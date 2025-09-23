@@ -18,6 +18,15 @@
 
 > これらは「Repository secrets」として登録してください。値は外部に公開されません。
 
+#### Claude Sonnet APIキー発行手順
+
+1. [Anthropic Developer Platform](https://console.anthropic.com)にアクセスし、アカウントを作成します。
+2. ログイン後、ダッシュボードまたはAPI管理画面に移動します。
+3. 「[API Keys](https://console.anthropic.com/settings/keys)」から新規APIキーを発行します。
+4. 発行されたAPIキーを控え、Githubリポジトリの「Secrets and variables」に `CLAUDE_API_KEY` として登録してください。
+
+※API利用には有料プランや申請が必要な場合があります。詳細はAnthropic公式の案内をご確認ください。
+
 ### 追加設定（必要に応じて）
 
 - 対象銘柄リストや分析条件を変数として管理したい場合は「Variables」に追加可能です。
