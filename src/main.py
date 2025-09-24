@@ -14,6 +14,7 @@ Github Actions上で定期実行可能。APIキーや設定値はSecrets/環境�
 import os
 import datetime
 import smtplib
+import requests
 from email.mime.text import MIMEText
 from email.utils import formatdate
 
@@ -25,21 +26,59 @@ SMTP_SERVER = os.getenv('SMTP_SERVER')
 SMTP_PORT = int(os.getenv('SMTP_PORT', '587'))
 SMTP_USER = os.getenv('SMTP_USER')
 SMTP_PASS = os.getenv('SMTP_PASS')
+YAHOO_API_KEY = os.getenv('YAHOO_API_KEY')
 
-# 1. データ収集（ダミー実装）
+# 1. データ収集（本番API連携例）
 def fetch_stock_data(symbol):
-    # 本来はAPI等で取得
+    # Yahoo Finance API例（RapidAPI経由）
+    url = "https://yfapi.net/v6/finance/quote"
+    headers = {"x-api-key": YAHOO_API_KEY}
+    params = {"symbols": symbol}
+    price = None
+    try:
+        response = requests.get(url, headers=headers, params=params, timeout=10)
+        if response.status_code == 200:
+            result = response.json()
+            price = result["quoteResponse"]["result"][0]["regularMarketPrice"]
+    except Exception as e:
+        print(f"株価取得失敗: {e}")
+    news = fetch_news(symbol)
     return {
-        'symbol': symbol,
-        'price': 1000,
-        'news': ['ニュース1', 'ニュース2'],
-        'sns': ['SNS投稿1', 'SNS投稿2']
+        "symbol": symbol,
+        "price": price,
+        "news": news
     }
 
-# 2. Claude Sonnet API分析（ダミー実装）
-def analyze_with_claude(data):
-    # 本来はClaude APIを呼び出し
-    return f"{data['symbol']}の分析結果: トレンドは上昇傾向です。主要ニュース: {', '.join(data['news'])}"
+def fetch_news(symbol):
+    # Google News API等で実装（ここはダミー）
+    return [f"{symbol}関連ニュース1", f"{symbol}関連ニュース2"]
+
+
+
+
+# 2. Claude Sonnet API分析（本番APIリクエスト例）
+    url = "https://api.anthropic.com/v1/messages"
+    headers = {
+        "x-api-key": CLAUDE_API_KEY,
+        "Content-Type": "application/json"
+    }
+    prompt = f"{data['symbol']}の株価は{data['price']}円です。ニュース: {', '.join(data['news'])}。これらを分析してください。"
+    payload = {
+        "model": "claude-sonnet-3",
+        "messages": [{"role": "user", "content": prompt}]
+    }
+    try:
+        response = requests.post(url, headers=headers, json=payload, timeout=15)
+        if response.status_code == 200:
+            result = response.json()
+            # Claude APIのレスポンス仕様に合わせて取得
+            return result["choices"][0]["message"]["content"]
+        else:
+            print(f"Claude APIエラー: {response.text}")
+            return "分析失敗"
+    except Exception as e:
+        print(f"Claude API呼び出し失敗: {e}")
+        return "分析失敗"
 
 # 3. レポート生成（HTML形式）
 def generate_report_html(symbol, analysis):

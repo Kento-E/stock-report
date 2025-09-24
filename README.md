@@ -15,6 +15,7 @@
 | `SMTP_PORT`      | SMTPポート                   | 通常587            |
 | `SMTP_USER`      | SMTP認証ユーザー             |                    |
 | `SMTP_PASS`      | SMTP認証パスワード           |                    |
+| `YAHOO_API_KEY`  | Yahoo Finance APIキー        |                    |
 
 > これらは「Repository secrets」として登録してください。値は外部に公開されません。
 
@@ -26,6 +27,10 @@
 4. 発行されたAPIキーを控え、Githubリポジトリの「Secrets and variables」に `CLAUDE_API_KEY` として登録してください。
 
 ※API利用には有料プランや申請が必要な場合があります。詳細はAnthropic公式の案内をご確認ください。
+
+#### Yahoo Finance APIキー発行手順
+
+[YH Finance API](https://financeapi.net/dashboard) でAPIキーを取得。
 
 ### 追加設定（必要に応じて）
 
