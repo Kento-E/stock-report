@@ -77,11 +77,25 @@ def send_report_via_mail(subject, html_body, to_addr):
 if __name__ == "__main__":
     # 対象銘柄リスト（例）
     symbols = ['7203.T', '6758.T']
+    all_reports = []
     for symbol in symbols:
         data = fetch_stock_data(symbol)
         analysis = analyze_with_claude(data)
         html, filename = generate_report_html(symbol, analysis)
         print(f"レポート生成: {filename}")
-        # メール配信（環境変数が設定されていれば送信）
-        if MAIL_TO and MAIL_FROM and SMTP_SERVER and SMTP_USER and SMTP_PASS:
-            send_report_via_mail(f"{symbol} 日次レポート", html, MAIL_TO)
+        all_reports.append(f"<h2>{symbol}</h2>\n{analysis}")
+
+    # 全銘柄分まとめてメール送信
+    if MAIL_TO and MAIL_FROM and SMTP_SERVER and SMTP_USER and SMTP_PASS:
+        today = datetime.date.today().isoformat()
+        subject = f"株式日次レポート ({today})"
+        body = f"""
+        <html>
+        <head><meta charset='utf-8'><title>{subject}</title></head>
+        <body>
+        <h1>{subject}</h1>
+        {''.join(all_reports)}
+        </body>
+        </html>
+        """
+        send_report_via_mail(subject, body, MAIL_TO)
