@@ -1,4 +1,3 @@
-
 """
 Claude Sonnet株式レポートシステム
 
@@ -57,12 +56,16 @@ def fetch_news(symbol):
 
 
 # 2. Claude Sonnet API分析（本番APIリクエスト例）
+def analyze_with_claude(data):
+    """
+    Claude Sonnet APIを用いて株価・ニュースデータを分析し、要約・トレンド抽出・リスク/チャンスの指摘を返す。
+    """
     url = "https://api.anthropic.com/v1/messages"
     headers = {
         "x-api-key": CLAUDE_API_KEY,
         "Content-Type": "application/json"
     }
-    prompt = f"{data['symbol']}の株価は{data['price']}円です。ニュース: {', '.join(data['news'])}。これらを分析してください。"
+    prompt = f"{data['symbol']}の株価は{data['price']}円です。ニュース: {', '.join(data['news'])}。これらを分析し、要約・トレンド・リスク/チャンスを日本語で簡潔に示してください。"
     payload = {
         "model": "claude-sonnet-3",
         "messages": [{"role": "user", "content": prompt}]
