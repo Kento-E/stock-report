@@ -5,7 +5,7 @@ Claude Sonnet株式レポートシステム
 Github Actions上で定期実行可能。APIキーや設定値はSecrets/環境変数で管理。
 レポートはHTML形式で生成し、メール配信処理の雛形も含む。
 
-- データ収集（株価・ニュース・SNS）
+- データ収集（株価・ニュース）
 - Claude Sonnet APIによる分析
 - レポート生成（HTML形式）
 - メール配信（SMTP設定は環境変数で管理）
