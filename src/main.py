@@ -1,4 +1,3 @@
-
 """
 Claude Sonnet株式レポートシステム
 
@@ -11,13 +10,17 @@ Github Actions上で定期実行可能。APIキーや設定値はSecrets/環境�
 - メール配信（SMTP設定は環境変数で管理）
 """
 
+from dotenv import load_dotenv
 import os
 import datetime
+import requests
 import smtplib
+import anthropic # pip install anthropic
 from email.mime.text import MIMEText
 from email.utils import formatdate
 
 # 必要なAPIキーや設定値は環境変数（Github Secrets）で管理
+load_dotenv()  # .envファイルから環境変数をロード
 CLAUDE_API_KEY = os.getenv('CLAUDE_API_KEY')
 MAIL_TO = os.getenv('MAIL_TO')
 MAIL_FROM = os.getenv('MAIL_FROM')
@@ -25,21 +28,68 @@ SMTP_SERVER = os.getenv('SMTP_SERVER')
 SMTP_PORT = int(os.getenv('SMTP_PORT', '587'))
 SMTP_USER = os.getenv('SMTP_USER')
 SMTP_PASS = os.getenv('SMTP_PASS')
+YAHOO_API_KEY = os.getenv('YAHOO_API_KEY')
 
-# 1. データ収集（ダミー実装）
+# 1. データ収集（本番API連携例）
 def fetch_stock_data(symbol):
-    # 本来はAPI等で取得
+    # Yahoo Finance API例（RapidAPI経由）
+    url = "https://yfapi.net/v6/finance/quote"
+    headers = {"x-api-key": YAHOO_API_KEY}
+    params = {"symbols": symbol}
+    price = None
+    try:
+        response = requests.get(url, headers=headers, params=params, timeout=10)
+        if response.status_code == 200:
+            result = response.json()
+            price = result["quoteResponse"]["result"][0]["regularMarketPrice"]
+    except Exception as e:
+        print(f"株価取得失敗: {e}")
+    news = fetch_news(symbol)
     return {
-        'symbol': symbol,
-        'price': 1000,
-        'news': ['ニュース1', 'ニュース2'],
-        'sns': ['SNS投稿1', 'SNS投稿2']
+        "symbol": symbol,
+        "price": price,
+        "news": news
     }
 
-# 2. Claude Sonnet API分析（ダミー実装）
+def fetch_news(symbol):
+    # Google News API等で実装（ここはダミー）
+    return [f"{symbol}関連ニュース1", f"{symbol}関連ニュース2"]
+
+
+
+
+# 2. Claude Sonnet API分析（本番APIリクエスト例）
 def analyze_with_claude(data):
-    # 本来はClaude APIを呼び出し
-    return f"{data['symbol']}の分析結果: トレンドは上昇傾向です。主要ニュース: {', '.join(data['news'])}"
+    """
+    Claude Sonnet APIを用いて株価・ニュースデータを分析し、要約・トレンド抽出・リスク/チャンスの指摘を返す。
+    """
+    if not CLAUDE_API_KEY or CLAUDE_API_KEY.strip() == "":
+        print("Claude APIエラー: APIキーが未設定です。環境変数CLAUDE_API_KEYを確認してください。")
+        return "分析失敗（APIキー未設定）"
+    client = anthropic.Anthropic(api_key=CLAUDE_API_KEY)
+    prompt = f"{data['symbol']}の株価は{data['price']}円です。ニュース: {', '.join(data['news'])}。これらを分析し、要約・トレンド・リスク/チャンスを日本語で簡潔に示してください。"
+    try:
+        message = client.messages.create(
+            model="claude-3-sonnet-20240229",
+            max_tokens=1000,
+            temperature=0.5,
+            system="あなたは株式分析の専門家です。",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": prompt
+                        }
+                    ]
+                }
+            ]
+        )
+        return message.content[0].text
+    except Exception as e:
+        print(f"Claude API呼び出し失敗: {e}")
+        return "分析失敗"
 
 # 3. レポート生成（HTML形式）
 def generate_report_html(symbol, analysis):
