@@ -71,7 +71,7 @@ def analyze_with_claude(data):
         message = client.messages.create(
             model="claude-3-sonnet-20240229",
             max_tokens=1000,
-            temperature=1,
+            temperature=0.5,
             system="あなたは株式分析の専門家です。",
             messages=[
                 {
