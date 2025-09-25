@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 import os
 import datetime
 import smtplib
-import requests
+import anthropic # pip install anthropic
 from email.mime.text import MIMEText
 from email.utils import formatdate
 
@@ -65,25 +65,27 @@ def analyze_with_claude(data):
     if not CLAUDE_API_KEY or CLAUDE_API_KEY.strip() == "":
         print("Claude APIエラー: APIキーが未設定です。環境変数CLAUDE_API_KEYを確認してください。")
         return "分析失敗（APIキー未設定）"
-    url = "https://api.anthropic.com/v1/messages"
-    headers = {
-        "Authorization": f"Bearer {CLAUDE_API_KEY}",
-        "Content-Type": "application/json"
-    }
+    client = anthropic.Anthropic(api_key=CLAUDE_API_KEY)
     prompt = f"{data['symbol']}の株価は{data['price']}円です。ニュース: {', '.join(data['news'])}。これらを分析し、要約・トレンド・リスク/チャンスを日本語で簡潔に示してください。"
-    payload = {
-        "model": "claude-sonnet-3",
-        "messages": [{"role": "user", "content": prompt}]
-    }
     try:
-        response = requests.post(url, headers=headers, json=payload, timeout=15)
-        if response.status_code == 200:
-            result = response.json()
-            # Claude APIのレスポンス仕様に合わせて取得
-            return result["choices"][0]["message"]["content"]
-        else:
-            print(f"Claude APIエラー: {response.text}")
-            return "分析失敗"
+        message = client.messages.create(
+            model="claude-3-sonnet-20240229",
+            max_tokens=1000,
+            temperature=1,
+            system="あなたは株式分析の専門家です。",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": prompt
+                        }
+                    ]
+                }
+            ]
+        )
+        return message.content[0].text
     except Exception as e:
         print(f"Claude API呼び出し失敗: {e}")
         return "分析失敗"
