@@ -13,6 +13,7 @@ Github Actions上で定期実行可能。APIキーや設定値はSecrets/環境�
 from dotenv import load_dotenv
 import os
 import datetime
+import requests
 import smtplib
 import anthropic # pip install anthropic
 from email.mime.text import MIMEText
