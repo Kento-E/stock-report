@@ -10,6 +10,7 @@ Github Actions上で定期実行可能。APIキーや設定値はSecrets/環境�
 - メール配信（SMTP設定は環境変数で管理）
 """
 
+from dotenv import load_dotenv
 import os
 import datetime
 import smtplib
@@ -18,6 +19,7 @@ from email.mime.text import MIMEText
 from email.utils import formatdate
 
 # 必要なAPIキーや設定値は環境変数（Github Secrets）で管理
+load_dotenv()  # .envファイルから環境変数をロード
 CLAUDE_API_KEY = os.getenv('CLAUDE_API_KEY')
 MAIL_TO = os.getenv('MAIL_TO')
 MAIL_FROM = os.getenv('MAIL_FROM')
@@ -60,9 +62,12 @@ def analyze_with_claude(data):
     """
     Claude Sonnet APIを用いて株価・ニュースデータを分析し、要約・トレンド抽出・リスク/チャンスの指摘を返す。
     """
+    if not CLAUDE_API_KEY or CLAUDE_API_KEY.strip() == "":
+        print("Claude APIエラー: APIキーが未設定です。環境変数CLAUDE_API_KEYを確認してください。")
+        return "分析失敗（APIキー未設定）"
     url = "https://api.anthropic.com/v1/messages"
     headers = {
-        "x-api-key": CLAUDE_API_KEY,
+        "Authorization": f"Bearer {CLAUDE_API_KEY}",
         "Content-Type": "application/json"
     }
     prompt = f"{data['symbol']}の株価は{data['price']}円です。ニュース: {', '.join(data['news'])}。これらを分析し、要約・トレンド・リスク/チャンスを日本語で簡潔に示してください。"
