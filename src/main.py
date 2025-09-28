@@ -63,7 +63,7 @@ def analyze_with_claude(data):
     prompt = f"{data['symbol']}の株価は{data['price']}円です。ニュース: {', '.join(data['news'])}。これらを分析し、要約・トレンド・リスク/チャンスを日本語で簡潔に示してください。"
     try:
         message = client.messages.create(
-            model="claude-3-sonnet-20240229",
+            model="claude-3-sonnet-latest",
             max_tokens=1000,
             temperature=0.5,
             system="あなたは株式分析の専門家です。",
