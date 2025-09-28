@@ -57,37 +57,8 @@ def fetch_news(symbol):
 
 
 # 2. Claude Sonnet API分析（本番APIリクエスト例）
+
 def analyze_with_claude(data):
-def analyze_with_gemini(data):
-    """
-    Gemini APIを用いて株価・ニュースデータを分析し、要約・トレンド抽出・リスク/チャンスの指摘を返す。
-    """
-    if not GEMINI_API_KEY or GEMINI_API_KEY.strip() == "":
-        print("Gemini APIエラー: APIキーが未設定です。環境変数GEMINI_API_KEYを確認してください。")
-        return "分析失敗（Gemini APIキー未設定）"
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={GEMINI_API_KEY}"
-    prompt = f"{data['symbol']}の株価は{data['price']}円です。ニュース: {', '.join(data['news'])}。これらを分析し、要約・トレンド・リスク/チャンスを日本語で簡潔に示してください。"
-    headers = {"Content-Type": "application/json"}
-    payload = {
-        "contents": [
-            {
-                "parts": [
-                    {"text": prompt}
-                ]
-            }
-        ]
-    }
-    try:
-        resp = requests.post(url, headers=headers, json=payload, timeout=20)
-        if resp.status_code == 200:
-            result = resp.json()
-            return result["candidates"][0]["content"]["parts"][0]["text"]
-        else:
-            print(f"Gemini APIエラー: {resp.status_code} {resp.text}")
-            return "分析失敗"
-    except Exception as e:
-        print(f"Gemini API呼び出し失敗: {e}")
-        return "分析失敗"
     """
     Claude Sonnet APIを用いて株価・ニュースデータを分析し、要約・トレンド抽出・リスク/チャンスの指摘を返す。
     """
@@ -117,6 +88,37 @@ def analyze_with_gemini(data):
         return message.content[0].text
     except Exception as e:
         print(f"Claude API呼び出し失敗: {e}")
+        return "分析失敗"
+
+def analyze_with_gemini(data):
+    """
+    Gemini APIを用いて株価・ニュースデータを分析し、要約・トレンド抽出・リスク/チャンスの指摘を返す。
+    """
+    if not GEMINI_API_KEY or GEMINI_API_KEY.strip() == "":
+        print("Gemini APIエラー: APIキーが未設定です。環境変数GEMINI_API_KEYを確認してください。")
+        return "分析失敗（Gemini APIキー未設定）"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={GEMINI_API_KEY}"
+    prompt = f"{data['symbol']}の株価は{data['price']}円です。ニュース: {', '.join(data['news'])}。これらを分析し、要約・トレンド・リスク/チャンスを日本語で簡潔に示してください。"
+    headers = {"Content-Type": "application/json"}
+    payload = {
+        "contents": [
+            {
+                "parts": [
+                    {"text": prompt}
+                ]
+            }
+        ]
+    }
+    try:
+        resp = requests.post(url, headers=headers, json=payload, timeout=20)
+        if resp.status_code == 200:
+            result = resp.json()
+            return result["candidates"][0]["content"]["parts"][0]["text"]
+        else:
+            print(f"Gemini APIエラー: {resp.status_code} {resp.text}")
+            return "分析失敗"
+    except Exception as e:
+        print(f"Gemini API呼び出し失敗: {e}")
         return "分析失敗"
 
 # 3. レポート生成（HTML形式）
