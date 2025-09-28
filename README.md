@@ -9,6 +9,7 @@
 | Secret名         | 用途                         | 例・備考           |
 | ---------------- | ---------------------------- | ------------------ |
 | `CLAUDE_API_KEY` | Claude Sonnet APIキー        |                    |
+| `GEMINI_API_KEY` | GEMINI APIキー               |                    |
 | `MAIL_TO`        | レポート送信先メールアドレス |                    |
 | `MAIL_FROM`      | 送信元メールアドレス         |                    |
 | `SMTP_SERVER`    | SMTPサーバー                 | 例: smtp.gmail.com |
@@ -25,6 +26,11 @@
 2. ログイン後、ダッシュボードまたはAPI管理画面に移動します。
 3. 「[API Keys](https://console.anthropic.com/settings/keys)」から新規APIキーを発行します。
 4. 発行されたAPIキーを控え、Githubリポジトリの「Secrets and variables」に `CLAUDE_API_KEY` として登録してください。
+
+#### Gemini APIキー発行手順
+
+1. [Gemini APIキーを取得する](https://aistudio.google.com/apikey?hl=ja)アクセスする。
+2. "Get API key" > "APIキーを作成"を選択する。
 
 ※API利用には有料プランや申請が必要な場合があります。詳細はAnthropic公式の案内をご確認ください。
 

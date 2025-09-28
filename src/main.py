@@ -12,6 +12,7 @@ Github Actions上で定期実行可能。APIキーや設定値はSecrets/環境�
 
 from dotenv import load_dotenv
 import os
+import sys
 import datetime
 import requests
 import anthropic # pip install anthropic
@@ -20,8 +21,12 @@ from mail_utils import send_report_via_mail, get_smtp_config, generate_mail_body
 # 必要なAPIキーや設定値は環境変数（Github Secrets）で管理
 load_dotenv()  # .envファイルから環境変数をロード
 CLAUDE_API_KEY = os.getenv('CLAUDE_API_KEY')
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 MAIL_TO = os.getenv('MAIL_TO')
 YAHOO_API_KEY = os.getenv('YAHOO_API_KEY')
+
+# 実行オプション判定（デフォルトGemini、--claude指定時のみClaude）
+USE_CLAUDE = "--claude" in sys.argv
 
 # 1. データ収集（本番API連携例）
 def fetch_stock_data(symbol):
@@ -52,6 +57,7 @@ def fetch_news(symbol):
 
 
 # 2. Claude Sonnet API分析（本番APIリクエスト例）
+
 def analyze_with_claude(data):
     """
     Claude Sonnet APIを用いて株価・ニュースデータを分析し、要約・トレンド抽出・リスク/チャンスの指摘を返す。
@@ -84,6 +90,37 @@ def analyze_with_claude(data):
         print(f"Claude API呼び出し失敗: {e}")
         return "分析失敗"
 
+def analyze_with_gemini(data):
+    """
+    Gemini APIを用いて株価・ニュースデータを分析し、要約・トレンド抽出・リスク/チャンスの指摘を返す。
+    """
+    if not GEMINI_API_KEY or GEMINI_API_KEY.strip() == "":
+        print("Gemini APIエラー: APIキーが未設定です。環境変数GEMINI_API_KEYを確認してください。")
+        return "分析失敗（Gemini APIキー未設定）"
+    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
+    prompt = f"{data['symbol']}の株価は{data['price']}円です。ニュース: {', '.join(data['news'])}。これらを分析し、要約・トレンド・リスク/チャンスを日本語で簡潔に示してください。"
+    headers = {"Content-Type": "application/json"}
+    payload = {
+        "contents": [
+            {
+                "parts": [
+                    {"text": prompt}
+                ]
+            }
+        ]
+    }
+    try:
+        resp = requests.post(url, headers=headers, json=payload, timeout=20)
+        if resp.status_code == 200:
+            result = resp.json()
+            return result["candidates"][0]["content"]["parts"][0]["text"]
+        else:
+            print(f"Gemini APIエラー: {resp.status_code} {resp.text}")
+            return "分析失敗"
+    except Exception as e:
+        print(f"Gemini API呼び出し失敗: {e}")
+        return "分析失敗"
+
 # 3. レポート生成（HTML形式）
 def generate_report_html(symbol, analysis):
     today = datetime.date.today().isoformat()
@@ -107,7 +144,10 @@ if __name__ == "__main__":
     all_reports = []
     for symbol in symbols:
         data = fetch_stock_data(symbol)
-        analysis = analyze_with_claude(data)
+        if USE_CLAUDE:
+            analysis = analyze_with_claude(data)
+        else:
+            analysis = analyze_with_gemini(data)
         html, filename = generate_report_html(symbol, analysis)
         print(f"レポート生成: {filename}")
         all_reports.append(f"<h2>{symbol}</h2>\n{analysis}")
