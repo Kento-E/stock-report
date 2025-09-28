@@ -109,18 +109,26 @@ def generate_report_html(symbol, analysis):
     return html, filename
 
 # 4. メール配信（雛形）
-def send_report_via_mail(subject, html_body, to_addr):
+def send_report_via_mail(subject, html_body, to_addrs):
+    """
+    to_addrs: カンマまたはセミコロン区切りの文字列、またはリスト
+    """
+    if isinstance(to_addrs, str):
+        # カンマまたはセミコロン区切りで分割し、空要素除去
+        to_list = [addr.strip() for addr in to_addrs.replace(';', ',').split(',') if addr.strip()]
+    else:
+        to_list = list(to_addrs)
     msg = MIMEText(html_body, "html", "utf-8")
     msg["Subject"] = subject
     msg["From"] = MAIL_FROM
-    msg["To"] = to_addr
+    msg["To"] = ", ".join(to_list)
     msg["Date"] = formatdate(localtime=True)
     try:
         with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
             server.starttls()
             server.login(SMTP_USER, SMTP_PASS)
-            server.sendmail(MAIL_FROM, [to_addr], msg.as_string())
-        print(f"メール送信成功: {to_addr}")
+            server.sendmail(MAIL_FROM, to_list, msg.as_string())
+        print(f"メール送信成功: {to_list}")
     except Exception as e:
         print(f"メール送信失敗: {e}")
 
