@@ -25,8 +25,8 @@ GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 MAIL_TO = os.getenv('MAIL_TO')
 YAHOO_API_KEY = os.getenv('YAHOO_API_KEY')
 
-# 実行オプション判定
-USE_GEMINI = "--gemini" in sys.argv
+# 実行オプション判定（デフォルトGemini、--claude指定時のみClaude）
+USE_CLAUDE = "--claude" in sys.argv
 
 # 1. データ収集（本番API連携例）
 def fetch_stock_data(symbol):
@@ -144,10 +144,10 @@ if __name__ == "__main__":
     all_reports = []
     for symbol in symbols:
         data = fetch_stock_data(symbol)
-        if USE_GEMINI:
-            analysis = analyze_with_gemini(data)
-        else:
+        if USE_CLAUDE:
             analysis = analyze_with_claude(data)
+        else:
+            analysis = analyze_with_gemini(data)
         html, filename = generate_report_html(symbol, analysis)
         print(f"レポート生成: {filename}")
         all_reports.append(f"<h2>{symbol}</h2>\n{analysis}")
