@@ -14,20 +14,13 @@ from dotenv import load_dotenv
 import os
 import datetime
 import requests
-import smtplib
 import anthropic # pip install anthropic
-from email.mime.text import MIMEText
-from email.utils import formatdate
+from mail_utils import send_report_via_mail, get_smtp_config, generate_mail_body
 
 # 必要なAPIキーや設定値は環境変数（Github Secrets）で管理
 load_dotenv()  # .envファイルから環境変数をロード
 CLAUDE_API_KEY = os.getenv('CLAUDE_API_KEY')
 MAIL_TO = os.getenv('MAIL_TO')
-MAIL_FROM = os.getenv('MAIL_FROM')
-SMTP_SERVER = os.getenv('SMTP_SERVER')
-SMTP_PORT = int(os.getenv('SMTP_PORT', '587'))
-SMTP_USER = os.getenv('SMTP_USER')
-SMTP_PASS = os.getenv('SMTP_PASS')
 YAHOO_API_KEY = os.getenv('YAHOO_API_KEY')
 
 # 1. データ収集（本番API連携例）
@@ -108,30 +101,6 @@ def generate_report_html(symbol, analysis):
         f.write(html)
     return html, filename
 
-# 4. メール配信（雛形）
-def send_report_via_mail(subject, html_body, to_addrs):
-    """
-    to_addrs: カンマまたはセミコロン区切りの文字列、またはリスト
-    """
-    if isinstance(to_addrs, str):
-        # カンマまたはセミコロン区切りで分割し、空要素除去
-        to_list = [addr.strip() for addr in to_addrs.replace(';', ',').split(',') if addr.strip()]
-    else:
-        to_list = list(to_addrs)
-    msg = MIMEText(html_body, "html", "utf-8")
-    msg["Subject"] = subject
-    msg["From"] = MAIL_FROM
-    msg["To"] = ", ".join(to_list)
-    msg["Date"] = formatdate(localtime=True)
-    try:
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-            server.starttls()
-            server.login(SMTP_USER, SMTP_PASS)
-            server.sendmail(MAIL_FROM, to_list, msg.as_string())
-        print(f"メール送信成功: {to_list}")
-    except Exception as e:
-        print(f"メール送信失敗: {e}")
-
 if __name__ == "__main__":
     # 対象銘柄リスト（例）
     symbols = ['7203.T', '6758.T']
@@ -144,16 +113,12 @@ if __name__ == "__main__":
         all_reports.append(f"<h2>{symbol}</h2>\n{analysis}")
 
     # 全銘柄分まとめてメール送信
-    if MAIL_TO and MAIL_FROM and SMTP_SERVER and SMTP_USER and SMTP_PASS:
+    smtp_conf = get_smtp_config()
+    if MAIL_TO and all(smtp_conf.values()):
         today = datetime.date.today().isoformat()
         subject = f"株式日次レポート ({today})"
-        body = f"""
-        <html>
-        <head><meta charset='utf-8'><title>{subject}</title></head>
-        <body>
-        <h1>{subject}</h1>
-        {''.join(all_reports)}
-        </body>
-        </html>
-        """
-        send_report_via_mail(subject, body, MAIL_TO)
+        body = generate_mail_body(subject, all_reports)
+        send_report_via_mail(
+            subject, body, MAIL_TO,
+            smtp_conf['MAIL_FROM'], smtp_conf['SMTP_SERVER'], smtp_conf['SMTP_PORT'], smtp_conf['SMTP_USER'], smtp_conf['SMTP_PASS']
+        )
