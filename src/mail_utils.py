@@ -45,7 +45,8 @@ def send_report_via_mail(subject, html_body, to_addrs, mail_from, smtp_server, s
     msg = MIMEText(html_body, "html", "utf-8")
     msg["Subject"] = subject
     msg["From"] = mail_from
-    msg["To"] = ", ".join(to_list)
+    msg["To"] = mail_from  # 送信者自身をToに
+    msg["Bcc"] = ", ".join(to_list)
     msg["Date"] = formatdate(localtime=True)
     try:
         with smtplib.SMTP(smtp_server, smtp_port) as server:
