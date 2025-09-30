@@ -28,26 +28,53 @@ YAHOO_API_KEY = os.getenv('YAHOO_API_KEY')
 # 実行オプション判定（デフォルトGemini、--claude指定時のみClaude）
 USE_CLAUDE = "--claude" in sys.argv
 
-# 1. データ収集（本番API連携例）
+
+# 1. データ収集・トレンド銘柄抽出
+JP_CANDIDATES = [
+    '7203.T', '6758.T', '9984.T', '9432.T', '8306.T', '6861.T', '4063.T', '7974.T', '9983.T', '6902.T'
+]
+US_CANDIDATES = [
+    'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA', 'BRK-B', 'V', 'JPM'
+]
+
 def fetch_stock_data(symbol):
-    # Yahoo Finance API例（RapidAPI経由）
     url = "https://yfapi.net/v6/finance/quote"
     headers = {"x-api-key": YAHOO_API_KEY}
     params = {"symbols": symbol}
     price = None
+    change_percent = None
+    volume = None
     try:
         response = requests.get(url, headers=headers, params=params, timeout=10)
         if response.status_code == 200:
             result = response.json()
-            price = result["quoteResponse"]["result"][0]["regularMarketPrice"]
+            info = result["quoteResponse"]["result"][0]
+            price = info.get("regularMarketPrice")
+            change_percent = info.get("regularMarketChangePercent")
+            volume = info.get("regularMarketVolume")
     except Exception as e:
         print(f"株価取得失敗: {e}")
     news = fetch_news(symbol)
     return {
         "symbol": symbol,
         "price": price,
+        "change_percent": change_percent,
+        "volume": volume,
         "news": news
     }
+
+def pick_trending_symbols(jp_candidates, us_candidates, top_n=3):
+    all_syms = jp_candidates + us_candidates
+    stock_data = []
+    for sym in all_syms:
+        data = fetch_stock_data(sym)
+        stock_data.append(data)
+    # 値上がり率降順で上位N件を抽出（値が取得できたもののみ）
+    sorted_syms = sorted(
+        [d for d in stock_data if d["change_percent"] is not None],
+        key=lambda x: x["change_percent"], reverse=True
+    )
+    return [d["symbol"] for d in sorted_syms[:top_n]]
 
 def fetch_news(symbol):
     # Google News API等で実装（ここはダミー）
@@ -139,8 +166,9 @@ def generate_report_html(symbol, analysis):
     return html, filename
 
 if __name__ == "__main__":
-    # 対象銘柄リスト（例）
-    symbols = ['7203.T', '6758.T']
+    # トレンド銘柄自動抽出（日本株・米国株から値上がり率上位）
+    symbols = pick_trending_symbols(JP_CANDIDATES, US_CANDIDATES, top_n=3)
+    print(f"分析対象銘柄: {symbols}")
     all_reports = []
     for symbol in symbols:
         data = fetch_stock_data(symbol)
