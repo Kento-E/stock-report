@@ -98,7 +98,12 @@ def analyze_with_gemini(data):
         print("Gemini APIエラー: APIキーが未設定です。環境変数GEMINI_API_KEYを確認してください。")
         return "分析失敗（Gemini APIキー未設定）"
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
-    prompt = f"{data['symbol']}の株価は{data['price']}円です。ニュース: {', '.join(data['news'])}。これらを分析し、要約・トレンド・リスク/チャンスを日本語で簡潔に示してください。"
+    prompt = (
+        "あなたは株式分析の専門家です。"
+        f"{data['symbol']}の株価は{data['price']}円です。"
+        f"ニュース: {', '.join(data['news'])}。"
+        "これらを分析し、要約・トレンド・リスク/チャンスを日本語で簡潔に示してください。"
+    )
     headers = {"Content-Type": "application/json"}
     payload = {
         "contents": [
