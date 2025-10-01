@@ -2,7 +2,7 @@ name: Daily Stock Report
 
 on:
   schedule:
-    - cron: "10 0 * * *"
+    - cron: "10 0 * * 1-5"
   workflow_dispatch:
 
 jobs:
