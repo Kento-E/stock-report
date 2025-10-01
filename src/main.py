@@ -16,7 +16,7 @@ import sys
 import datetime
 import requests
 import anthropic # pip install anthropic
-from mail_utils import send_report_via_mail, get_smtp_config, generate_mail_body
+from mail_utils import send_report_via_mail, get_smtp_config, generate_mail_body, markdown_to_html
 
 # 必要なAPIキーや設定値は環境変数（Github Secrets）で管理
 load_dotenv()  # .envファイルから環境変数をロード
@@ -129,12 +129,13 @@ def analyze_with_gemini(data):
 # 3. レポート生成（HTML形式）
 def generate_report_html(symbol, analysis):
     today = datetime.date.today().isoformat()
+    analysis_html = markdown_to_html(analysis)
     html = f"""
     <html>
     <head><meta charset='utf-8'><title>{symbol} 日次レポート ({today})</title></head>
     <body>
     <h1>{symbol} 日次レポート ({today})</h1>
-    <p>{analysis}</p>
+    {analysis_html}
     </body>
     </html>
     """
@@ -155,7 +156,8 @@ if __name__ == "__main__":
             analysis = analyze_with_gemini(data)
         html, filename = generate_report_html(symbol, analysis)
         print(f"レポート生成: {filename}")
-        all_reports.append(f"<h2>{symbol}</h2>\n{analysis}")
+        analysis_html = markdown_to_html(analysis)
+        all_reports.append(f"<h2>{symbol}</h2>\n{analysis_html}")
 
     # 全銘柄分まとめてメール送信
     smtp_conf = get_smtp_config()

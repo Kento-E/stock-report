@@ -1,12 +1,9 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.utils import formatdate
-
 import os
 import datetime
-import smtplib
-from email.mime.text import MIMEText
-from email.utils import formatdate
+import markdown
 
 def get_smtp_config():
     """
@@ -19,6 +16,12 @@ def get_smtp_config():
         'SMTP_USER': os.getenv('SMTP_USER'),
         'SMTP_PASS': os.getenv('SMTP_PASS'),
     }
+
+def markdown_to_html(markdown_text):
+    """
+    マークダウンテキストをHTMLに変換
+    """
+    return markdown.markdown(markdown_text, extensions=['extra', 'nl2br'])
 
 def generate_mail_body(subject, all_reports):
     today = datetime.date.today().isoformat()
