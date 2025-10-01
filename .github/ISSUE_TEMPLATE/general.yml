@@ -1,0 +1,27 @@
+name: General Issue
+description: 一般的な問題や質問
+title: ""
+labels: []
+assignees:
+  - copilot
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ご報告ありがとうございます。
+  - type: textarea
+    id: description
+    attributes:
+      label: 説明
+      description: 問題や質問の内容を詳しく教えてください。
+      placeholder: 詳細をここに記載してください。
+    validations:
+      required: true
+  - type: textarea
+    id: additional
+    attributes:
+      label: 追加情報
+      description: 他に共有したい情報があれば記載してください。
+      placeholder: スクリーンショット、ログ、参考資料など
+    validations:
+      required: false

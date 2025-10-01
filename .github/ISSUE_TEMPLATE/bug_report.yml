@@ -1,0 +1,47 @@
+name: Bug Report
+description: バグレポートを作成
+title: "[Bug]: "
+labels: ["bug"]
+assignees:
+  - copilot
+body:
+  - type: markdown
+    attributes:
+      value: |
+        バグレポートをご提出いただきありがとうございます。
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 何が起きましたか？
+      description: バグの内容を詳しく教えてください。
+      placeholder: バグの詳細をここに記載してください。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待される動作
+      description: どのような動作を期待していましたか？
+      placeholder: 期待される動作をここに記載してください。
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順
+      description: バグを再現するための手順を教えてください。
+      placeholder: |
+        1. '...' に移動
+        2. '...' をクリック
+        3. '...' まで下にスクロール
+        4. エラーを確認
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: 関連ログ
+      description: 関連するログやエラーメッセージがあれば貼り付けてください。
+      render: shell
+    validations:
+      required: false
