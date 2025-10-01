@@ -74,7 +74,8 @@
 ## 9. 実行環境
 
 - GitHub Actions 上で定期実行（cron スケジューラ）を行う。
-- 実行時刻は JST（日本標準時）で毎日午前 9 時 10 分。
+- 実行時刻は JST（日本標準時）で平日（月曜日～金曜日）の午前 9 時 10 分。
+- 土日は株式市場が休みのため実行しない。
 - Claude Sonnet API キーやメール配信設定等の機密情報は、GitHub リポジトリの「Secrets and variables」で安全に管理する。
 - レポート生成・配信処理も Actions workflow で自動化する。
 
