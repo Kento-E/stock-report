@@ -17,9 +17,15 @@
 | `SMTP_USER`      | SMTP認証ユーザー             |                    |
 | `SMTP_PASS`      | SMTP認証パスワード           |                    |
 | `YAHOO_API_KEY`  | Yahoo Finance APIキー        |                    |
-| `STOCK_SYMBOLS`  | 分析対象の株銘柄リスト       | 例: 7203.T,6758.T,AAPL,MSFT（カンマ区切り） |
 
 > これらは「Repository secrets」として登録してください。値は外部に公開されません。
+
+### Variables設定（リポジトリ設定 > Settings > Secrets and variables > Actions > Variables）
+
+| Variable名       | 用途                         | 例・備考           |
+| ---------------- | ---------------------------- | ------------------ |
+| `STOCK_SYMBOLS`  | 分析対象の株銘柄リスト       | 例: 7203.T,6758.T,AAPL,MSFT（カンマ区切り） |
+
 > `STOCK_SYMBOLS`は未設定の場合、デフォルトで`7203.T,6758.T`が使用されます。日本株（.T、.JPサフィックス）と米国株の両方に対応しています。
 
 #### Claude Sonnet APIキー発行手順
