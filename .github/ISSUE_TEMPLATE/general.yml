@@ -2,8 +2,6 @@ name: General Issue
 description: 一般的な問題や質問
 title: ""
 labels: []
-assignees:
-  - Kento-E
 body:
   - type: markdown
     attributes:
@@ -27,5 +25,14 @@ body:
       label: 追加情報
       description: 他に共有したい情報があれば記載してください。
       placeholder: スクリーンショット、ログ、参考資料など
+    validations:
+      required: false
+  - type: textarea
+    id: copilot-request
+    attributes:
+      label: GitHub Copilotへの質問（任意）
+      description: GitHub Copilotに分析や質問をしたい場合は、以下のようにメンションしてください。
+      placeholder: "@copilot この問題について教えてください"
+      value: "@copilot この問題について教えてください"
     validations:
       required: false

@@ -2,8 +2,6 @@ name: Feature Request
 description: 新機能のリクエスト
 title: "[Feature]: "
 labels: ["enhancement"]
-assignees:
-  - Kento-E
 body:
   - type: markdown
     attributes:
@@ -43,5 +41,14 @@ body:
       label: 追加情報
       description: 他に共有したい情報があれば記載してください。
       placeholder: スクリーンショット、参考資料など
+    validations:
+      required: false
+  - type: textarea
+    id: copilot-request
+    attributes:
+      label: GitHub Copilotへの質問（任意）
+      description: GitHub Copilotに分析や質問をしたい場合は、以下のようにメンションしてください。
+      placeholder: "@copilot この機能について分析してください"
+      value: "@copilot この機能について分析してください"
     validations:
       required: false
