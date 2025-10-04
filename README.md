@@ -58,6 +58,32 @@
 - メール配信に外部サービス（Gmail等）を使う場合は、アプリパスワードや2段階認証の設定も必要です。
 - Github Actions workflowファイル（.github/workflows/）の設置
 
+### Pull Request 自動マージ機能
+
+本リポジトリには、Pull Request を承認（Approve）すると自動的にマージする機能が実装されています。
+
+#### 動作仕様
+
+- Pull Request が承認されると、`.github/workflows/auto-merge.yml` ワークフローが自動実行されます。
+- マージ方式は **スカッシュマージ（Squash Merge）** を採用し、複数のコミットを1つにまとめます。
+- マージ後、ブランチは自動的に削除されます。
+
+#### 必要な権限設定
+
+この機能を使用するには、以下の設定が必要です：
+
+1. **Settings > Actions > General > Workflow permissions** で以下を設定：
+   - 「Read and write permissions」を選択
+   - 「Allow GitHub Actions to create and approve pull requests」にチェック
+
+2. リポジトリの設定で、GitHub Actions に必要な権限が付与されていることを確認してください。
+
+#### 注意事項
+
+- マージ可能な状態（競合がない、必要なチェックが通過しているなど）でなければ、自動マージは実行されません。
+- 承認後、手動でマージボタンを押す必要はありません。
+- 詳細な動作確認手順は `.github/instructions/testing.instructions.md` を参照してください。
+
 ## 参考
 
 - [Github公式: Secrets and variables](https://docs.github.com/ja/actions/security-guides/encrypted-secrets)
