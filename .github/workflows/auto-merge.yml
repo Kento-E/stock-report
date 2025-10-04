@@ -25,6 +25,15 @@ jobs:
         run: |
           echo "PR #${PR_NUMBER} が承認されました。自動マージを開始します..."
           
+          # PRがDraftかどうかをチェック
+          IS_DRAFT=$(gh pr view ${PR_NUMBER} --json isDraft --jq '.isDraft')
+          
+          if [ "$IS_DRAFT" = "true" ]; then
+            echo "⚠️ このPRはDraft状態です。Draft状態のPRは自動マージされません。"
+            echo "Ready for reviewに変更してから再度Approveしてください。"
+            exit 0
+          fi
+          
           # PRがマージ可能な状態かチェック
           gh pr view ${PR_NUMBER} --json mergeable,mergeStateStatus --jq '.mergeable,.mergeStateStatus'
           
