@@ -3,12 +3,16 @@ description: 新機能のリクエスト
 title: "[Feature]: "
 labels: ["enhancement"]
 assignees:
-  - copilot
+  - Kento-E
 body:
   - type: markdown
     attributes:
       value: |
         機能リクエストをご提出いただきありがとうございます。
+
+        💡 **GitHub Copilotを使用する場合**: Issueのコメント欄で
+        `@copilot` とメンションすることで、GitHub Copilotに
+        質問や分析を依頼できます。
   - type: textarea
     id: problem
     attributes:
