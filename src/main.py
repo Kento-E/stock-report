@@ -173,7 +173,7 @@ if __name__ == "__main__":
         html, filename = generate_report_html(symbol, analysis)
         print(f"レポート生成: {filename}")
         analysis_html = markdown_to_html(analysis)
-        all_reports.append(f"<h2>{symbol}</h2>\n{analysis_html}")
+        all_reports.append(f"<h1>{symbol}</h1>\n{analysis_html}")
 
     # 全銘柄分まとめてメール送信
     smtp_conf = get_smtp_config()

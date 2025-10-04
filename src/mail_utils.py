@@ -29,7 +29,6 @@ def generate_mail_body(subject, all_reports):
     <html>
     <head><meta charset='utf-8'><title>{subject}</title></head>
     <body>
-    <h1>{subject}</h1>
     {''.join(all_reports)}
     </body>
     </html>
