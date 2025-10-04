@@ -3,7 +3,7 @@ description: 新機能のリクエスト
 title: "[Feature]: "
 labels: ["enhancement"]
 assignees:
-  - copilot
+  - Kento-E
 body:
   - type: markdown
     attributes:
