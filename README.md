@@ -20,6 +20,14 @@
 
 > これらは「Repository secrets」として登録してください。値は外部に公開されません。
 
+### Variables設定（リポジトリ設定 > Settings > Secrets and variables > Actions > Variables）
+
+| Variable名       | 用途                         | 例・備考           |
+| ---------------- | ---------------------------- | ------------------ |
+| `STOCK_SYMBOLS`  | 分析対象の株銘柄リスト       | 例: 7203.T,6758.T,AAPL,MSFT（カンマ区切り） |
+
+> `STOCK_SYMBOLS`は未設定の場合、デフォルトで`7203.T,6758.T`が使用されます。日本株（.T、.JPサフィックス）と米国株の両方に対応しています。
+
 #### Claude Sonnet APIキー発行手順
 
 1. [Anthropic Developer Platform](https://console.anthropic.com)にアクセスし、アカウントを作成します。
@@ -40,7 +48,9 @@
 
 ### 追加設定（必要に応じて）
 
-- 対象銘柄リストや分析条件を変数として管理したい場合は「Variables」に追加可能です。
+- `STOCK_SYMBOLS`環境変数で分析対象の株銘柄を自由に設定できます（カンマ区切り）。
+- 日本株（例: 7203.T、6758.T）と米国株（例: AAPL、MSFT）の両方を混在させることが可能です。
+- その他の分析条件を変数として管理したい場合は「Variables」に追加可能です。
 
 ## Github Web画面で必要なその他設定
 
