@@ -1,0 +1,6 @@
+# CODEOWNERS
+# このファイルは、プルリクエストの自動レビュアー割り当てを制御します。
+# 詳細: https://docs.github.com/ja/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# デフォルトのコードオーナー（すべてのファイルに適用）
+* @copilot

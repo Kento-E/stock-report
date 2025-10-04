@@ -16,7 +16,7 @@ import sys
 import datetime
 import requests
 import anthropic # pip install anthropic
-from mail_utils import send_report_via_mail, get_smtp_config, generate_mail_body
+from mail_utils import send_report_via_mail, get_smtp_config, generate_mail_body, markdown_to_html
 
 # 必要なAPIキーや設定値は環境変数（Github Secrets）で管理
 load_dotenv()  # .envファイルから環境変数をロード
@@ -25,18 +25,23 @@ GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 MAIL_TO = os.getenv('MAIL_TO')
 YAHOO_API_KEY = os.getenv('YAHOO_API_KEY')
 
+# 株銘柄リスト（環境変数で指定、未設定の場合はデフォルト値）
+STOCK_SYMBOLS = os.getenv('STOCK_SYMBOLS', '7203.T,6758.T')
+
 # 実行オプション判定（デフォルトGemini、--claude指定時のみClaude）
 USE_CLAUDE = "--claude" in sys.argv
 
+# 銘柄の市場を判定するヘルパー関数
+def get_currency_for_symbol(symbol):
+    """
+    銘柄シンボルから通貨を判定する。
+    日本株（.T、.JPなどのサフィックス）の場合は「円」、それ以外は「ドル」を返す。
+    """
+    if symbol.endswith('.T') or symbol.endswith('.JP'):
+        return '円'
+    return 'ドル'
 
-# 1. データ収集・トレンド銘柄抽出
-JP_CANDIDATES = [
-    '7203.T', '6758.T', '9984.T', '9432.T', '8306.T', '6861.T', '4063.T', '7974.T', '9983.T', '6902.T'
-]
-US_CANDIDATES = [
-    'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA', 'BRK-B', 'V', 'JPM'
-]
-
+# 1. データ収集（本番API連携例）
 def fetch_stock_data(symbol):
     url = "https://yfapi.net/v6/finance/quote"
     headers = {"x-api-key": YAHOO_API_KEY}
@@ -93,7 +98,8 @@ def analyze_with_claude(data):
         print("Claude APIエラー: APIキーが未設定です。環境変数CLAUDE_API_KEYを確認してください。")
         return "分析失敗（APIキー未設定）"
     client = anthropic.Anthropic(api_key=CLAUDE_API_KEY)
-    prompt = f"{data['symbol']}の株価は{data['price']}円です。ニュース: {', '.join(data['news'])}。これらを分析し、要約・トレンド・リスク/チャンスを日本語で簡潔に示してください。"
+    currency = get_currency_for_symbol(data['symbol'])
+    prompt = f"{data['symbol']}の株価は{data['price']}{currency}です。ニュース: {', '.join(data['news'])}。これらを分析し、要約・トレンド・リスク/チャンスを日本語で簡潔に示してください。"
     try:
         message = client.messages.create(
             model="claude-3-sonnet-latest",
@@ -125,7 +131,13 @@ def analyze_with_gemini(data):
         print("Gemini APIエラー: APIキーが未設定です。環境変数GEMINI_API_KEYを確認してください。")
         return "分析失敗（Gemini APIキー未設定）"
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
-    prompt = f"{data['symbol']}の株価は{data['price']}円です。ニュース: {', '.join(data['news'])}。これらを分析し、要約・トレンド・リスク/チャンスを日本語で簡潔に示してください。"
+    currency = get_currency_for_symbol(data['symbol'])
+    prompt = (
+        "あなたは株式分析の専門家です。"
+        f"{data['symbol']}の株価は{data['price']}{currency}です。"
+        f"ニュース: {', '.join(data['news'])}。"
+        "これらを分析し、要約・トレンド・リスク/チャンスを日本語で簡潔に示してください。"
+    )
     headers = {"Content-Type": "application/json"}
     payload = {
         "contents": [
@@ -151,12 +163,13 @@ def analyze_with_gemini(data):
 # 3. レポート生成（HTML形式）
 def generate_report_html(symbol, analysis):
     today = datetime.date.today().isoformat()
+    analysis_html = markdown_to_html(analysis)
     html = f"""
     <html>
     <head><meta charset='utf-8'><title>{symbol} 日次レポート ({today})</title></head>
     <body>
     <h1>{symbol} 日次レポート ({today})</h1>
-    <p>{analysis}</p>
+    {analysis_html}
     </body>
     </html>
     """
@@ -166,8 +179,8 @@ def generate_report_html(symbol, analysis):
     return html, filename
 
 if __name__ == "__main__":
-    # トレンド銘柄自動抽出（日本株・米国株から値上がり率上位）
-    symbols = pick_trending_symbols(JP_CANDIDATES, US_CANDIDATES, top_n=3)
+    # 対象銘柄リスト（環境変数STOCK_SYMBOLSから取得、カンマ区切り）
+    symbols = [s.strip() for s in STOCK_SYMBOLS.split(',') if s.strip()]
     print(f"分析対象銘柄: {symbols}")
     all_reports = []
     for symbol in symbols:
@@ -178,7 +191,8 @@ if __name__ == "__main__":
             analysis = analyze_with_gemini(data)
         html, filename = generate_report_html(symbol, analysis)
         print(f"レポート生成: {filename}")
-        all_reports.append(f"<h2>{symbol}</h2>\n{analysis}")
+        analysis_html = markdown_to_html(analysis)
+        all_reports.append(f"<h1>{symbol}</h1>\n{analysis_html}")
 
     # 全銘柄分まとめてメール送信
     smtp_conf = get_smtp_config()

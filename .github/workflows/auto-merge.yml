@@ -1,0 +1,43 @@
+name: Auto Merge on Approval
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    # PRが承認され、かつ承認者がリポジトリのメンバーである場合のみ実行
+    if: github.event.review.state == 'approved'
+    
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Auto merge PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          echo "PR #${PR_NUMBER} が承認されました。自動マージを開始します..."
+          
+          # PRがDraftかどうかをチェック
+          IS_DRAFT=$(gh pr view ${PR_NUMBER} --json isDraft --jq '.isDraft')
+          
+          if [ "$IS_DRAFT" = "true" ]; then
+            echo "⚠️ このPRはDraft状態です。Draft状態のPRは自動マージされません。"
+            echo "Ready for reviewに変更してから再度Approveしてください。"
+            exit 0
+          fi
+          
+          # PRがマージ可能な状態かチェック
+          gh pr view ${PR_NUMBER} --json mergeable,mergeStateStatus --jq '.mergeable,.mergeStateStatus'
+          
+          # スカッシュマージを実行
+          gh pr merge ${PR_NUMBER} --squash --auto --delete-branch
+          
+          echo "PR #${PR_NUMBER} を自動マージしました（スカッシュコミット）"
