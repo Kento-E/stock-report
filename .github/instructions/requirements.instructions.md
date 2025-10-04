@@ -13,13 +13,19 @@
 
 ### 3.1 データ収集
 
-- 対象銘柄リスト（例: '7203.T', '6758.T'）の株価データを Yahoo Finance API（RapidAPI 経由）から日次で自動取得する。
+- 対象銘柄リストは環境変数 `STOCK_SYMBOLS` で設定可能（カンマ区切り）。
+- デフォルト値: '7203.T,6758.T'（未設定時）
+- 日本株（.T、.JP サフィックス）と米国株の両方に対応。
+- 株価データを Yahoo Finance API（RapidAPI 経由）から日次で自動取得する。
 - ニュースデータも将来的に拡張可能な構造で取得（現状はダミー実装）。
 
 ### 3.2 AI 分析
 
-- Claude Sonnet API（最新モデル: claude-3-sonnet-latest など）を用いて、収集データの動向・トレンド・リスク/チャンスを日本語で要約・分析する。
+- Claude Sonnet API（最新モデル: claude-3-sonnet-latest など）または Gemini API を用いて、収集データの動向・トレンド・リスク/チャンスを日本語で要約・分析する。
 - API キー・モデル名は環境変数で管理。
+- 銘柄シンボルから市場を自動判定し、適切な通貨（円/ドル）で分析を実施。
+  - 日本株（.T、.JP サフィックス）→「円」
+  - 米国株など → 「ドル」
 
 ### 3.3 レポート生成
 
@@ -37,13 +43,15 @@
 
 - GitHub Actions 等の CI/CD で日次自動実行が可能。
 - .env や Secrets で安全に API キー・認証情報を管理。
+- 対象銘柄リスト（STOCK_SYMBOLS）は GitHub Actions の Variables で管理（機密情報ではないため）。
 
 ## 4. 非機能要件
 
 - セキュリティ：API キーや個人情報の安全な管理（.env, Secrets, BCC 運用等）。
 - パフォーマンス：日次処理が 1 時間以内に完了すること。
-- 拡張性：銘柄追加や分析ロジック、ニュース API 拡張が容易。
+- 拡張性：銘柄追加や分析ロジック、ニュース API 拡張が容易。環境変数による柔軟な設定変更。
 - 保守性：設定や運用が容易で、モジュール分割・関数化されていること。
+- 多市場対応：日本株と米国株など、複数の市場に対応可能な設計。
 
 ## 5. システム構成
 
@@ -76,8 +84,24 @@
 - GitHub Actions 上で定期実行（cron スケジューラ）を行う。
 - 実行時刻は JST（日本標準時）で平日（月曜日～金曜日）の午前 9 時 10 分。
 - 土日は株式市場が休みのため実行しない。
-- Claude Sonnet API キーやメール配信設定等の機密情報は、GitHub リポジトリの「Secrets and variables」で安全に管理する。
+- Claude Sonnet API キーやメール配信設定等の機密情報は、GitHub リポジトリの「Secrets」で安全に管理する。
+- 対象銘柄リスト（STOCK_SYMBOLS）は「Variables」で管理する（機密情報ではないため）。
 - レポート生成・配信処理も Actions workflow で自動化する。
+
+## 10. 環境変数
+
+| 変数名           | 種類     | 用途                                   | デフォルト値      |
+| ---------------- | -------- | -------------------------------------- | ----------------- |
+| `CLAUDE_API_KEY` | Secret   | Claude Sonnet API キー                 | なし（必須）      |
+| `GEMINI_API_KEY` | Secret   | Gemini API キー                        | なし（必須）      |
+| `YAHOO_API_KEY`  | Secret   | Yahoo Finance API キー                 | なし（必須）      |
+| `MAIL_TO`        | Secret   | レポート送信先メールアドレス           | なし（必須）      |
+| `MAIL_FROM`      | Secret   | 送信元メールアドレス                   | なし（必須）      |
+| `SMTP_SERVER`    | Secret   | SMTP サーバー                          | なし（必須）      |
+| `SMTP_PORT`      | Secret   | SMTP ポート                            | なし（必須）      |
+| `SMTP_USER`      | Secret   | SMTP 認証ユーザー                      | なし（必須）      |
+| `SMTP_PASS`      | Secret   | SMTP 認証パスワード                    | なし（必須）      |
+| `STOCK_SYMBOLS`  | Variable | 分析対象銘柄リスト（カンマ区切り）     | 7203.T,6758.T     |
 
 ---
 
