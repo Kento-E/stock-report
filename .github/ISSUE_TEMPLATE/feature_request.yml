@@ -2,6 +2,7 @@ name: Feature Request
 description: 新機能のリクエスト
 title: "[Feature]: "
 labels: ["enhancement"]
+assignees: ["copilot"]
 body:
   - type: markdown
     attributes:
@@ -10,7 +11,8 @@ body:
 
         💡 **GitHub Copilotを使用する場合**: Issueのコメント欄で
         `@copilot` とメンションすることで、GitHub Copilotに
-        質問や分析を依頼できます。
+        質問や分析を依頼できます。Copilotに修正とPull Request作成まで
+        依頼することも可能です。
   - type: textarea
     id: problem
     attributes:
@@ -48,7 +50,7 @@ body:
     attributes:
       label: GitHub Copilotへの質問（任意）
       description: GitHub Copilotに分析や質問をしたい場合は、以下のようにメンションしてください。
-      placeholder: "@copilot この機能について分析してください"
-      value: "@copilot この機能について分析してください"
+      placeholder: "@copilot この機能を実装し、Pull Requestを作成してください"
+      value: "@copilot この機能を実装し、Pull Requestを作成してください"
     validations:
       required: false
