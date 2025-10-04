@@ -58,6 +58,14 @@
 - メール配信に外部サービス（Gmail等）を使う場合は、アプリパスワードや2段階認証の設定も必要です。
 - Github Actions workflowファイル（.github/workflows/）の設置
 
+## GitHub Copilotの活用
+
+本リポジトリではGitHub Copilotを活用できます：
+
+- **Issueテンプレート**: Issue作成時、「GitHub Copilotへの質問」フィールドに自動的に `@copilot` メンションの例が挿入されます。このフィールドを使用することで、Issue作成と同時にGitHub Copilotに質問できます。
+- **Copilotへの質問**: Issueのコメント欄で `@copilot` とメンションすることで、GitHub Copilotに質問や分析を依頼できます。
+- **コードレビュー**: Pull Requestでは、CODEOWNERSファイルにより `@copilot` が自動的にレビュアーとして設定されます。
+
 ## 参考
 
 - [Github公式: Secrets and variables](https://docs.github.com/ja/actions/security-guides/encrypted-secrets)
