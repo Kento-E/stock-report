@@ -43,24 +43,43 @@ def get_currency_for_symbol(symbol):
 
 # 1. データ収集（本番API連携例）
 def fetch_stock_data(symbol):
-    # Yahoo Finance API例（RapidAPI経由）
     url = "https://yfapi.net/v6/finance/quote"
     headers = {"x-api-key": YAHOO_API_KEY}
     params = {"symbols": symbol}
     price = None
+    change_percent = None
+    volume = None
     try:
         response = requests.get(url, headers=headers, params=params, timeout=10)
         if response.status_code == 200:
             result = response.json()
-            price = result["quoteResponse"]["result"][0]["regularMarketPrice"]
+            info = result["quoteResponse"]["result"][0]
+            price = info.get("regularMarketPrice")
+            change_percent = info.get("regularMarketChangePercent")
+            volume = info.get("regularMarketVolume")
     except Exception as e:
         print(f"株価取得失敗: {e}")
     news = fetch_news(symbol)
     return {
         "symbol": symbol,
         "price": price,
+        "change_percent": change_percent,
+        "volume": volume,
         "news": news
     }
+
+def pick_trending_symbols(jp_candidates, us_candidates, top_n=3):
+    all_syms = jp_candidates + us_candidates
+    stock_data = []
+    for sym in all_syms:
+        data = fetch_stock_data(sym)
+        stock_data.append(data)
+    # 値上がり率降順で上位N件を抽出（値が取得できたもののみ）
+    sorted_syms = sorted(
+        [d for d in stock_data if d["change_percent"] is not None],
+        key=lambda x: x["change_percent"], reverse=True
+    )
+    return [d["symbol"] for d in sorted_syms[:top_n]]
 
 def fetch_news(symbol):
     # Google News API等で実装（ここはダミー）
