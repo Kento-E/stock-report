@@ -25,11 +25,47 @@ GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 MAIL_TO = os.getenv('MAIL_TO')
 YAHOO_API_KEY = os.getenv('YAHOO_API_KEY')
 
-# 株銘柄リスト（環境変数で指定、未設定の場合はデフォルト値）
-STOCK_SYMBOLS = os.getenv('STOCK_SYMBOLS', '7203.T,6758.T')
-
 # 実行オプション判定（デフォルトGemini、--claude指定時のみClaude）
 USE_CLAUDE = "--claude" in sys.argv
+
+def load_stock_symbols(filepath='data/stocks.txt'):
+    """
+    銘柄リストファイルから銘柄コードを読み込む。
+    - #で始まる行はコメント行として無視
+    - 行末の#以降もコメントとして無視
+    - 空行は無視
+    - 銘柄コードのみを抽出して返す
+    """
+    symbols = []
+    # ファイルパスの解決（main.pyからの相対パス）
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(script_dir)
+    full_path = os.path.join(project_root, filepath)
+    
+    try:
+        with open(full_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                # コメント行をスキップ
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                # 行末のコメントを削除
+                if '#' in line:
+                    line = line.split('#')[0].strip()
+                # 空白で区切られている場合、最初の要素（銘柄コード）のみを取得
+                symbol = line.split()[0] if line.split() else ''
+                if symbol:
+                    symbols.append(symbol)
+    except FileNotFoundError:
+        print(f"警告: 銘柄リストファイルが見つかりません: {full_path}")
+        print("デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
+        return ['7203.T', '6758.T']
+    except Exception as e:
+        print(f"銘柄リストファイルの読み込みエラー: {e}")
+        print("デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
+        return ['7203.T', '6758.T']
+    
+    return symbols
 
 # 銘柄の市場を判定するヘルパー関数
 def get_currency_for_symbol(symbol):
@@ -160,8 +196,8 @@ def generate_report_html(symbol, analysis):
     return html, filename
 
 if __name__ == "__main__":
-    # 対象銘柄リスト（環境変数STOCK_SYMBOLSから取得、カンマ区切り）
-    symbols = [s.strip() for s in STOCK_SYMBOLS.split(',') if s.strip()]
+    # 対象銘柄リスト（data/stocks.txtから読み込み）
+    symbols = load_stock_symbols()
     print(f"分析対象銘柄: {symbols}")
     all_reports = []
     for symbol in symbols:
