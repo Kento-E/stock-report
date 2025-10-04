@@ -10,7 +10,8 @@ body:
 
         💡 **GitHub Copilotを使用する場合**: Issueのコメント欄で
         `@copilot` とメンションすることで、GitHub Copilotに
-        質問や分析を依頼できます。
+        質問や分析を依頼できます。Copilotに修正とPull Request作成まで
+        依頼することも可能です。
   - type: textarea
     id: description
     attributes:
@@ -32,7 +33,7 @@ body:
     attributes:
       label: GitHub Copilotへの質問（任意）
       description: GitHub Copilotに分析や質問をしたい場合は、以下のようにメンションしてください。
-      placeholder: "@copilot この問題について教えてください"
-      value: "@copilot この問題について教えてください"
+      placeholder: "@copilot この問題を解決し、Pull Requestを作成してください"
+      value: "@copilot この問題を解決し、Pull Requestを作成してください"
     validations:
       required: false
