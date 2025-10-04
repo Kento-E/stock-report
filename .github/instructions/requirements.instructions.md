@@ -45,6 +45,13 @@
 - .env や Secrets で安全に API キー・認証情報を管理。
 - 対象銘柄リスト（STOCK_SYMBOLS）は GitHub Actions の Variables で管理（機密情報ではないため）。
 
+### 3.6 自動マージ機能
+
+- GitHub Copilot が作成した Pull Request を承認（Approve）すると、自動的にマージされる。
+- マージ方式はスカッシュマージ（Squash Merge）を採用し、コミット履歴を整理。
+- マージ後、自動的にブランチを削除してリポジトリを整理。
+- GitHub Actions の `pull_request_review` イベントをトリガーとして実行。
+
 ## 4. 非機能要件
 
 - セキュリティ：API キーや個人情報の安全な管理（.env, Secrets, BCC 運用等）。
@@ -60,6 +67,7 @@
 - requirements.txt：依存パッケージ管理
 - .env/.env.example：環境変数テンプレート
 - .github/workflows/report.yml：自動実行ワークフロー
+- .github/workflows/auto-merge.yml：PR 承認時の自動マージワークフロー
 
 ## 6. 利用技術
 

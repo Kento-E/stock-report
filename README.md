@@ -52,12 +52,6 @@
 - 日本株（例: 7203.T、6758.T）と米国株（例: AAPL、MSFT）の両方を混在させることが可能です。
 - その他の分析条件を変数として管理したい場合は「Variables」に追加可能です。
 
-## Github Web画面で必要なその他設定
-
-- Actionsの有効化（Settings > Actions > General）
-- メール配信に外部サービス（Gmail等）を使う場合は、アプリパスワードや2段階認証の設定も必要です。
-- Github Actions workflowファイル（.github/workflows/）の設置
-
 ## GitHub Copilotの活用
 
 本リポジトリではGitHub Copilotを活用できます：
@@ -65,6 +59,33 @@
 - **Issueテンプレート**: Issue作成時、「GitHub Copilotへの質問」フィールドに自動的に `@copilot` メンションの例が挿入されます。このフィールドを使用することで、Issue作成と同時にGitHub Copilotに質問できます。
 - **Copilotへの質問**: Issueのコメント欄で `@copilot` とメンションすることで、GitHub Copilotに質問や分析を依頼できます。
 - **コードレビュー**: Pull Requestでは、CODEOWNERSファイルにより `@copilot` が自動的にレビュアーとして設定されます。
+
+### Pull Request 自動マージ機能
+
+本リポジトリには、Pull Request を承認（Approve）すると自動的にマージする機能が実装されています。
+
+#### 動作仕様
+
+- Pull Request が承認されると、`.github/workflows/auto-merge.yml` ワークフローが自動実行されます。
+- マージ方式は **スカッシュマージ（Squash Merge）** を採用し、複数のコミットを1つにまとめます。
+- マージ後、ブランチは自動的に削除されます。
+
+#### 必要な権限設定
+
+この機能を使用するには、以下の設定が必要です：
+
+1. **Settings > Actions > General > Workflow permissions** で以下を設定：
+   - 「Read and write permissions」を選択
+   - 「Allow GitHub Actions to create and approve pull requests」にチェック
+
+2. リポジトリの設定で、GitHub Actions に必要な権限が付与されていることを確認してください。
+
+#### 注意事項
+
+- マージ可能な状態（競合がない、必要なチェックが通過しているなど）でなければ、自動マージは実行されません。
+- **Draft状態のPRは自動マージされません。** Draft状態のPRを承認した場合、その旨が表示されますが、ワークフローはエラーにならず正常終了します。Ready for reviewに変更してから再度Approveしてください。
+- 承認後、手動でマージボタンを押す必要はありません。
+- 詳細な動作確認手順は `.github/instructions/testing.instructions.md` を参照してください。
 
 ## 参考
 
