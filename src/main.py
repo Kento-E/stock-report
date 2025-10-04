@@ -25,8 +25,21 @@ GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 MAIL_TO = os.getenv('MAIL_TO')
 YAHOO_API_KEY = os.getenv('YAHOO_API_KEY')
 
+# 株銘柄リスト（環境変数で指定、未設定の場合はデフォルト値）
+STOCK_SYMBOLS = os.getenv('STOCK_SYMBOLS', '7203.T,6758.T')
+
 # 実行オプション判定（デフォルトGemini、--claude指定時のみClaude）
 USE_CLAUDE = "--claude" in sys.argv
+
+# 銘柄の市場を判定するヘルパー関数
+def get_currency_for_symbol(symbol):
+    """
+    銘柄シンボルから通貨を判定する。
+    日本株（.T、.JPなどのサフィックス）の場合は「円」、それ以外は「ドル」を返す。
+    """
+    if symbol.endswith('.T') or symbol.endswith('.JP'):
+        return '円'
+    return 'ドル'
 
 # 1. データ収集（本番API連携例）
 def fetch_stock_data(symbol):
@@ -66,7 +79,8 @@ def analyze_with_claude(data):
         print("Claude APIエラー: APIキーが未設定です。環境変数CLAUDE_API_KEYを確認してください。")
         return "分析失敗（APIキー未設定）"
     client = anthropic.Anthropic(api_key=CLAUDE_API_KEY)
-    prompt = f"{data['symbol']}の株価は{data['price']}円です。ニュース: {', '.join(data['news'])}。これらを分析し、要約・トレンド・リスク/チャンスを日本語で簡潔に示してください。"
+    currency = get_currency_for_symbol(data['symbol'])
+    prompt = f"{data['symbol']}の株価は{data['price']}{currency}です。ニュース: {', '.join(data['news'])}。これらを分析し、要約・トレンド・リスク/チャンスを日本語で簡潔に示してください。"
     try:
         message = client.messages.create(
             model="claude-3-sonnet-latest",
@@ -98,9 +112,10 @@ def analyze_with_gemini(data):
         print("Gemini APIエラー: APIキーが未設定です。環境変数GEMINI_API_KEYを確認してください。")
         return "分析失敗（Gemini APIキー未設定）"
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
+    currency = get_currency_for_symbol(data['symbol'])
     prompt = (
         "あなたは株式分析の専門家です。"
-        f"{data['symbol']}の株価は{data['price']}円です。"
+        f"{data['symbol']}の株価は{data['price']}{currency}です。"
         f"ニュース: {', '.join(data['news'])}。"
         "これらを分析し、要約・トレンド・リスク/チャンスを日本語で簡潔に示してください。"
     )
@@ -145,8 +160,9 @@ def generate_report_html(symbol, analysis):
     return html, filename
 
 if __name__ == "__main__":
-    # 対象銘柄リスト（例）
-    symbols = ['7203.T', '6758.T']
+    # 対象銘柄リスト（環境変数STOCK_SYMBOLSから取得、カンマ区切り）
+    symbols = [s.strip() for s in STOCK_SYMBOLS.split(',') if s.strip()]
+    print(f"分析対象銘柄: {symbols}")
     all_reports = []
     for symbol in symbols:
         data = fetch_stock_data(symbol)
