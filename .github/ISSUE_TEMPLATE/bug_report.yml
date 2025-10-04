@@ -3,7 +3,7 @@ description: バグレポートを作成
 title: "[Bug]: "
 labels: ["bug"]
 assignees:
-  - Kento-E
+  - copilot
 body:
   - type: markdown
     attributes:

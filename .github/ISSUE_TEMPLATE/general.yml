@@ -3,7 +3,7 @@ description: 一般的な問題や質問
 title: ""
 labels: []
 assignees:
-  - Kento-E
+  - copilot
 body:
   - type: markdown
     attributes:
