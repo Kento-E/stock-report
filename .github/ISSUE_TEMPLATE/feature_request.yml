@@ -1,0 +1,43 @@
+name: Feature Request
+description: 新機能のリクエスト
+title: "[Feature]: "
+labels: ["enhancement"]
+assignees:
+  - copilot
+body:
+  - type: markdown
+    attributes:
+      value: |
+        機能リクエストをご提出いただきありがとうございます。
+  - type: textarea
+    id: problem
+    attributes:
+      label: 問題の説明
+      description: どのような問題を解決したいですか？
+      placeholder: この機能が必要な理由を教えてください。
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: 提案する解決策
+      description: どのような機能を追加すべきだと思いますか？
+      placeholder: 提案する機能の詳細をここに記載してください。
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 代替案
+      description: 他に考えられる解決策や機能はありますか？
+      placeholder: 代替案があれば記載してください。
+    validations:
+      required: false
+  - type: textarea
+    id: additional
+    attributes:
+      label: 追加情報
+      description: 他に共有したい情報があれば記載してください。
+      placeholder: スクリーンショット、参考資料など
+    validations:
+      required: false
