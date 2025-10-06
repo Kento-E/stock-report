@@ -76,8 +76,9 @@ def analyze_with_claude(data):
     Claude Sonnet APIを用いて株価・ニュースデータを分析し、要約・トレンド抽出・リスク/チャンスの指摘を返す。
     """
     if not CLAUDE_API_KEY or CLAUDE_API_KEY.strip() == "":
-        print("Claude APIエラー: APIキーが未設定です。環境変数CLAUDE_API_KEYを確認してください。")
-        return "分析失敗（APIキー未設定）"
+        error_msg = "Claude APIエラー: APIキーが未設定です。環境変数CLAUDE_API_KEYを確認してください。"
+        print(error_msg)
+        return f"## 分析失敗\n\n**エラー内容:** {error_msg}"
     client = anthropic.Anthropic(api_key=CLAUDE_API_KEY)
     currency = get_currency_for_symbol(data['symbol'])
     prompt = f"{data['symbol']}の株価は{data['price']}{currency}です。ニュース: {', '.join(data['news'])}。これらを分析し、要約・トレンド・リスク/チャンスを日本語で簡潔に示してください。"
@@ -101,16 +102,18 @@ def analyze_with_claude(data):
         )
         return message.content[0].text
     except Exception as e:
-        print(f"Claude API呼び出し失敗: {e}")
-        return "分析失敗"
+        error_msg = f"Claude API呼び出し失敗: {str(e)}"
+        print(error_msg)
+        return f"## 分析失敗\n\n**エラー内容:** {error_msg}\n\n**エラータイプ:** {type(e).__name__}"
 
 def analyze_with_gemini(data):
     """
     Gemini APIを用いて株価・ニュースデータを分析し、要約・トレンド抽出・リスク/チャンスの指摘を返す。
     """
     if not GEMINI_API_KEY or GEMINI_API_KEY.strip() == "":
-        print("Gemini APIエラー: APIキーが未設定です。環境変数GEMINI_API_KEYを確認してください。")
-        return "分析失敗（Gemini APIキー未設定）"
+        error_msg = "Gemini APIエラー: APIキーが未設定です。環境変数GEMINI_API_KEYを確認してください。"
+        print(error_msg)
+        return f"## 分析失敗\n\n**エラー内容:** {error_msg}"
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
     currency = get_currency_for_symbol(data['symbol'])
     prompt = (
@@ -135,11 +138,14 @@ def analyze_with_gemini(data):
             result = resp.json()
             return result["candidates"][0]["content"]["parts"][0]["text"]
         else:
-            print(f"Gemini APIエラー: {resp.status_code} {resp.text}")
-            return "分析失敗"
+            error_msg = f"Gemini APIエラー: HTTPステータス {resp.status_code}"
+            error_detail = resp.text[:500]  # 最初の500文字のみ含める
+            print(f"{error_msg}\n応答内容: {error_detail}")
+            return f"## 分析失敗\n\n**エラー内容:** {error_msg}\n\n**API応答:** {error_detail}"
     except Exception as e:
-        print(f"Gemini API呼び出し失敗: {e}")
-        return "分析失敗"
+        error_msg = f"Gemini API呼び出し失敗: {str(e)}"
+        print(error_msg)
+        return f"## 分析失敗\n\n**エラー内容:** {error_msg}\n\n**エラータイプ:** {type(e).__name__}"
 
 # 3. レポート生成（HTML形式）
 def generate_report_html(symbol, analysis):
