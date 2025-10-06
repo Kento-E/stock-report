@@ -16,6 +16,7 @@ import sys
 import datetime
 import requests
 import anthropic # pip install anthropic
+import yaml # pip install pyyaml
 from mail_utils import send_report_via_mail, get_smtp_config, generate_mail_body, markdown_to_html
 
 # 必要なAPIキーや設定値は環境変数（Github Secrets）で管理
@@ -28,13 +29,19 @@ YAHOO_API_KEY = os.getenv('YAHOO_API_KEY')
 # 実行オプション判定（デフォルトGemini、--claude指定時のみClaude）
 USE_CLAUDE = "--claude" in sys.argv
 
-def load_stock_symbols(filepath='data/stocks.txt'):
+def load_stock_symbols(filepath='data/stocks.yaml'):
     """
-    銘柄リストファイルから銘柄コードを読み込む。
-    - #で始まる行はコメント行として無視
-    - 行末の#以降もコメントとして無視
-    - 空行は無視
-    - 銘柄コードのみを抽出して返す
+    銘柄リストファイル（YAML形式）から銘柄コードを読み込む。
+    
+    YAML形式の例:
+    stocks:
+      - symbol: 7203.T
+        name: トヨタ自動車
+        added: 2024-01-01
+      - symbol: 6758.T
+        name: ソニーグループ
+    
+    返り値: 銘柄コードのリスト (例: ['7203.T', '6758.T'])
     """
     symbols = []
     # ファイルパスの解決（main.pyからの相対パス）
@@ -44,20 +51,27 @@ def load_stock_symbols(filepath='data/stocks.txt'):
     
     try:
         with open(full_path, 'r', encoding='utf-8') as f:
-            for line in f:
-                # コメント行をスキップ
-                line = line.strip()
-                if not line or line.startswith('#'):
-                    continue
-                # 行末のコメントを削除
-                if '#' in line:
-                    line = line.split('#')[0].strip()
-                # 空白で区切られている場合、最初の要素（銘柄コード）のみを取得
-                symbol = line.split()[0] if line.split() else ''
-                if symbol:
-                    symbols.append(symbol)
+            data = yaml.safe_load(f)
+            
+        # YAMLから銘柄リストを取得
+        if data and 'stocks' in data:
+            for stock in data['stocks']:
+                if isinstance(stock, dict) and 'symbol' in stock:
+                    symbols.append(stock['symbol'])
+                elif isinstance(stock, str):
+                    # 文字列の場合も対応（後方互換性）
+                    symbols.append(stock)
+        
+        if not symbols:
+            print("警告: 銘柄リストが空です。デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
+            return ['7203.T', '6758.T']
+            
     except FileNotFoundError:
         print(f"警告: 銘柄リストファイルが見つかりません: {full_path}")
+        print("デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
+        return ['7203.T', '6758.T']
+    except yaml.YAMLError as e:
+        print(f"YAML解析エラー: {e}")
         print("デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
         return ['7203.T', '6758.T']
     except Exception as e:
