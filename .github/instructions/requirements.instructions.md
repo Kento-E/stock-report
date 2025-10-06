@@ -54,6 +54,14 @@
 - マージ後、自動的にブランチを削除してリポジトリを整理。
 - GitHub Actions の `pull_request_review` イベントをトリガーとして実行。
 
+### 3.7 カスタムチャットモード
+
+- VS Code の GitHub Copilot で使用可能なカスタムチャット参加者（Custom Chat Participant）を定義。
+- `.github/copilot-instructions.md` ファイルでカスタムチャットモードを設定。
+- `@kansai` とメンションすることで、関西弁で応答するフレンドリーなプログラミングアシスタントを利用可能。
+- コードの質問や相談に対して、関西弁でわかりやすく親しみやすい回答を提供。
+- 技術的な正確性を保ちつつ、「せやな」「ほんまに」「ええで」などの関西弁特有の表現を使用。
+
 ## 4. 非機能要件
 
 - セキュリティ：API キーや個人情報の安全な管理（.env, Secrets, BCC 運用等）。
@@ -70,6 +78,7 @@
 - .env/.env.example：環境変数テンプレート
 - .github/workflows/report.yml：自動実行ワークフロー
 - .github/workflows/auto-merge.yml：PR 承認時の自動マージワークフロー
+- .github/copilot-instructions.md：VS Code 用カスタムチャットモード定義
 
 ## 6. 利用技術
 
