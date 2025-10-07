@@ -15,3 +15,11 @@ stocks:
   - symbol: 6758.T
     name: ソニーグループ
     added: 2024-01-01
+  
+  - symbol: AAPL
+    name: Apple Inc.
+    added: 2024-01-01
+  
+  - symbol: MSFT
+    name: Microsoft Corporation
+    added: 2024-01-01
