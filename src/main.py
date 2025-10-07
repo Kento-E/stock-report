@@ -16,6 +16,7 @@ import sys
 import datetime
 import requests
 import anthropic # pip install anthropic
+import yaml # pip install pyyaml
 from mail_utils import send_report_via_mail, get_smtp_config, generate_mail_body, markdown_to_html
 
 # 必要なAPIキーや設定値は環境変数（Github Secrets）で管理
@@ -25,11 +26,60 @@ GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 MAIL_TO = os.getenv('MAIL_TO')
 YAHOO_API_KEY = os.getenv('YAHOO_API_KEY')
 
-# 株銘柄リスト（環境変数で指定、未設定の場合はデフォルト値）
-STOCK_SYMBOLS = os.getenv('STOCK_SYMBOLS', '7203.T,6758.T')
-
 # 実行オプション判定（デフォルトGemini、--claude指定時のみClaude）
 USE_CLAUDE = "--claude" in sys.argv
+
+def load_stock_symbols(filepath='data/stocks.yaml'):
+    """
+    銘柄リストファイル（YAML形式）から銘柄コードを読み込む。
+    
+    YAML形式の例:
+    stocks:
+      - symbol: 7203.T
+        name: トヨタ自動車
+        added: 2024-01-01
+      - symbol: 6758.T
+        name: ソニーグループ
+    
+    返り値: 銘柄コードのリスト (例: ['7203.T', '6758.T'])
+    """
+    symbols = []
+    # ファイルパスの解決（main.pyからの相対パス）
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(script_dir)
+    full_path = os.path.join(project_root, filepath)
+    
+    try:
+        with open(full_path, 'r', encoding='utf-8') as f:
+            data = yaml.safe_load(f)
+            
+        # YAMLから銘柄リストを取得
+        if data and 'stocks' in data:
+            for stock in data['stocks']:
+                if isinstance(stock, dict) and 'symbol' in stock:
+                    symbols.append(stock['symbol'])
+                elif isinstance(stock, str):
+                    # 文字列の場合も対応（後方互換性）
+                    symbols.append(stock)
+        
+        if not symbols:
+            print("警告: 銘柄リストが空です。デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
+            return ['7203.T', '6758.T']
+            
+    except FileNotFoundError:
+        print(f"警告: 銘柄リストファイルが見つかりません: {full_path}")
+        print("デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
+        return ['7203.T', '6758.T']
+    except yaml.YAMLError as e:
+        print(f"YAML解析エラー: {e}")
+        print("デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
+        return ['7203.T', '6758.T']
+    except Exception as e:
+        print(f"銘柄リストファイルの読み込みエラー: {e}")
+        print("デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
+        return ['7203.T', '6758.T']
+    
+    return symbols
 
 # 銘柄の市場を判定するヘルパー関数
 def get_currency_for_symbol(symbol):
@@ -166,8 +216,8 @@ def generate_report_html(symbol, analysis):
     return html, filename
 
 if __name__ == "__main__":
-    # 対象銘柄リスト（環境変数STOCK_SYMBOLSから取得、カンマ区切り）
-    symbols = [s.strip() for s in STOCK_SYMBOLS.split(',') if s.strip()]
+    # 対象銘柄リスト（data/stocks.txtから読み込み）
+    symbols = load_stock_symbols()
     print(f"分析対象銘柄: {symbols}")
     all_reports = []
     for symbol in symbols:

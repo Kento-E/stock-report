@@ -13,11 +13,12 @@
 
 ### 3.1 データ収集
 
-- 対象銘柄リストは環境変数 `STOCK_SYMBOLS` で設定可能（カンマ区切り）。
-- デフォルト値: '7203.T,6758.T'（未設定時）
+- 対象銘柄リストはリポジトリ内の `data/stocks.yaml` ファイル（YAML形式）で管理。
+- デフォルト値: '7203.T,6758.T'（ファイルが存在しない場合）
 - 日本株（.T、.JP サフィックス）と米国株の両方に対応。
 - 株価データを Yahoo Finance API（RapidAPI 経由）から日次で自動取得する。
 - ニュースデータも将来的に拡張可能な構造で取得（現状はダミー実装）。
+- 銘柄リストはYAML形式で管理し、銘柄コード、企業名、追加日、メモなどを構造化して記録可能。
 
 ### 3.2 AI 分析
 
@@ -45,7 +46,7 @@
 
 - GitHub Actions 等の CI/CD で日次自動実行が可能。
 - .env や Secrets で安全に API キー・認証情報を管理。
-- 対象銘柄リスト（STOCK_SYMBOLS）は GitHub Actions の Variables で管理（機密情報ではないため）。
+- 対象銘柄リストはリポジトリ内の `data/stocks.yaml` ファイル（YAML形式）で管理し、Git で変更履歴を追跡。
 
 ### 3.6 自動マージ機能
 
@@ -66,25 +67,28 @@
 
 - セキュリティ：API キーや個人情報の安全な管理（.env, Secrets, BCC 運用等）。
 - パフォーマンス：日次処理が 1 時間以内に完了すること。
-- 拡張性：銘柄追加や分析ロジック、ニュース API 拡張が容易。環境変数による柔軟な設定変更。
-- 保守性：設定や運用が容易で、モジュール分割・関数化されていること。
+- 拡張性：銘柄追加や分析ロジック、ニュース API 拡張が容易。銘柄リストはYAML形式で管理し、スマートフォンからも編集可能。銘柄ごとに追加メタデータを柔軟に管理可能。
+- 保守性：設定や運用が容易で、モジュール分割・関数化されていること。銘柄の変更履歴を Git で管理。
 - 多市場対応：日本株と米国株など、複数の市場に対応可能な設計。
 
 ## 5. システム構成
 
 - main.py：データ収集・AI 分析・レポート生成・配信の統括
 - mail_utils.py：メール送信・SMTP 設定・本文生成のユーティリティ
+- data/stocks.yaml：分析対象銘柄リスト（YAML形式、Git で変更履歴管理）
 - requirements.txt：依存パッケージ管理
 - .env/.env.example：環境変数テンプレート
 - .github/workflows/report.yml：自動実行ワークフロー
 - .github/workflows/auto-merge.yml：PR 承認時の自動マージワークフロー
+- .github/copilot-instructions.md：VS Code 用カスタムチャットモード定義
 - .github/copilot-instructions.md：VS Code 用カスタムチャットモード定義
 
 ## 6. 利用技術
 
 - Python（データ収集・分析・レポート生成・メール送信）
 - anthropic（Claude Sonnet API 公式パッケージ）
-- requests, python-dotenv, smtplib, email
+- PyYAML（YAML ファイルの解析）
+- requests, python-dotenv, smtplib, email, markdown
 - GitHub Actions（スケジューラ・自動化）
 
 ## 7. 運用・保守
@@ -105,7 +109,7 @@
 - 実行時刻は JST（日本標準時）で平日（月曜日～金曜日）の午前 9 時 10 分。
 - 土日は株式市場が休みのため実行しない。
 - Claude Sonnet API キーやメール配信設定等の機密情報は、GitHub リポジトリの「Secrets」で安全に管理する。
-- 対象銘柄リスト（STOCK_SYMBOLS）は「Variables」で管理する（機密情報ではないため）。
+- 対象銘柄リストは `data/stocks.yaml` ファイル（YAML形式）で管理し、Git で変更履歴を追跡する。
 - レポート生成・配信処理も Actions workflow で自動化する。
 
 ## 10. 環境変数
@@ -121,7 +125,19 @@
 | `SMTP_PORT`      | Secret   | SMTP ポート                            | なし（必須）      |
 | `SMTP_USER`      | Secret   | SMTP 認証ユーザー                      | なし（必須）      |
 | `SMTP_PASS`      | Secret   | SMTP 認証パスワード                    | なし（必須）      |
-| `STOCK_SYMBOLS`  | Variable | 分析対象銘柄リスト（カンマ区切り）     | 7203.T,6758.T     |
+
+## 11. 銘柄リスト管理
+
+- 銘柄リストは `data/stocks.yaml` ファイル（YAML形式）で管理。
+- 構造化されたデータ形式で、銘柄ごとに以下の情報を管理可能：
+  - `symbol`（必須）: 銘柄コード
+  - `name`（任意）: 企業名
+  - `added`（任意）: 追加日
+  - `note`（任意）: メモ・注記
+- YAMLのコメント機能（`#` で始まる行）を使用可能。
+- Git で変更履歴を管理できるため、いつ・誰が・どの銘柄を追加/削除したか追跡可能。
+- スマートフォンのブラウザからも GitHub の Web インターフェースで簡単に編集可能。
+- 将来的に銘柄ごとの追加設定（アラート閾値、分析頻度など）を柔軟に追加可能。
 
 ---
 
