@@ -19,6 +19,13 @@ import anthropic # pip install anthropic
 import yaml # pip install pyyaml
 from mail_utils import send_report_via_mail, get_smtp_config, generate_mail_body, markdown_to_html
 
+try:
+    from defeatbeta_api.data.ticker import Ticker
+    DEFEATBETA_AVAILABLE = True
+except ImportError:
+    DEFEATBETA_AVAILABLE = False
+    print("警告: defeatbeta-apiがインストールされていません。ニュース取得機能が制限されます。")
+
 # 必要なAPIキーや設定値は環境変数（Github Secrets）で管理
 load_dotenv()  # .envファイルから環境変数をロード
 CLAUDE_API_KEY = os.getenv('CLAUDE_API_KEY')
@@ -113,8 +120,45 @@ def fetch_stock_data(symbol):
     }
 
 def fetch_news(symbol):
-    # Google News API等で実装（ここはダミー）
-    return [f"{symbol}関連ニュース1", f"{symbol}関連ニュース2"]
+    """
+    defeatbeta-apiを使用して銘柄に関連するニュースを取得する。
+    
+    Args:
+        symbol: 銘柄コード（例: 'TSLA', '7203.T'）
+    
+    Returns:
+        ニュースの文字列リスト（最大5件）
+    """
+    if not DEFEATBETA_AVAILABLE:
+        # defeatbeta-apiが利用できない場合はダミーデータを返す
+        return [f"{symbol}関連ニュースが取得できません（defeatbeta-apiが必要です）"]
+    
+    try:
+        # defeatbeta-apiを使用してニュースを取得
+        ticker = Ticker(symbol)
+        news_data = ticker.news()
+        news_list = news_data.get_news_list()
+        
+        if news_list.empty:
+            print(f"情報: {symbol}のニュースが見つかりませんでした。")
+            return [f"{symbol}関連のニュースは現在ありません。"]
+        
+        # ニュース情報を整形（最大5件）
+        formatted_news = []
+        for idx, row in news_list.head(5).iterrows():
+            title = row.get('title', 'タイトルなし')
+            publisher = row.get('publisher', '不明')
+            report_date = row.get('report_date', '不明')
+            # 簡潔なニュース文字列を作成
+            news_str = f"[{report_date}] {publisher}: {title}"
+            formatted_news.append(news_str)
+        
+        return formatted_news
+        
+    except Exception as e:
+        # エラー時はダミーデータを返す
+        print(f"ニュース取得エラー ({symbol}): {e}")
+        return [f"{symbol}関連ニュースの取得に失敗しました"]
 
 
 
