@@ -3,3 +3,4 @@ python-dotenv~=1.1.1
 anthropic~=0.68.0
 markdown~=3.7
 pyyaml~=6.0.2
+defeatbeta-api~=0.0.19
