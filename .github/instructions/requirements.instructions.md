@@ -75,15 +75,47 @@
 
 ## 5. システム構成
 
-- main.py：データ収集・AI 分析・レポート生成・配信の統括
-- mail_utils.py：メール送信・SMTP 設定・本文生成のユーティリティ
-- data/stocks.yaml：分析対象銘柄リスト（YAML形式、Git で変更履歴管理）
-- requirements.txt：依存パッケージ管理
-- .env/.env.example：環境変数テンプレート
-- .github/workflows/report.yml：自動実行ワークフロー
-- .github/workflows/auto-merge.yml：PR 承認時の自動マージワークフロー
-- .github/copilot-instructions.md：VS Code 用カスタムチャットモード定義
-- .github/copilot-instructions.md：VS Code 用カスタムチャットモード定義
+### 5.1 モジュール構成
+
+システムはAPI別・機能別にモジュール化されており、単一責任の原則に従って設計されています。
+
+#### コアモジュール（src/）
+
+- **main.py**：メインエントリーポイント。各モジュールを組み合わせたオーケストレーション処理（64行）
+- **config.py**：環境変数の読み込みと設定値の一元管理（31行）
+- **stock_loader.py**：YAML銘柄リストの読み込みと通貨判定機能（83行）
+- **data_fetcher.py**：Yahoo Finance APIとdefeatbeta-apiによるデータ取得（93行）
+- **ai_analyzer.py**：Claude API/Gemini APIによる分析処理と保有状況プロンプト生成（163行）
+- **report_generator.py**：HTMLレポート生成とファイル保存（39行）
+- **mail_utils.py**：メール送信・SMTP 設定・本文生成のユーティリティ（60行）
+
+#### データ・設定ファイル
+
+- **data/stocks.yaml**：分析対象銘柄リスト（YAML形式、Git で変更履歴管理）
+- **requirements.txt**：依存パッケージ管理
+- **.env/.env.example**：環境変数テンプレート
+
+#### GitHub Actions・設定
+
+- **.github/workflows/report.yml**：自動実行ワークフロー
+- **.github/workflows/auto-merge.yml**：PR 承認時の自動マージワークフロー
+- **.github/copilot-instructions.md**：VS Code 用カスタムチャットモード定義
+
+### 5.2 モジュール間の関係
+
+```
+main.py (オーケストレーション)
+  ├── config.py (設定管理)
+  ├── stock_loader.py (銘柄データ読み込み)
+  ├── data_fetcher.py (外部API: Yahoo Finance, defeatbeta-api)
+  │     └── config.py
+  ├── ai_analyzer.py (AI分析: Claude, Gemini)
+  │     ├── config.py
+  │     └── stock_loader.py
+  ├── report_generator.py (レポート生成)
+  │     └── mail_utils.py
+  └── mail_utils.py (メール配信)
+```
 
 ## 6. 利用技術
 
@@ -100,6 +132,7 @@
 - エラー詳細情報をメール本文に含めることで、GitHub Actions画面を確認せずに原因把握が可能
 - API キー・認証情報の安全な管理
 - モデル EOL や API 仕様変更時の迅速な対応
+- モジュール分割により、各機能の独立したテスト・保守が可能
 
 ## 8. その他
 
@@ -160,4 +193,9 @@
 
 ---
 
-（本要件定義書は現行の main.py・mail_utils.py の設計・実装内容に基づき、今後の議論・運用により随時更新します）
+（本要件定義書は現行のモジュール化されたシステム設計・実装内容に基づき、今後の議論・運用により随時更新します）
+
+### 変更履歴
+
+- 2025-10-10: main.pyをモジュール化（428行→64行、85%削減）。API別・機能別に6つのモジュールに分割し、保守性と拡張性を向上。
+
