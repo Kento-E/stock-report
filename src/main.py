@@ -356,14 +356,27 @@ def analyze_with_gemini(data):
         return f"## 分析失敗\n\n**エラー内容:** {error_msg}\n\n**エラータイプ:** {type(e).__name__}"
 
 # 3. レポート生成（HTML形式）
-def generate_report_html(symbol, analysis):
+def generate_report_html(symbol, name, analysis):
+    """
+    HTMLレポートを生成する。
+    
+    Args:
+        symbol: 銘柄コード (例: '7203.T')
+        name: 企業名 (例: 'トヨタ自動車')
+        analysis: 分析結果のテキスト
+    
+    Returns:
+        (html, filename) のタプル
+    """
     today = datetime.date.today().isoformat()
     analysis_html = markdown_to_html(analysis)
+    # 見出しに企業名を使用し、銘柄コードを副題として表示
     html = f"""
     <html>
-    <head><meta charset='utf-8'><title>{symbol} 日次レポート ({today})</title></head>
+    <head><meta charset='utf-8'><title>{name} ({symbol}) 日次レポート ({today})</title></head>
     <body>
-    <h1>{symbol} 日次レポート ({today})</h1>
+    <h1>{name}</h1>
+    <p style="color: #666; font-size: 14px;">銘柄コード: {symbol} | 日付: {today}</p>
     {analysis_html}
     </body>
     </html>
@@ -395,10 +408,11 @@ if __name__ == "__main__":
             analysis = analyze_with_claude(data)
         else:
             analysis = analyze_with_gemini(data)
-        html, filename = generate_report_html(symbol, analysis)
+        html, filename = generate_report_html(symbol, name, analysis)
         print(f"レポート生成: {filename}")
         analysis_html = markdown_to_html(analysis)
-        all_reports.append(f"<h1>{symbol}</h1>\n{analysis_html}")
+        # メール本文でも企業名を見出しに使用
+        all_reports.append(f"<h1>{name}</h1>\n<p style=\"color: #666; font-size: 14px;\">銘柄コード: {symbol}</p>\n{analysis_html}")
 
     # 全銘柄分まとめてメール送信
     smtp_conf = get_smtp_config()
