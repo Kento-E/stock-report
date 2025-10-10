@@ -38,7 +38,7 @@ USE_CLAUDE = "--claude" in sys.argv
 
 def load_stock_symbols(filepath='data/stocks.yaml'):
     """
-    銘柄リストファイル（YAML形式）から銘柄コードを読み込む。
+    銘柄リストファイル（YAML形式）から銘柄情報を読み込む。
     
     YAML形式の例:
     stocks:
@@ -48,9 +48,9 @@ def load_stock_symbols(filepath='data/stocks.yaml'):
       - symbol: 6758.T
         name: ソニーグループ
     
-    返り値: 銘柄コードのリスト (例: ['7203.T', '6758.T'])
+    返り値: 銘柄情報の辞書のリスト (例: [{'symbol': '7203.T', 'name': 'トヨタ自動車'}, ...])
     """
-    symbols = []
+    stocks = []
     # ファイルパスの解決（main.pyからの相対パス）
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(script_dir)
@@ -64,29 +64,45 @@ def load_stock_symbols(filepath='data/stocks.yaml'):
         if data and 'stocks' in data:
             for stock in data['stocks']:
                 if isinstance(stock, dict) and 'symbol' in stock:
-                    symbols.append(stock['symbol'])
+                    # 辞書形式の場合、symbolとnameを取得
+                    stocks.append({
+                        'symbol': stock['symbol'],
+                        'name': stock.get('name', stock['symbol'])  # nameがない場合はsymbolを使用
+                    })
                 elif isinstance(stock, str):
                     # 文字列の場合も対応（後方互換性）
-                    symbols.append(stock)
+                    stocks.append({'symbol': stock, 'name': stock})
         
-        if not symbols:
+        if not stocks:
             print("警告: 銘柄リストが空です。デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
-            return ['7203.T', '6758.T']
+            return [
+                {'symbol': '7203.T', 'name': 'トヨタ自動車'},
+                {'symbol': '6758.T', 'name': 'ソニーグループ'}
+            ]
             
     except FileNotFoundError:
         print(f"警告: 銘柄リストファイルが見つかりません: {full_path}")
         print("デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
-        return ['7203.T', '6758.T']
+        return [
+            {'symbol': '7203.T', 'name': 'トヨタ自動車'},
+            {'symbol': '6758.T', 'name': 'ソニーグループ'}
+        ]
     except yaml.YAMLError as e:
         print(f"YAML解析エラー: {e}")
         print("デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
-        return ['7203.T', '6758.T']
+        return [
+            {'symbol': '7203.T', 'name': 'トヨタ自動車'},
+            {'symbol': '6758.T', 'name': 'ソニーグループ'}
+        ]
     except Exception as e:
         print(f"銘柄リストファイルの読み込みエラー: {e}")
         print("デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
-        return ['7203.T', '6758.T']
+        return [
+            {'symbol': '7203.T', 'name': 'トヨタ自動車'},
+            {'symbol': '6758.T', 'name': 'ソニーグループ'}
+        ]
     
-    return symbols
+    return stocks
 
 # 銘柄の市場を判定するヘルパー関数
 def get_currency_for_symbol(symbol):
@@ -242,14 +258,27 @@ def analyze_with_gemini(data):
         return f"## 分析失敗\n\n**エラー内容:** {error_msg}\n\n**エラータイプ:** {type(e).__name__}"
 
 # 3. レポート生成（HTML形式）
-def generate_report_html(symbol, analysis):
+def generate_report_html(symbol, name, analysis):
+    """
+    HTMLレポートを生成する。
+    
+    Args:
+        symbol: 銘柄コード (例: '7203.T')
+        name: 企業名 (例: 'トヨタ自動車')
+        analysis: 分析結果のテキスト
+    
+    Returns:
+        (html, filename) のタプル
+    """
     today = datetime.date.today().isoformat()
     analysis_html = markdown_to_html(analysis)
+    # 見出しに企業名を使用し、銘柄コードを副題として表示
     html = f"""
     <html>
-    <head><meta charset='utf-8'><title>{symbol} 日次レポート ({today})</title></head>
+    <head><meta charset='utf-8'><title>{name} ({symbol}) 日次レポート ({today})</title></head>
     <body>
-    <h1>{symbol} 日次レポート ({today})</h1>
+    <h1>{name}</h1>
+    <p style="color: #666; font-size: 14px;">銘柄コード: {symbol} | 日付: {today}</p>
     {analysis_html}
     </body>
     </html>
@@ -260,20 +289,24 @@ def generate_report_html(symbol, analysis):
     return html, filename
 
 if __name__ == "__main__":
-    # 対象銘柄リスト（data/stocks.txtから読み込み）
-    symbols = load_stock_symbols()
-    print(f"分析対象銘柄: {symbols}")
+    # 対象銘柄リスト（data/stocks.yamlから読み込み）
+    stocks = load_stock_symbols()
+    stock_list_str = [f"{s['name']} ({s['symbol']})" for s in stocks]
+    print(f"分析対象銘柄: {stock_list_str}")
     all_reports = []
-    for symbol in symbols:
+    for stock in stocks:
+        symbol = stock['symbol']
+        name = stock['name']
         data = fetch_stock_data(symbol)
         if USE_CLAUDE:
             analysis = analyze_with_claude(data)
         else:
             analysis = analyze_with_gemini(data)
-        html, filename = generate_report_html(symbol, analysis)
+        html, filename = generate_report_html(symbol, name, analysis)
         print(f"レポート生成: {filename}")
         analysis_html = markdown_to_html(analysis)
-        all_reports.append(f"<h1>{symbol}</h1>\n{analysis_html}")
+        # メール本文でも企業名を見出しに使用
+        all_reports.append(f"<h1>{name}</h1>\n<p style=\"color: #666; font-size: 14px;\">銘柄コード: {symbol}</p>\n{analysis_html}")
 
     # 全銘柄分まとめてメール送信
     smtp_conf = get_smtp_config()
