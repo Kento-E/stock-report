@@ -45,10 +45,12 @@ def load_stock_symbols(filepath='data/stocks.yaml'):
       - symbol: 7203.T
         name: トヨタ自動車
         added: 2024-01-01
+        quantity: 100
+        acquisition_price: 2500
       - symbol: 6758.T
         name: ソニーグループ
     
-    返り値: 銘柄情報の辞書のリスト (例: [{'symbol': '7203.T', 'name': 'トヨタ自動車'}, ...])
+    返り値: 銘柄情報の辞書リスト (例: [{'symbol': '7203.T', 'name': 'トヨタ自動車', 'quantity': 100, 'acquisition_price': 2500}, ...])
     """
     stocks = []
     # ファイルパスの解決（main.pyからの相対パス）
@@ -61,46 +63,40 @@ def load_stock_symbols(filepath='data/stocks.yaml'):
             data = yaml.safe_load(f)
             
         # YAMLから銘柄リストを取得
-        if data and 'stocks' in data:
+        if data and 'stocks' in data and data['stocks']:
             for stock in data['stocks']:
                 if isinstance(stock, dict) and 'symbol' in stock:
-                    # 辞書形式の場合、symbolとnameを取得
-                    stocks.append({
+                    # 銘柄情報を辞書として保存
+                    stock_info = {
                         'symbol': stock['symbol'],
-                        'name': stock.get('name', stock['symbol'])  # nameがない場合はsymbolを使用
-                    })
+                        'name': stock.get('name'),
+                        'quantity': stock.get('quantity'),
+                        'acquisition_price': stock.get('acquisition_price'),
+                        'note': stock.get('note'),
+                        'added': stock.get('added')
+                    }
+                    stocks.append(stock_info)
                 elif isinstance(stock, str):
                     # 文字列の場合も対応（後方互換性）
-                    stocks.append({'symbol': stock, 'name': stock})
+                    stocks.append({'symbol': stock})
         
         if not stocks:
-            print("警告: 銘柄リストが空です。デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
-            return [
-                {'symbol': '7203.T', 'name': 'トヨタ自動車'},
-                {'symbol': '6758.T', 'name': 'ソニーグループ'}
-            ]
+            error_msg = f"エラー: 銘柄リストが空です。{full_path} に銘柄を追加してください。"
+            print(error_msg)
+            raise ValueError(error_msg)
             
     except FileNotFoundError:
-        print(f"警告: 銘柄リストファイルが見つかりません: {full_path}")
-        print("デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
-        return [
-            {'symbol': '7203.T', 'name': 'トヨタ自動車'},
-            {'symbol': '6758.T', 'name': 'ソニーグループ'}
-        ]
+        error_msg = f"エラー: 銘柄リストファイルが見つかりません: {full_path}"
+        print(error_msg)
+        raise FileNotFoundError(error_msg)
     except yaml.YAMLError as e:
-        print(f"YAML解析エラー: {e}")
-        print("デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
-        return [
-            {'symbol': '7203.T', 'name': 'トヨタ自動車'},
-            {'symbol': '6758.T', 'name': 'ソニーグループ'}
-        ]
+        error_msg = f"エラー: YAML解析エラー: {e}"
+        print(error_msg)
+        raise yaml.YAMLError(error_msg)
     except Exception as e:
-        print(f"銘柄リストファイルの読み込みエラー: {e}")
-        print("デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
-        return [
-            {'symbol': '7203.T', 'name': 'トヨタ自動車'},
-            {'symbol': '6758.T', 'name': 'ソニーグループ'}
-        ]
+        error_msg = f"エラー: 銘柄リストファイルの読み込みエラー: {e}"
+        print(error_msg)
+        raise
     
     return stocks
 
@@ -115,7 +111,17 @@ def get_currency_for_symbol(symbol):
     return 'ドル'
 
 # 1. データ収集（本番API連携例）
-def fetch_stock_data(symbol):
+def fetch_stock_data(symbol, stock_info=None):
+    """
+    株価とニュースデータを取得する。
+    
+    Args:
+        symbol: 銘柄コード
+        stock_info: 銘柄情報（保有数、取得単価など）
+    
+    Returns:
+        株価、ニュース、保有情報を含む辞書
+    """
     # Yahoo Finance API例（RapidAPI経由）
     url = "https://yfapi.net/v6/finance/quote"
     headers = {"x-api-key": YAHOO_API_KEY}
@@ -129,11 +135,20 @@ def fetch_stock_data(symbol):
     except Exception as e:
         print(f"株価取得失敗: {e}")
     news = fetch_news(symbol)
-    return {
+    
+    data = {
         "symbol": symbol,
         "price": price,
         "news": news
     }
+    
+    # 保有情報を追加
+    if stock_info:
+        data['quantity'] = stock_info.get('quantity')
+        data['acquisition_price'] = stock_info.get('acquisition_price')
+        data['name'] = stock_info.get('name')
+    
+    return data
 
 def fetch_news(symbol):
     """
@@ -183,7 +198,7 @@ def fetch_news(symbol):
 
 def analyze_with_claude(data):
     """
-    Claude Sonnet APIを用いて株価・ニュースデータを分析し、要約・トレンド抽出・リスク/チャンスの指摘を返す。
+    Claude Sonnet APIを用いて株価・ニュースデータを分析し、要約・トレンド抽出・リスク/チャンスの指摘と売買判断を返す。
     """
     if not CLAUDE_API_KEY or CLAUDE_API_KEY.strip() == "":
         error_msg = "Claude APIエラー: APIキーが未設定です。環境変数CLAUDE_API_KEYを確認してください。"
@@ -191,13 +206,59 @@ def analyze_with_claude(data):
         return f"## 分析失敗\n\n**エラー内容:** {error_msg}"
     client = anthropic.Anthropic(api_key=CLAUDE_API_KEY)
     currency = get_currency_for_symbol(data['symbol'])
-    prompt = f"{data['symbol']}の株価は{data['price']}{currency}です。ニュース: {', '.join(data['news'])}。これらを分析し、要約・トレンド・リスク/チャンスを日本語で簡潔に示してください。"
+    
+    # 保有状況に基づいたプロンプトの生成
+    holding_status = ""
+    if data.get('quantity') is not None:
+        quantity = data['quantity']
+        acquisition_price = data.get('acquisition_price')
+        
+        if quantity > 0:
+            holding_status = f"現在の保有状況: {quantity}株を保有中"
+            if acquisition_price:
+                holding_status += f"（取得単価: {acquisition_price}{currency}）"
+                if data['price']:
+                    profit_loss = (data['price'] - acquisition_price) * quantity
+                    profit_rate = ((data['price'] - acquisition_price) / acquisition_price) * 100
+                    holding_status += f"\n現在の損益: {profit_loss:,.0f}{currency}（{profit_rate:+.2f}%）"
+        elif quantity < 0:
+            holding_status = f"現在の保有状況: {abs(quantity)}株を空売り中（信用売り）"
+            if acquisition_price:
+                holding_status += f"（空売り価格: {acquisition_price}{currency}）"
+                if data['price']:
+                    profit_loss = (acquisition_price - data['price']) * abs(quantity)
+                    profit_rate = ((acquisition_price - data['price']) / acquisition_price) * 100
+                    holding_status += f"\n現在の損益: {profit_loss:,.0f}{currency}（{profit_rate:+.2f}%）"
+        else:
+            holding_status = "現在の保有状況: 保有なし（購入または空売りを検討中）"
+    else:
+        holding_status = "現在の保有状況: 保有なし（購入または空売りを検討中）"
+    
+    prompt = f"""
+{data['symbol']}の分析をお願いします。
+
+現在の株価: {data['price']}{currency}
+{holding_status}
+
+最近のニュース:
+{chr(10).join(f"- {news}" for news in data['news'])}
+
+以下の観点から分析してください：
+1. 株価とニュースの要約
+2. 現在のトレンドと今後の見通し
+3. リスク要因とチャンス要因
+4. 売買判断（買い/売り/ホールド/様子見）とその理由
+5. 推奨する指値価格（買い注文または売り注文）
+
+保有状況を考慮して、具体的な売買アクションを提案してください。
+"""
+    
     try:
         message = client.messages.create(
             model="claude-3-sonnet-latest",
-            max_tokens=1000,
+            max_tokens=1500,
             temperature=0.5,
-            system="あなたは株式分析の専門家です。",
+            system="あなたは株式分析の専門家です。データに基づいて客観的な分析と売買判断を提供してください。",
             messages=[
                 {
                     "role": "user",
@@ -218,7 +279,7 @@ def analyze_with_claude(data):
 
 def analyze_with_gemini(data):
     """
-    Gemini APIを用いて株価・ニュースデータを分析し、要約・トレンド抽出・リスク/チャンスの指摘を返す。
+    Gemini APIを用いて株価・ニュースデータを分析し、要約・トレンド抽出・リスク/チャンスの指摘と売買判断を返す。
     """
     if not GEMINI_API_KEY or GEMINI_API_KEY.strip() == "":
         error_msg = "Gemini APIエラー: APIキーが未設定です。環境変数GEMINI_API_KEYを確認してください。"
@@ -226,11 +287,48 @@ def analyze_with_gemini(data):
         return f"## 分析失敗\n\n**エラー内容:** {error_msg}"
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
     currency = get_currency_for_symbol(data['symbol'])
+    
+    # 保有状況に基づいたプロンプトの生成
+    holding_status = ""
+    if data.get('quantity') is not None:
+        quantity = data['quantity']
+        acquisition_price = data.get('acquisition_price')
+        
+        if quantity > 0:
+            holding_status = f"現在の保有状況: {quantity}株を保有中"
+            if acquisition_price:
+                holding_status += f"（取得単価: {acquisition_price}{currency}）"
+                if data['price']:
+                    profit_loss = (data['price'] - acquisition_price) * quantity
+                    profit_rate = ((data['price'] - acquisition_price) / acquisition_price) * 100
+                    holding_status += f"\n現在の損益: {profit_loss:,.0f}{currency}（{profit_rate:+.2f}%）"
+        elif quantity < 0:
+            holding_status = f"現在の保有状況: {abs(quantity)}株を空売り中（信用売り）"
+            if acquisition_price:
+                holding_status += f"（空売り価格: {acquisition_price}{currency}）"
+                if data['price']:
+                    profit_loss = (acquisition_price - data['price']) * abs(quantity)
+                    profit_rate = ((acquisition_price - data['price']) / acquisition_price) * 100
+                    holding_status += f"\n現在の損益: {profit_loss:,.0f}{currency}（{profit_rate:+.2f}%）"
+        else:
+            holding_status = "現在の保有状況: 保有なし（購入または空売りを検討中）"
+    else:
+        holding_status = "現在の保有状況: 保有なし（購入または空売りを検討中）"
+    
     prompt = (
-        "あなたは株式分析の専門家です。"
-        f"{data['symbol']}の株価は{data['price']}{currency}です。"
-        f"ニュース: {', '.join(data['news'])}。"
-        "これらを分析し、要約・トレンド・リスク/チャンスを日本語で簡潔に示してください。"
+        "あなたは株式分析の専門家です。データに基づいて客観的な分析と売買判断を提供してください。\n\n"
+        f"{data['symbol']}の分析をお願いします。\n\n"
+        f"現在の株価: {data['price']}{currency}\n"
+        f"{holding_status}\n\n"
+        f"最近のニュース:\n"
+        f"{chr(10).join(f'- {news}' for news in data['news'])}\n\n"
+        "以下の観点から分析してください：\n"
+        "1. 株価とニュースの要約\n"
+        "2. 現在のトレンドと今後の見通し\n"
+        "3. リスク要因とチャンス要因\n"
+        "4. 売買判断（買い/売り/ホールド/様子見）とその理由\n"
+        "5. 推奨する指値価格（買い注文または売り注文）\n\n"
+        "保有状況を考慮して、具体的な売買アクションを提案してください。"
     )
     headers = {"Content-Type": "application/json"}
     payload = {
@@ -243,7 +341,7 @@ def analyze_with_gemini(data):
         ]
     }
     try:
-        resp = requests.post(url, headers=headers, json=payload, timeout=20)
+        resp = requests.post(url, headers=headers, json=payload, timeout=60)
         if resp.status_code == 200:
             result = resp.json()
             return result["candidates"][0]["content"]["parts"][0]["text"]
@@ -289,15 +387,24 @@ def generate_report_html(symbol, name, analysis):
     return html, filename
 
 if __name__ == "__main__":
-    # 対象銘柄リスト（data/stocks.yamlから読み込み）
-    stocks = load_stock_symbols()
-    stock_list_str = [f"{s['name']} ({s['symbol']})" for s in stocks]
-    print(f"分析対象銘柄: {stock_list_str}")
+    try:
+        # 対象銘柄リスト（data/stocks.yamlから読み込み）
+        stocks = load_stock_symbols()
+        print(f"分析対象銘柄: {[s['symbol'] for s in stocks]}")
+    except (FileNotFoundError, ValueError, yaml.YAMLError) as e:
+        print(f"\n{str(e)}")
+        print("\n処理を終了します。")
+        sys.exit(1)
+    except Exception as e:
+        print(f"\n予期しないエラーが発生しました: {e}")
+        print("\n処理を終了します。")
+        sys.exit(1)
+    
     all_reports = []
-    for stock in stocks:
-        symbol = stock['symbol']
-        name = stock['name']
-        data = fetch_stock_data(symbol)
+    for stock_info in stocks:
+        symbol = stock_info['symbol']
+        name = stock_info.get('name', symbol)  # 企業名がなければ銘柄コードを使用
+        data = fetch_stock_data(symbol, stock_info)
         if USE_CLAUDE:
             analysis = analyze_with_claude(data)
         else:

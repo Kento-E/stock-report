@@ -6,20 +6,29 @@
 # - name: 企業名 (任意)
 # - added: 追加日 (任意)
 # - note: メモ (任意)
+# - quantity: 保有数 (任意、マイナスは空売り)
+# - acquisition_price: 取得単価 (任意)
 
 stocks:
   - symbol: 7203.T
     name: トヨタ自動車
     added: 2025-10-07
+    quantity: 100
+    acquisition_price: 2500
   
   - symbol: 6758.T
     name: ソニーグループ
     added: 2025-10-07
+    quantity: -50
+    acquisition_price: 12000
+    note: 空売りポジション
   
   - symbol: AAPL
     name: Apple Inc.
     added: 2025-10-07
+    # 保有数未設定（購入検討中）
   
   - symbol: MSFT
     name: Microsoft Corporation
     added: 2025-10-07
+    # 保有数未設定（購入検討中）
