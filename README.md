@@ -1,5 +1,34 @@
 # stock-report
 
+株式銘柄の動向をAI（Claude Sonnet / Gemini）で自動分析し、HTML形式のレポートを生成・メール配信するシステムです。
+
+## 特徴
+
+- 🤖 **AI分析**: Claude SonnetまたはGemini APIによる株価・ニュース分析
+- 📊 **自動レポート生成**: HTML形式の見やすいレポート
+- 📧 **メール配信**: 複数宛先へのBCC送信
+- ⏰ **自動実行**: GitHub Actionsによる日次実行
+- 🔧 **モジュール設計**: 保守性・拡張性の高い構造
+
+## システム構成
+
+本プロジェクトは機能別にモジュール化されており、各モジュールが単一の責任を持つ設計になっています。
+
+```
+src/
+├── config.py              # 環境変数と設定管理
+├── stock_loader.py        # YAML銘柄リスト読み込み
+├── data_fetcher.py        # 株価・ニュースデータ取得
+├── ai_analyzer.py         # AI分析（Claude/Gemini）
+├── report_generator.py    # HTMLレポート生成
+├── mail_utils.py          # メール配信
+└── main.py                # メインエントリーポイント
+```
+
+詳細は以下のドキュメントを参照してください：
+- [モジュール分割リファレンス](docs/MODULE_REFERENCE.md)
+- [リファクタリングサマリー](docs/REFACTORING_SUMMARY.md)
+
 ## Github Actions用 Secrets and variables 設定方法
 
 本プロジェクトの自動実行・メール配信には、GithubリポジトリのWeb画面から以下の「Secrets and variables」の登録が必要です。
