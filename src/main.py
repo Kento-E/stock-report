@@ -340,7 +340,7 @@ def analyze_with_gemini(data):
         ]
     }
     try:
-        resp = requests.post(url, headers=headers, json=payload, timeout=20)
+        resp = requests.post(url, headers=headers, json=payload, timeout=60)
         if resp.status_code == 200:
             result = resp.json()
             return result["candidates"][0]["content"]["parts"][0]["text"]
