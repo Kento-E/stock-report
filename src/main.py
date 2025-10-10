@@ -63,7 +63,7 @@ def load_stock_symbols(filepath='data/stocks.yaml'):
             data = yaml.safe_load(f)
             
         # YAMLから銘柄リストを取得
-        if data and 'stocks' in data:
+        if data and 'stocks' in data and data['stocks']:
             for stock in data['stocks']:
                 if isinstance(stock, dict) and 'symbol' in stock:
                     # 銘柄情報を辞書として保存
@@ -81,21 +81,22 @@ def load_stock_symbols(filepath='data/stocks.yaml'):
                     stocks.append({'symbol': stock})
         
         if not stocks:
-            print("警告: 銘柄リストが空です。デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
-            return [{'symbol': '7203.T'}, {'symbol': '6758.T'}]
+            error_msg = f"エラー: 銘柄リストが空です。{full_path} に銘柄を追加してください。"
+            print(error_msg)
+            raise ValueError(error_msg)
             
     except FileNotFoundError:
-        print(f"警告: 銘柄リストファイルが見つかりません: {full_path}")
-        print("デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
-        return [{'symbol': '7203.T'}, {'symbol': '6758.T'}]
+        error_msg = f"エラー: 銘柄リストファイルが見つかりません: {full_path}"
+        print(error_msg)
+        raise FileNotFoundError(error_msg)
     except yaml.YAMLError as e:
-        print(f"YAML解析エラー: {e}")
-        print("デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
-        return [{'symbol': '7203.T'}, {'symbol': '6758.T'}]
+        error_msg = f"エラー: YAML解析エラー: {e}"
+        print(error_msg)
+        raise yaml.YAMLError(error_msg)
     except Exception as e:
-        print(f"銘柄リストファイルの読み込みエラー: {e}")
-        print("デフォルトの銘柄リスト [7203.T, 6758.T] を使用します。")
-        return [{'symbol': '7203.T'}, {'symbol': '6758.T'}]
+        error_msg = f"エラー: 銘柄リストファイルの読み込みエラー: {e}"
+        print(error_msg)
+        raise
     
     return stocks
 
@@ -373,9 +374,19 @@ def generate_report_html(symbol, analysis):
     return html, filename
 
 if __name__ == "__main__":
-    # 対象銘柄リスト（data/stocks.yamlから読み込み）
-    stocks = load_stock_symbols()
-    print(f"分析対象銘柄: {[s['symbol'] for s in stocks]}")
+    try:
+        # 対象銘柄リスト（data/stocks.yamlから読み込み）
+        stocks = load_stock_symbols()
+        print(f"分析対象銘柄: {[s['symbol'] for s in stocks]}")
+    except (FileNotFoundError, ValueError, yaml.YAMLError) as e:
+        print(f"\n{str(e)}")
+        print("\n処理を終了します。")
+        sys.exit(1)
+    except Exception as e:
+        print(f"\n予期しないエラーが発生しました: {e}")
+        print("\n処理を終了します。")
+        sys.exit(1)
+    
     all_reports = []
     for stock_info in stocks:
         symbol = stock_info['symbol']
