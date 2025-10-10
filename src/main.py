@@ -403,6 +403,7 @@ if __name__ == "__main__":
     all_reports = []
     for stock_info in stocks:
         symbol = stock_info['symbol']
+        name = stock_info.get('name', symbol)  # 企業名がなければ銘柄コードを使用
         data = fetch_stock_data(symbol, stock_info)
         if USE_CLAUDE:
             analysis = analyze_with_claude(data)
