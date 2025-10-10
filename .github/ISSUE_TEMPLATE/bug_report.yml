@@ -13,6 +13,18 @@ body:
         `@copilot` とメンションすることで、GitHub Copilotに
         質問や分析を依頼できます。Copilotに修正とPull Request作成まで
         依頼することも可能です。
+  - type: dropdown
+    id: base-branch
+    attributes:
+      label: ベースブランチ
+      description: Pull Requestのベースとなるブランチを選択してください。通常は「main」を選択します。
+      options:
+        - main
+        - copilot/split-main-py-file
+        - freature/analyze-brand
+      default: 0
+    validations:
+      required: true
   - type: textarea
     id: what-happened
     attributes:
