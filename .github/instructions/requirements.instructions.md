@@ -68,6 +68,20 @@
 - コードの質問や相談に対して、関西弁でわかりやすく親しみやすい回答を提供。
 - 技術的な正確性を保ちつつ、「せやな」「ほんまに」「ええで」などの関西弁特有の表現を使用。
 
+### 3.8 テスト自動化
+
+- pytest を使用したユニットテストの実装により、コードの品質を保証。
+- Pull Request 作成時・プッシュ時に GitHub Actions で自動的にテストを実行。
+- テストカバレッジレポートの生成とアーティファクト保存。
+- テスト対象モジュール：
+  - stock_loader（銘柄リスト読み込み、通貨判定）
+  - data_fetcher（データ構造検証）
+  - report_generator（HTMLレポート生成）
+  - mail_utils（メール本文生成、マークダウン変換）
+  - ai_analyzer（保有状況プロンプト生成、損益計算）
+- CI/CD パイプラインでテストが失敗した場合、マージをブロック。
+- GitHub Copilot Premium の消費を節約しつつ、コード品質を維持。
+
 ## 4. 非機能要件
 
 - セキュリティ：API キーや個人情報の安全な管理（.env, Secrets, BCC 運用等）。
@@ -102,7 +116,17 @@
 
 - **.github/workflows/report.yml**：自動実行ワークフロー
 - **.github/workflows/auto-merge.yml**：PR 承認時の自動マージワークフロー
+- **.github/workflows/test.yml**：テスト自動実行ワークフロー
 - **.github/copilot-instructions.md**：VS Code 用カスタムチャットモード定義
+
+#### テスト（tests/）
+
+- **tests/__init__.py**：テストパッケージ初期化
+- **tests/test_stock_loader.py**：銘柄リスト読み込みと通貨判定のテスト
+- **tests/test_data_fetcher.py**：データ取得機能のテスト
+- **tests/test_report_generator.py**：HTMLレポート生成のテスト
+- **tests/test_mail_utils.py**：メール関連ユーティリティのテスト
+- **tests/test_ai_analyzer.py**：AI分析機能のテスト
 
 ### 5.2 モジュール間の関係
 
@@ -127,7 +151,8 @@ main.py (オーケストレーション)
 - defeatbeta-api（市場ニュースデータ取得）
 - PyYAML（YAML ファイルの解析）
 - requests, python-dotenv, smtplib, email, markdown
-- GitHub Actions（スケジューラ・自動化）
+- pytest, pytest-cov（テストフレームワーク・カバレッジ測定）
+- GitHub Actions（スケジューラ・自動化・CI/CD）
 
 ## 7. 運用・保守
 
@@ -136,6 +161,8 @@ main.py (オーケストレーション)
 - API キー・認証情報の安全な管理
 - モデル EOL や API 仕様変更時の迅速な対応
 - モジュール分割により、各機能の独立したテスト・保守が可能
+- 自動テストによりコード品質を継続的に保証
+- Pull Request 作成時の自動テスト実行により、問題を早期発見
 
 ## 8. その他
 
