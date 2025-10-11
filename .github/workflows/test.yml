@@ -24,7 +24,8 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install --timeout=100 -r requirements.txt
+        timeout-minutes: 10
       
       - name: Run tests with pytest
         run: |
