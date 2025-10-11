@@ -143,6 +143,42 @@ stocks:
 - YAML形式により、銘柄ごとに追加のメタデータを柔軟に管理できます
 - その他の分析条件を変数として管理したい場合は、環境変数や設定ファイルに追加可能です
 
+## テスト
+
+本プロジェクトには自動テストが実装されており、コードの品質を保証しています。
+
+### テストの実行方法
+
+ローカル環境でテストを実行する場合：
+
+```bash
+# 依存パッケージのインストール
+pip install -r requirements.txt
+
+# すべてのテストを実行
+python -m pytest tests/ -v
+
+# カバレッジレポート付きで実行
+python -m pytest tests/ -v --cov=src --cov-report=html
+```
+
+### テストの種類
+
+- **ユニットテスト**: 各モジュールの個別機能をテスト
+  - `test_stock_loader.py`: 銘柄リスト読み込み、通貨判定
+  - `test_data_fetcher.py`: データ構造の検証
+  - `test_report_generator.py`: HTMLレポート生成
+  - `test_mail_utils.py`: メール本文生成、マークダウン変換
+  - `test_ai_analyzer.py`: 保有状況プロンプト生成、損益計算
+
+### 自動テスト実行
+
+Pull Requestを作成すると、GitHub Actionsで自動的にテストが実行されます：
+
+- テスト結果はPRの「Checks」タブで確認できます
+- テストが失敗した場合、マージ前に修正が必要です
+- カバレッジレポートはアーティファクトとしてダウンロード可能です
+
 ## GitHub Copilotの活用
 
 本リポジトリではGitHub Copilotを活用できます：
