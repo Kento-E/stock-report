@@ -27,7 +27,6 @@ src/
 
 詳細は以下のドキュメントを参照してください：
 - [モジュール分割リファレンス](docs/MODULE_REFERENCE.md)
-- [リファクタリングサマリー](docs/REFACTORING_SUMMARY.md)
 
 ## Github Actions用 Secrets and variables 設定方法
 
