@@ -54,10 +54,7 @@ AIが以下の情報を提供するようになりました：
 
 ### 追加されたファイル
 
-1. **docs/test_report/trading_timing_feature.md**
-   - 機能のテストレポート
-
-2. **docs/examples/ai_prompt_examples.md**
+1. **docs/examples/ai_prompt_examples.md**
    - AI分析プロンプトの例
 
 ## 使用方法
@@ -142,7 +139,7 @@ AIは保有状況を考慮して、具体的な売買アクションを提案し
 - ✅ 損益計算
 - ✅ コード構文チェック
 
-詳細は `docs/test_report/trading_timing_feature.md` を参照してください。
+詳細は [PR #39のコメント](https://github.com/Kento-E/stock-report/pull/39#issuecomment-3397312153) を参照してください。
 
 ## 次のステップ
 
@@ -155,7 +152,7 @@ AIは保有状況を考慮して、具体的な売買アクションを提案し
 
 ## 関連ドキュメント
 
-- テストレポート: `docs/test_report/trading_timing_feature.md`
+- テストレポート: [PR #39のコメント](https://github.com/Kento-E/stock-report/pull/39#issuecomment-3397312153)
 - プロンプト例: `docs/examples/ai_prompt_examples.md`
 - 要件定義書: `.github/instructions/requirements.instructions.md`
 - README: `README.md`
