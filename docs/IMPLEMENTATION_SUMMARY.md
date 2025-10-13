@@ -139,7 +139,7 @@ AIは保有状況を考慮して、具体的な売買アクションを提案し
 - ✅ 損益計算
 - ✅ コード構文チェック
 
-詳細は `docs/PR39_TEST_REPORTS.md` を参照してください。
+詳細は [PR #39のコメント](https://github.com/Kento-E/stock-report/pull/39#issuecomment-3397312153) を参照してください。
 
 ## 次のステップ
 
@@ -152,7 +152,7 @@ AIは保有状況を考慮して、具体的な売買アクションを提案し
 
 ## 関連ドキュメント
 
-- テストレポート: `docs/PR39_TEST_REPORTS.md`
+- テストレポート: [PR #39のコメント](https://github.com/Kento-E/stock-report/pull/39#issuecomment-3397312153)
 - プロンプト例: `docs/examples/ai_prompt_examples.md`
 - 要件定義書: `.github/instructions/requirements.instructions.md`
 - README: `README.md`
