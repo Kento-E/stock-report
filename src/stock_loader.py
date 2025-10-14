@@ -45,7 +45,8 @@ def load_stock_symbols(filepath='data/stocks.yaml'):
                         'quantity': stock.get('quantity'),
                         'acquisition_price': stock.get('acquisition_price'),
                         'note': stock.get('note'),
-                        'added': stock.get('added')
+                        'added': stock.get('added'),
+                        'considering_action': stock.get('considering_action', 'buy')
                     }
                     stocks.append(stock_info)
                 elif isinstance(stock, str):
@@ -91,22 +92,23 @@ def categorize_stock(stock_info):
         stock_info: 銘柄情報の辞書
         
     Returns:
-        分類名（'holding', 'short_selling', 'considering_buy'）
+        分類名（'holding', 'short_selling', 'considering_buy', 'considering_short_sell'）
     """
     quantity = stock_info.get('quantity')
+    considering_action = stock_info.get('considering_action', 'buy')  # デフォルトは購入検討
     
-    if quantity is None:
-        # 保有数未設定は購入検討中
-        return 'considering_buy'
+    if quantity is None or quantity == 0:
+        # 保有数未設定またはゼロの場合は検討中
+        if considering_action == 'short_sell':
+            return 'considering_short_sell'
+        else:
+            return 'considering_buy'
     elif quantity > 0:
         # 正の値は保有中
         return 'holding'
     elif quantity < 0:
         # 負の値は空売り中
         return 'short_selling'
-    else:
-        # ゼロの場合も購入検討中とみなす
-        return 'considering_buy'
 
 
 def categorize_stocks(stocks):
@@ -117,12 +119,13 @@ def categorize_stocks(stocks):
         stocks: 銘柄情報の辞書リスト
         
     Returns:
-        分類別の銘柄辞書 {'holding': [...], 'short_selling': [...], 'considering_buy': [...]}
+        分類別の銘柄辞書 {'holding': [...], 'short_selling': [...], 'considering_buy': [...], 'considering_short_sell': [...]}
     """
     categorized = {
         'holding': [],
         'short_selling': [],
-        'considering_buy': []
+        'considering_buy': [],
+        'considering_short_sell': []
     }
     
     for stock_info in stocks:

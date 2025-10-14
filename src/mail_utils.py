@@ -36,6 +36,30 @@ def generate_mail_body(subject, all_reports):
     return body
 
 
+def generate_single_category_mail_body(subject, category_name, reports):
+    """
+    単一カテゴリーのレポートからHTMLメール本文を生成する。
+    
+    Args:
+        subject: メール件名
+        category_name: カテゴリー名（日本語）
+        reports: レポートのリスト
+    
+    Returns:
+        HTML形式のメール本文
+    """
+    body = f"""
+    <html>
+    <head><meta charset='utf-8'><title>{subject}</title></head>
+    <body style="font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px;">
+    <h1 style="color: #333; border-bottom: 3px solid #007bff; padding-bottom: 15px;">{category_name}</h1>
+    {''.join(reports)}
+    </body>
+    </html>
+    """
+    return body
+
+
 def generate_categorized_mail_body(subject, categorized_reports):
     """
     分類別のレポートからHTMLメール本文を生成する。
@@ -43,7 +67,7 @@ def generate_categorized_mail_body(subject, categorized_reports):
     Args:
         subject: メール件名
         categorized_reports: 分類別のレポート辞書
-            {'holding': [...], 'short_selling': [...], 'considering_buy': [...]}
+            {'holding': [...], 'short_selling': [...], 'considering_buy': [...], 'considering_short_sell': [...]}
     
     Returns:
         HTML形式のメール本文
@@ -51,13 +75,14 @@ def generate_categorized_mail_body(subject, categorized_reports):
     category_names = {
         'holding': '保有銘柄',
         'short_selling': '空売り銘柄',
-        'considering_buy': '購入検討中の銘柄'
+        'considering_buy': '購入検討中の銘柄',
+        'considering_short_sell': '空売り検討中の銘柄'
     }
     
     sections = []
     
     # 各分類のセクションを生成
-    for category in ['holding', 'short_selling', 'considering_buy']:
+    for category in ['holding', 'short_selling', 'considering_buy', 'considering_short_sell']:
         reports = categorized_reports.get(category, [])
         if reports:
             section_title = category_names[category]

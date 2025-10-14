@@ -9,7 +9,7 @@ import sys
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from mail_utils import markdown_to_html, generate_mail_body, generate_categorized_mail_body
+from mail_utils import markdown_to_html, generate_mail_body, generate_categorized_mail_body, generate_single_category_mail_body
 
 
 class TestMarkdownToHtml:
@@ -73,6 +73,39 @@ class TestGenerateMailBody:
         assert subject in body
 
 
+class TestGenerateSingleCategoryMailBody:
+    """generate_single_category_mail_body関数のテスト"""
+    
+    def test_single_category_mail(self):
+        """単一カテゴリーのメール生成"""
+        subject = "テスト件名"
+        category_name = "保有銘柄"
+        reports = [
+            '<h3>銘柄1</h3><p>分析1</p>',
+            '<h3>銘柄2</h3><p>分析2</p>'
+        ]
+        
+        body = generate_single_category_mail_body(subject, category_name, reports)
+        
+        assert '<html>' in body
+        assert '</html>' in body
+        assert subject in body
+        assert category_name in body
+        assert '銘柄1' in body
+        assert '銘柄2' in body
+    
+    def test_single_category_empty_reports(self):
+        """レポートが空でもエラーが発生しない"""
+        subject = "テスト件名"
+        category_name = "空売り銘柄"
+        reports = []
+        
+        body = generate_single_category_mail_body(subject, category_name, reports)
+        
+        assert '<html>' in body
+        assert category_name in body
+
+
 class TestGenerateCategorizedMailBody:
     """generate_categorized_mail_body関数のテスト"""
     
@@ -82,7 +115,8 @@ class TestGenerateCategorizedMailBody:
         categorized_reports = {
             'holding': ['<h3>保有銘柄1</h3><p>分析1</p>'],
             'short_selling': ['<h3>空売り銘柄1</h3><p>分析2</p>'],
-            'considering_buy': ['<h3>検討銘柄1</h3><p>分析3</p>']
+            'considering_buy': ['<h3>検討銘柄1</h3><p>分析3</p>'],
+            'considering_short_sell': ['<h3>空売り検討銘柄1</h3><p>分析4</p>']
         }
         
         body = generate_categorized_mail_body(subject, categorized_reports)
@@ -93,9 +127,11 @@ class TestGenerateCategorizedMailBody:
         assert '保有銘柄' in body
         assert '空売り銘柄' in body
         assert '購入検討中の銘柄' in body
+        assert '空売り検討中の銘柄' in body
         assert '保有銘柄1' in body
         assert '空売り銘柄1' in body
         assert '検討銘柄1' in body
+        assert '空売り検討銘柄1' in body
     
     def test_partial_categories(self):
         """一部のカテゴリーのみの場合"""
@@ -103,7 +139,8 @@ class TestGenerateCategorizedMailBody:
         categorized_reports = {
             'holding': ['<h3>保有銘柄1</h3><p>分析1</p>'],
             'short_selling': [],
-            'considering_buy': ['<h3>検討銘柄1</h3><p>分析2</p>']
+            'considering_buy': ['<h3>検討銘柄1</h3><p>分析2</p>'],
+            'considering_short_sell': []
         }
         
         body = generate_categorized_mail_body(subject, categorized_reports)
@@ -112,6 +149,7 @@ class TestGenerateCategorizedMailBody:
         assert '保有銘柄' in body
         assert '空売り銘柄' not in body
         assert '購入検討中の銘柄' in body
+        assert '空売り検討中の銘柄' not in body
     
     def test_empty_categories(self):
         """全カテゴリーが空の場合"""
@@ -119,7 +157,8 @@ class TestGenerateCategorizedMailBody:
         categorized_reports = {
             'holding': [],
             'short_selling': [],
-            'considering_buy': []
+            'considering_buy': [],
+            'considering_short_sell': []
         }
         
         body = generate_categorized_mail_body(subject, categorized_reports)
@@ -130,3 +169,4 @@ class TestGenerateCategorizedMailBody:
         assert '保有銘柄' not in body
         assert '空売り銘柄' not in body
         assert '購入検討中の銘柄' not in body
+        assert '空売り検討中の銘柄' not in body

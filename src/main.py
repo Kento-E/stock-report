@@ -20,7 +20,7 @@ from stock_loader import load_stock_symbols, categorize_stocks
 from data_fetcher import fetch_stock_data
 from ai_analyzer import analyze_with_claude, analyze_with_gemini
 from report_generator import generate_report_html
-from mail_utils import send_report_via_mail, get_smtp_config, generate_categorized_mail_body, markdown_to_html
+from mail_utils import send_report_via_mail, get_smtp_config, generate_single_category_mail_body, markdown_to_html
 
 if __name__ == "__main__":
     try:
@@ -43,7 +43,8 @@ if __name__ == "__main__":
     categorized_reports = {
         'holding': [],
         'short_selling': [],
-        'considering_buy': []
+        'considering_buy': [],
+        'considering_short_sell': []
     }
     
     # 各分類の銘柄を処理
@@ -63,13 +64,29 @@ if __name__ == "__main__":
             report_html = f"<h3>{name}</h3>\n<p style=\"color: #666; font-size: 14px;\">銘柄コード: {symbol}</p>\n{analysis_html}"
             categorized_reports[category].append(report_html)
 
-    # 全銘柄分まとめてメール送信
+    # 分類別に個別のメールを送信
     smtp_conf = get_smtp_config()
     if MAIL_TO and all(smtp_conf.values()):
         today = datetime.date.today().isoformat()
-        subject = f"株式日次レポート ({today})"
-        body = generate_categorized_mail_body(subject, categorized_reports)
-        send_report_via_mail(
-            subject, body, MAIL_TO,
-            smtp_conf['MAIL_FROM'], smtp_conf['SMTP_SERVER'], smtp_conf['SMTP_PORT'], smtp_conf['SMTP_USER'], smtp_conf['SMTP_PASS']
-        )
+        
+        # カテゴリー名の定義
+        category_names = {
+            'holding': '保有銘柄',
+            'short_selling': '空売り銘柄',
+            'considering_buy': '購入検討中の銘柄',
+            'considering_short_sell': '空売り検討中の銘柄'
+        }
+        
+        # 各カテゴリーごとに個別のメールを送信
+        for category in ['holding', 'short_selling', 'considering_buy', 'considering_short_sell']:
+            reports = categorized_reports.get(category, [])
+            if reports:  # 銘柄が存在する場合のみメール送信
+                category_name = category_names[category]
+                subject = f"株式日次レポート - {category_name} ({today})"
+                body = generate_single_category_mail_body(subject, category_name, reports)
+                send_report_via_mail(
+                    subject, body, MAIL_TO,
+                    smtp_conf['MAIL_FROM'], smtp_conf['SMTP_SERVER'], smtp_conf['SMTP_PORT'], smtp_conf['SMTP_USER'], smtp_conf['SMTP_PASS']
+                )
+                print(f"メール送信完了: {category_name}")
+

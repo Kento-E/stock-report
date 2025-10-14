@@ -162,6 +162,16 @@ class TestCategorizeStock:
         """保有数ゼロ（購入検討中）"""
         stock_info = {'symbol': 'MSFT', 'quantity': 0}
         assert categorize_stock(stock_info) == 'considering_buy'
+    
+    def test_considering_short_sell(self):
+        """空売り検討中の銘柄"""
+        stock_info = {'symbol': 'TSLA', 'quantity': 0, 'considering_action': 'short_sell'}
+        assert categorize_stock(stock_info) == 'considering_short_sell'
+    
+    def test_considering_short_sell_no_quantity(self):
+        """保有数未設定で空売り検討中の銘柄"""
+        stock_info = {'symbol': 'NVDA', 'considering_action': 'short_sell'}
+        assert categorize_stock(stock_info) == 'considering_short_sell'
 
 
 class TestCategorizeStocks:
@@ -174,6 +184,7 @@ class TestCategorizeStocks:
             {'symbol': '6758.T', 'name': 'ソニー', 'quantity': -50},
             {'symbol': 'AAPL', 'name': 'Apple'},
             {'symbol': 'MSFT', 'name': 'Microsoft', 'quantity': 200},
+            {'symbol': 'TSLA', 'name': 'Tesla', 'considering_action': 'short_sell'},
         ]
         
         result = categorize_stocks(stocks)
@@ -181,10 +192,12 @@ class TestCategorizeStocks:
         assert len(result['holding']) == 2
         assert len(result['short_selling']) == 1
         assert len(result['considering_buy']) == 1
+        assert len(result['considering_short_sell']) == 1
         assert result['holding'][0]['symbol'] == '7203.T'
         assert result['holding'][1]['symbol'] == 'MSFT'
         assert result['short_selling'][0]['symbol'] == '6758.T'
         assert result['considering_buy'][0]['symbol'] == 'AAPL'
+        assert result['considering_short_sell'][0]['symbol'] == 'TSLA'
     
     def test_categorize_empty_list(self):
         """空のリスト"""
@@ -193,6 +206,7 @@ class TestCategorizeStocks:
         assert len(result['holding']) == 0
         assert len(result['short_selling']) == 0
         assert len(result['considering_buy']) == 0
+        assert len(result['considering_short_sell']) == 0
     
     def test_categorize_single_category(self):
         """単一カテゴリーのみ"""
@@ -206,3 +220,4 @@ class TestCategorizeStocks:
         assert len(result['holding']) == 2
         assert len(result['short_selling']) == 0
         assert len(result['considering_buy']) == 0
+        assert len(result['considering_short_sell']) == 0
