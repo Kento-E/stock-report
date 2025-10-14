@@ -35,6 +35,46 @@ def generate_mail_body(subject, all_reports):
     """
     return body
 
+
+def generate_categorized_mail_body(subject, categorized_reports):
+    """
+    分類別のレポートからHTMLメール本文を生成する。
+    
+    Args:
+        subject: メール件名
+        categorized_reports: 分類別のレポート辞書
+            {'holding': [...], 'short_selling': [...], 'considering_buy': [...]}
+    
+    Returns:
+        HTML形式のメール本文
+    """
+    category_names = {
+        'holding': '保有銘柄',
+        'short_selling': '空売り銘柄',
+        'considering_buy': '購入検討中の銘柄'
+    }
+    
+    sections = []
+    
+    # 各分類のセクションを生成
+    for category in ['holding', 'short_selling', 'considering_buy']:
+        reports = categorized_reports.get(category, [])
+        if reports:
+            section_title = category_names[category]
+            section_html = f'<h2 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px; margin-top: 30px;">{section_title}</h2>\n'
+            section_html += ''.join(reports)
+            sections.append(section_html)
+    
+    body = f"""
+    <html>
+    <head><meta charset='utf-8'><title>{subject}</title></head>
+    <body style="font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px;">
+    {''.join(sections)}
+    </body>
+    </html>
+    """
+    return body
+
 def send_report_via_mail(subject, html_body, to_addrs, mail_from, smtp_server, smtp_port, smtp_user, smtp_pass):
     """
     to_addrs: カンマまたはセミコロン区切りの文字列、またはリスト

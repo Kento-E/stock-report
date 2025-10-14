@@ -10,7 +10,7 @@ import sys
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from stock_loader import load_stock_symbols, get_currency_for_symbol
+from stock_loader import load_stock_symbols, get_currency_for_symbol, categorize_stock, categorize_stocks
 
 
 class TestGetCurrencyForSymbol:
@@ -138,3 +138,71 @@ class TestLoadStockSymbols:
         assert result[0]['acquisition_price'] == 2500
         assert result[0]['note'] == 'テストメモ'
         assert result[0]['added'] == '2025-10-07'
+
+
+class TestCategorizeStock:
+    """categorize_stock関数のテスト"""
+    
+    def test_holding_stock(self):
+        """保有中の銘柄"""
+        stock_info = {'symbol': '7203.T', 'quantity': 100}
+        assert categorize_stock(stock_info) == 'holding'
+    
+    def test_short_selling_stock(self):
+        """空売り中の銘柄"""
+        stock_info = {'symbol': '6758.T', 'quantity': -50}
+        assert categorize_stock(stock_info) == 'short_selling'
+    
+    def test_considering_buy_no_quantity(self):
+        """保有数未設定（購入検討中）"""
+        stock_info = {'symbol': 'AAPL'}
+        assert categorize_stock(stock_info) == 'considering_buy'
+    
+    def test_considering_buy_zero_quantity(self):
+        """保有数ゼロ（購入検討中）"""
+        stock_info = {'symbol': 'MSFT', 'quantity': 0}
+        assert categorize_stock(stock_info) == 'considering_buy'
+
+
+class TestCategorizeStocks:
+    """categorize_stocks関数のテスト"""
+    
+    def test_categorize_all_types(self):
+        """全種類の銘柄を分類"""
+        stocks = [
+            {'symbol': '7203.T', 'name': 'トヨタ', 'quantity': 100},
+            {'symbol': '6758.T', 'name': 'ソニー', 'quantity': -50},
+            {'symbol': 'AAPL', 'name': 'Apple'},
+            {'symbol': 'MSFT', 'name': 'Microsoft', 'quantity': 200},
+        ]
+        
+        result = categorize_stocks(stocks)
+        
+        assert len(result['holding']) == 2
+        assert len(result['short_selling']) == 1
+        assert len(result['considering_buy']) == 1
+        assert result['holding'][0]['symbol'] == '7203.T'
+        assert result['holding'][1]['symbol'] == 'MSFT'
+        assert result['short_selling'][0]['symbol'] == '6758.T'
+        assert result['considering_buy'][0]['symbol'] == 'AAPL'
+    
+    def test_categorize_empty_list(self):
+        """空のリスト"""
+        result = categorize_stocks([])
+        
+        assert len(result['holding']) == 0
+        assert len(result['short_selling']) == 0
+        assert len(result['considering_buy']) == 0
+    
+    def test_categorize_single_category(self):
+        """単一カテゴリーのみ"""
+        stocks = [
+            {'symbol': '7203.T', 'quantity': 100},
+            {'symbol': '6758.T', 'quantity': 50},
+        ]
+        
+        result = categorize_stocks(stocks)
+        
+        assert len(result['holding']) == 2
+        assert len(result['short_selling']) == 0
+        assert len(result['considering_buy']) == 0

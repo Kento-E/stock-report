@@ -81,3 +81,52 @@ def get_currency_for_symbol(symbol):
     if symbol.endswith('.T') or symbol.endswith('.JP'):
         return '円'
     return 'ドル'
+
+
+def categorize_stock(stock_info):
+    """
+    銘柄を保有状況に基づいて分類する。
+    
+    Args:
+        stock_info: 銘柄情報の辞書
+        
+    Returns:
+        分類名（'holding', 'short_selling', 'considering_buy'）
+    """
+    quantity = stock_info.get('quantity')
+    
+    if quantity is None:
+        # 保有数未設定は購入検討中
+        return 'considering_buy'
+    elif quantity > 0:
+        # 正の値は保有中
+        return 'holding'
+    elif quantity < 0:
+        # 負の値は空売り中
+        return 'short_selling'
+    else:
+        # ゼロの場合も購入検討中とみなす
+        return 'considering_buy'
+
+
+def categorize_stocks(stocks):
+    """
+    銘柄リストを分類別に振り分ける。
+    
+    Args:
+        stocks: 銘柄情報の辞書リスト
+        
+    Returns:
+        分類別の銘柄辞書 {'holding': [...], 'short_selling': [...], 'considering_buy': [...]}
+    """
+    categorized = {
+        'holding': [],
+        'short_selling': [],
+        'considering_buy': []
+    }
+    
+    for stock_info in stocks:
+        category = categorize_stock(stock_info)
+        categorized[category].append(stock_info)
+    
+    return categorized

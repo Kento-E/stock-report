@@ -9,7 +9,7 @@ import sys
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from mail_utils import markdown_to_html, generate_mail_body
+from mail_utils import markdown_to_html, generate_mail_body, generate_categorized_mail_body
 
 
 class TestMarkdownToHtml:
@@ -71,3 +71,62 @@ class TestGenerateMailBody:
         assert '<html>' in body
         assert '</html>' in body
         assert subject in body
+
+
+class TestGenerateCategorizedMailBody:
+    """generate_categorized_mail_body関数のテスト"""
+    
+    def test_all_categories(self):
+        """全カテゴリーのレポートが含まれる"""
+        subject = "テスト件名"
+        categorized_reports = {
+            'holding': ['<h3>保有銘柄1</h3><p>分析1</p>'],
+            'short_selling': ['<h3>空売り銘柄1</h3><p>分析2</p>'],
+            'considering_buy': ['<h3>検討銘柄1</h3><p>分析3</p>']
+        }
+        
+        body = generate_categorized_mail_body(subject, categorized_reports)
+        
+        assert '<html>' in body
+        assert '</html>' in body
+        assert subject in body
+        assert '保有銘柄' in body
+        assert '空売り銘柄' in body
+        assert '購入検討中の銘柄' in body
+        assert '保有銘柄1' in body
+        assert '空売り銘柄1' in body
+        assert '検討銘柄1' in body
+    
+    def test_partial_categories(self):
+        """一部のカテゴリーのみの場合"""
+        subject = "テスト件名"
+        categorized_reports = {
+            'holding': ['<h3>保有銘柄1</h3><p>分析1</p>'],
+            'short_selling': [],
+            'considering_buy': ['<h3>検討銘柄1</h3><p>分析2</p>']
+        }
+        
+        body = generate_categorized_mail_body(subject, categorized_reports)
+        
+        assert '<html>' in body
+        assert '保有銘柄' in body
+        assert '空売り銘柄' not in body
+        assert '購入検討中の銘柄' in body
+    
+    def test_empty_categories(self):
+        """全カテゴリーが空の場合"""
+        subject = "テスト件名"
+        categorized_reports = {
+            'holding': [],
+            'short_selling': [],
+            'considering_buy': []
+        }
+        
+        body = generate_categorized_mail_body(subject, categorized_reports)
+        
+        assert '<html>' in body
+        assert '</html>' in body
+        # カテゴリー名が表示されないことを確認
+        assert '保有銘柄' not in body
+        assert '空売り銘柄' not in body
+        assert '購入検討中の銘柄' not in body
