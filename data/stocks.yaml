@@ -6,8 +6,9 @@
 # - name: 企業名 (任意)
 # - added: 追加日 (任意)
 # - note: メモ (任意)
-# - quantity: 保有数 (任意、マイナスは空売り)
+# - quantity: 保有数 (任意、マイナスは空売り、0または未設定は検討中)
 # - acquisition_price: 取得単価 (任意)
+# - considering_action: 検討中の行動 (任意、'buy'または'short_sell'、デフォルトは'buy')
 
 stocks:
   - symbol: 7203.T

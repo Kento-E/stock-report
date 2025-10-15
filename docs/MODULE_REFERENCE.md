@@ -6,11 +6,12 @@ main.pyファイルを機能別・API別に分割し、保守性と拡張性を�
 
 ## 分割前後の比較
 
-| 項目 | 分割前 | 分割後 |
-|------|--------|--------|
-| main.pyの行数 | 428行 | 64行 |
-| ファイル数 | 2ファイル | 7ファイル |
-| 責任の分離 | 単一ファイルに集約 | 機能別に明確に分離 |
+| 項目 | 分割前 | 分割後 | 最新 |
+|------|--------|--------|------|
+| main.pyの行数 | 428行 | 64行 | 76行 |
+| ファイル数 | 2ファイル | 7ファイル | 7ファイル |
+| 責任の分離 | 単一ファイルに集約 | 機能別に明確に分離 | 機能別に明確に分離 |
+| メール分類 | なし | なし | 3分類対応 |
 
 ## モジュール一覧
 
@@ -32,19 +33,22 @@ main.pyファイルを機能別・API別に分割し、保守性と拡張性を�
 - `USE_CLAUDE`: Claude使用フラグ
 - `DEFEATBETA_AVAILABLE`: defeatbeta-api可用性フラグ
 
-### 2. stock_loader.py (83行)
+### 2. stock_loader.py (136行)
 
-**責務**: 銘柄リストの読み込みと通貨判定
+**責務**: 銘柄リストの読み込み、通貨判定、銘柄分類
 
 **主な機能**:
 - YAML形式の銘柄リストファイルの読み込み
 - 銘柄情報の構造化（symbol, name, quantity, acquisition_price等）
 - 市場通貨の自動判定（日本株=円、米国株=ドル）
+- 保有状況に基づく銘柄分類（保有中、空売り中、購入検討中）
 - エラーハンドリング（ファイル不在、YAML構文エラー等）
 
 **公開される関数**:
 - `load_stock_symbols(filepath='data/stocks.yaml')`: 銘柄リスト読み込み
 - `get_currency_for_symbol(symbol)`: 通貨判定関数
+- `categorize_stock(stock_info)`: 個別銘柄の分類判定
+- `categorize_stocks(stocks)`: 銘柄リストの一括分類
 
 ### 3. data_fetcher.py (93行)
 
@@ -102,20 +106,21 @@ main.pyファイルを機能別・API別に分割し、保守性と拡張性を�
 **依存関係**:
 - `mail_utils.markdown_to_html`
 
-### 6. main.py (64行)
+### 6. main.py (76行)
 
 **責務**: メインエントリーポイント・オーケストレーション
 
 **主な処理フロー**:
 1. 銘柄リストの読み込み
-2. 各銘柄のデータ収集
-3. AI分析の実行
-4. レポート生成
-5. メール配信
+2. 銘柄の分類（保有中、空売り中、購入検討中）
+3. 各分類の銘柄のデータ収集
+4. AI分析の実行
+5. レポート生成
+6. 分類別メール配信
 
 **依存関係**: すべてのモジュール
 
-### 7. mail_utils.py (60行) ※既存
+### 7. mail_utils.py (103行)
 
 **責務**: メール配信処理
 
@@ -123,7 +128,15 @@ main.pyファイルを機能別・API別に分割し、保守性と拡張性を�
 - SMTP設定の取得
 - HTMLメールの送信
 - Markdown→HTML変換
+- 分類別メール本文の生成
 - BCC送信による複数宛先対応
+
+**公開される関数**:
+- `get_smtp_config()`: SMTP設定取得
+- `markdown_to_html(markdown_text)`: Markdown→HTML変換
+- `generate_mail_body(subject, all_reports)`: 従来形式のメール本文生成（後方互換性）
+- `generate_categorized_mail_body(subject, categorized_reports)`: 分類別メール本文生成
+- `send_report_via_mail(...)`: メール送信
 
 ## モジュール間の依存関係図
 
