@@ -1,6 +1,6 @@
-# カスタムチャットモード使用例
+# カスタムチャット参加者 使用例
 
-このファイルでは、`.github/copilot-instructions.md` で定義されたカスタムチャットモードの使用例を示します。
+このファイルでは、`.github/copilot-chat-participants.md` で定義されたカスタムチャット参加者の使用例を示します。
 
 ## 関西弁チャット（@kansai）の使い方
 
@@ -50,7 +50,7 @@ def calculate_moving_average(prices, window):
 - GitHub上のIssueやPull Requestのコメントでは使用できません
 - 技術的な正確性は保たれつつ、関西弁で親しみやすく説明されます
 
-## その他のカスタムチャットモード
+## その他のカスタムチャット参加者
 
-必要に応じて、`.github/copilot-instructions.md` に他のカスタムチャットモードを追加できます。
+必要に応じて、`.github/copilot-chat-participants.md` に他のカスタムチャット参加者を追加できます。
 例：敬語モード、初心者向けモード、上級者向けモードなど。
