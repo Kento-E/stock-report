@@ -75,6 +75,7 @@ stocks:
     note: 自動車メーカー最大手
     quantity: 100
     acquisition_price: 2500
+    currency: 円
   
   - symbol: 6758.T
     name: ソニーグループ
@@ -82,11 +83,20 @@ stocks:
     quantity: -50
     acquisition_price: 12000
     note: 空売りポジション
+    # currency未設定の場合は自動判定（.T/.JPなら円）
   
   - symbol: AAPL
     name: Apple Inc.
     added: 2024-01-15
+    currency: ドル
     # 保有数未設定（購入検討中）
+  
+  - symbol: BMW.DE
+    name: BMW
+    added: 2024-01-20
+    currency: ユーロ
+    quantity: 50
+    acquisition_price: 95
 ```
 
 **フィールド説明:**
@@ -96,6 +106,14 @@ stocks:
 - `note` (任意): メモ・注記
 - `quantity` (任意): 保有数（プラスは保有、マイナスは空売り、未設定は購入検討中）
 - `acquisition_price` (任意): 取得単価（購入価格または空売り価格）
+- `currency` (任意): 通貨単位（円、ドル、ユーロ、ポンドなど）
+
+**通貨の指定:**
+- `currency`フィールドで明示的に通貨を指定できます（円、ドル、ユーロ、ポンド、元など）
+- 未指定の場合は銘柄シンボルから自動判定されます：
+  - 日本株（.T、.JP）: 円
+  - その他: ドル
+- 明示的な指定が自動判定より優先されます
 
 **保有情報の活用:**
 - `quantity`を設定すると、AIが保有状況を考慮した売買判断を提供します

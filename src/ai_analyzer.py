@@ -19,7 +19,7 @@ def analyze_with_claude(data):
         print(error_msg)
         return f"## 分析失敗\n\n**エラー内容:** {error_msg}"
     client = anthropic.Anthropic(api_key=CLAUDE_API_KEY)
-    currency = get_currency_for_symbol(data['symbol'])
+    currency = get_currency_for_symbol(data['symbol'], data.get('currency'))
     
     # 保有状況に基づいたプロンプトの生成
     holding_status = _generate_holding_status(data, currency)
@@ -77,7 +77,7 @@ def analyze_with_gemini(data):
         print(error_msg)
         return f"## 分析失敗\n\n**エラー内容:** {error_msg}"
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
-    currency = get_currency_for_symbol(data['symbol'])
+    currency = get_currency_for_symbol(data['symbol'], data.get('currency'))
     
     # 保有状況に基づいたプロンプトの生成
     holding_status = _generate_holding_status(data, currency)

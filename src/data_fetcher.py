@@ -47,6 +47,7 @@ def fetch_stock_data(symbol, stock_info=None):
         data['quantity'] = stock_info.get('quantity')
         data['acquisition_price'] = stock_info.get('acquisition_price')
         data['name'] = stock_info.get('name')
+        data['currency'] = stock_info.get('currency')
     
     return data
 
