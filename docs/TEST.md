@@ -36,11 +36,11 @@ Pull Request を作成すると、自動的に以下が実行されます：
 
 | ファイル名 | テスト対象モジュール | テストケース数 |
 |-----------|-------------------|--------------|
-| `test_stock_loader.py` | stock_loader.py | 19 |
+| `test_stock_loader.py` | stock_loader.py | 28 |
 | `test_data_fetcher.py` | data_fetcher.py | 2 |
 | `test_report_generator.py` | report_generator.py | 3 |
-| `test_mail_utils.py` | mail_utils.py | 5 |
-| `test_ai_analyzer.py` | ai_analyzer.py | 10 |
+| `test_mail_utils.py` | mail_utils.py | 10 |
+| `test_ai_analyzer.py` | ai_analyzer.py | 0 |
 
 ### テストカバレッジ
 
