@@ -215,6 +215,19 @@ Pull Requestを作成すると、GitHub Actionsで自動的にテストが実行
 - **カスタムチャットモード**: VS Codeで `@kansai` とメンションすることで、関西弁で応答するフレンドリーなCopilotチャットモードを使用できます。詳細は `.github/copilot-instructions.md` を参照してください。
 - **効率的な利用**: GitHub Copilot Premium の消費を節約するため、テスト自動化の活用や実用性重視のドキュメント方針など、効率的な作業方針を定めています。詳細は `.github/instructions/copilot.instructions.md` を参照してください。
 
+### GitHub Copilot Setup Steps
+
+GitHub Copilot がPull Request作成時に適切に動作するための環境設定を `.github/workflows/copilot-setup-steps.yml` で定義しています。このワークフローにより、以下の警告が解消されます：
+
+> Warning: Firewall rules blocked me from connecting to one or more addresses
+
+このワークフローでは以下を設定しています：
+
+- Python 3.10 環境のセットアップ
+- 日本語フォントのインストール
+- 依存パッケージのインストール
+- 必要な権限（contents: read, pull-requests: write）
+
 ### Pull Request 自動マージ機能
 
 本リポジトリには、Pull Request を承認（Approve）すると自動的にマージする機能が実装されています。
