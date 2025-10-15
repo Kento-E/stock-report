@@ -40,7 +40,7 @@ Pull Request を作成すると、自動的に以下が実行されます：
 | `test_data_fetcher.py` | data_fetcher.py | 2 |
 | `test_report_generator.py` | report_generator.py | 3 |
 | `test_mail_utils.py` | mail_utils.py | 10 |
-| `test_ai_analyzer.py` | ai_analyzer.py | 0 |
+| `test_ai_analyzer.py` | ai_analyzer.py | 9 |
 
 ### テストカバレッジ
 
