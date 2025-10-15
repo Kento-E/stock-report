@@ -36,20 +36,20 @@ Pull Request を作成すると、自動的に以下が実行されます：
 
 | ファイル名 | テスト対象モジュール | テストケース数 |
 |-----------|-------------------|--------------|
-| `test_stock_loader.py` | stock_loader.py | 10 |
+| `test_stock_loader.py` | stock_loader.py | 19 |
 | `test_data_fetcher.py` | data_fetcher.py | 2 |
 | `test_report_generator.py` | report_generator.py | 3 |
 | `test_mail_utils.py` | mail_utils.py | 5 |
-| `test_ai_analyzer.py` | ai_analyzer.py | 8 |
+| `test_ai_analyzer.py` | ai_analyzer.py | 10 |
 
 ### テストカバレッジ
 
 主要なモジュールについてユニットテストを実装しています：
 
-- **stock_loader**: YAML読み込み、通貨判定、エラーハンドリング
+- **stock_loader**: YAML読み込み、多通貨対応の通貨判定、エラーハンドリング
 - **report_generator**: HTMLレポート生成、マークダウン変換
 - **mail_utils**: メール本文生成、マークダウン変換
-- **ai_analyzer**: 保有状況プロンプト生成、損益計算
+- **ai_analyzer**: 保有状況プロンプト生成、多通貨対応の損益計算
 
 ## テストの種類
 

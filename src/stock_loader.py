@@ -19,10 +19,17 @@ def load_stock_symbols(filepath='data/stocks.yaml'):
         added: 2024-01-01
         quantity: 100
         acquisition_price: 2500
+        currency: 円
       - symbol: 6758.T
         name: ソニーグループ
+      - symbol: AAPL
+        name: Apple Inc.
+        currency: ドル
+      - symbol: BMW.DE
+        name: BMW
+        currency: ユーロ
     
-    返り値: 銘柄情報の辞書リスト (例: [{'symbol': '7203.T', 'name': 'トヨタ自動車', 'quantity': 100, 'acquisition_price': 2500}, ...])
+    返り値: 銘柄情報の辞書リスト (例: [{'symbol': '7203.T', 'name': 'トヨタ自動車', 'quantity': 100, 'acquisition_price': 2500, 'currency': '円'}, ...])
     """
     stocks = []
     # ファイルパスの解決（main.pyからの相対パス）
@@ -46,7 +53,8 @@ def load_stock_symbols(filepath='data/stocks.yaml'):
                         'acquisition_price': stock.get('acquisition_price'),
                         'note': stock.get('note'),
                         'added': stock.get('added'),
-                        'considering_action': stock.get('considering_action', 'buy')
+                        'considering_action': stock.get('considering_action', 'buy'),
+                        'currency': stock.get('currency')
                     }
                     stocks.append(stock_info)
                 elif isinstance(stock, str):
@@ -74,11 +82,24 @@ def load_stock_symbols(filepath='data/stocks.yaml'):
     return stocks
 
 
-def get_currency_for_symbol(symbol):
+def get_currency_for_symbol(symbol, explicit_currency=None):
     """
     銘柄シンボルから通貨を判定する。
+    
+    Args:
+        symbol: 銘柄コード
+        explicit_currency: 明示的に指定された通貨（任意）
+    
+    Returns:
+        通貨単位（円、ドル、ユーロなど）
+    
+    明示的に通貨が指定されている場合はそれを優先し、
+    未指定の場合は銘柄シンボルから自動判定する。
     日本株（.T、.JPなどのサフィックス）の場合は「円」、それ以外は「ドル」を返す。
     """
+    if explicit_currency:
+        return explicit_currency
+    
     if symbol.endswith('.T') or symbol.endswith('.JP'):
         return '円'
     return 'ドル'
