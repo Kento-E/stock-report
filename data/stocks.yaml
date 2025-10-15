@@ -8,6 +8,7 @@
 # - note: メモ (任意)
 # - quantity: 保有数 (任意、マイナスは空売り、0または未設定は検討中)
 # - acquisition_price: 取得単価 (任意)
+# - currency: 通貨単位 (任意、円/ドル/ユーロ/ポンドなど。未設定の場合は自動判定)
 # - considering_action: 検討中の行動 (任意、'buy'または'short_sell'、デフォルトは'buy')
 
 stocks:
@@ -16,6 +17,7 @@ stocks:
     added: 2025-10-07
     quantity: 100
     acquisition_price: 2500
+    currency: 円
   
   - symbol: 6758.T
     name: ソニーグループ
@@ -23,13 +25,16 @@ stocks:
     quantity: -50
     acquisition_price: 12000
     note: 空売りポジション
+    # currency未設定の場合は自動判定（.T/.JPなら円）
   
   - symbol: AAPL
     name: Apple Inc.
     added: 2025-10-07
+    currency: ドル
     # 保有数未設定（購入検討中）
   
   - symbol: MSFT
     name: Microsoft Corporation
     added: 2025-10-07
+    currency: ドル
     # 保有数未設定（購入検討中）

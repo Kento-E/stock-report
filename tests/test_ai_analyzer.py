@@ -118,3 +118,33 @@ class TestGenerateHoldingStatus:
         
         assert '50株を保有中' in result
         assert 'ドル' in result
+    
+    def test_currency_euro(self):
+        """通貨がユーロの場合"""
+        data = {
+            'quantity': 30,
+            'acquisition_price': 80,
+            'price': 85
+        }
+        currency = 'ユーロ'
+        
+        result = _generate_holding_status(data, currency)
+        
+        assert '30株を保有中' in result
+        assert 'ユーロ' in result
+        assert '80ユーロ' in result
+    
+    def test_currency_pound(self):
+        """通貨がポンドの場合"""
+        data = {
+            'quantity': 100,
+            'acquisition_price': 650,
+            'price': 670
+        }
+        currency = 'ポンド'
+        
+        result = _generate_holding_status(data, currency)
+        
+        assert '100株を保有中' in result
+        assert 'ポンド' in result
+        assert '650ポンド' in result

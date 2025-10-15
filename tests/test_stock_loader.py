@@ -28,6 +28,34 @@ class TestGetCurrencyForSymbol:
         """米国株の通貨判定"""
         assert get_currency_for_symbol('AAPL') == 'ドル'
         assert get_currency_for_symbol('MSFT') == 'ドル'
+    
+    def test_explicit_currency_yen(self):
+        """明示的に円を指定"""
+        assert get_currency_for_symbol('7203.T', '円') == '円'
+    
+    def test_explicit_currency_dollar(self):
+        """明示的にドルを指定"""
+        assert get_currency_for_symbol('AAPL', 'ドル') == 'ドル'
+    
+    def test_explicit_currency_euro(self):
+        """明示的にユーロを指定"""
+        assert get_currency_for_symbol('BMW.DE', 'ユーロ') == 'ユーロ'
+    
+    def test_explicit_currency_pound(self):
+        """明示的にポンドを指定"""
+        assert get_currency_for_symbol('HSBA.L', 'ポンド') == 'ポンド'
+    
+    def test_explicit_currency_overrides_auto_detection(self):
+        """明示的な通貨指定が自動判定より優先される"""
+        # 日本株でもユーロを指定できる
+        assert get_currency_for_symbol('7203.T', 'ユーロ') == 'ユーロ'
+        # 米国株でも円を指定できる
+        assert get_currency_for_symbol('AAPL', '円') == '円'
+    
+    def test_none_explicit_currency_uses_auto_detection(self):
+        """明示的な通貨がNoneの場合は自動判定"""
+        assert get_currency_for_symbol('7203.T', None) == '円'
+        assert get_currency_for_symbol('AAPL', None) == 'ドル'
 
 
 class TestLoadStockSymbols:
@@ -138,6 +166,73 @@ class TestLoadStockSymbols:
         assert result[0]['acquisition_price'] == 2500
         assert result[0]['note'] == 'テストメモ'
         assert result[0]['added'] == '2025-10-07'
+    
+    def test_currency_field_euro(self, tmp_path):
+        """通貨フィールド（ユーロ）のテスト"""
+        test_yaml = tmp_path / "euro_stocks.yaml"
+        test_data = {
+            'stocks': [
+                {
+                    'symbol': 'BMW.DE',
+                    'name': 'BMW',
+                    'currency': 'ユーロ'
+                }
+            ]
+        }
+        with open(test_yaml, 'w', encoding='utf-8') as f:
+            yaml.dump(test_data, f, allow_unicode=True)
+        
+        result = load_stock_symbols(str(test_yaml))
+        
+        assert result[0]['symbol'] == 'BMW.DE'
+        assert result[0]['name'] == 'BMW'
+        assert result[0]['currency'] == 'ユーロ'
+    
+    def test_currency_field_pound(self, tmp_path):
+        """通貨フィールド（ポンド）のテスト"""
+        test_yaml = tmp_path / "pound_stocks.yaml"
+        test_data = {
+            'stocks': [
+                {
+                    'symbol': 'HSBA.L',
+                    'name': 'HSBC Holdings',
+                    'currency': 'ポンド',
+                    'quantity': 50,
+                    'acquisition_price': 650
+                }
+            ]
+        }
+        with open(test_yaml, 'w', encoding='utf-8') as f:
+            yaml.dump(test_data, f, allow_unicode=True)
+        
+        result = load_stock_symbols(str(test_yaml))
+        
+        assert result[0]['symbol'] == 'HSBA.L'
+        assert result[0]['currency'] == 'ポンド'
+        assert result[0]['quantity'] == 50
+        assert result[0]['acquisition_price'] == 650
+    
+    def test_mixed_currencies(self, tmp_path):
+        """複数通貨の混在テスト"""
+        test_yaml = tmp_path / "mixed_currencies.yaml"
+        test_data = {
+            'stocks': [
+                {'symbol': '7203.T', 'name': 'トヨタ自動車'},  # 円（自動判定）
+                {'symbol': 'AAPL', 'name': 'Apple', 'currency': 'ドル'},  # 明示的にドル
+                {'symbol': 'BMW.DE', 'name': 'BMW', 'currency': 'ユーロ'},  # 明示的にユーロ
+                {'symbol': 'HSBA.L', 'name': 'HSBC', 'currency': 'ポンド'}  # 明示的にポンド
+            ]
+        }
+        with open(test_yaml, 'w', encoding='utf-8') as f:
+            yaml.dump(test_data, f, allow_unicode=True)
+        
+        result = load_stock_symbols(str(test_yaml))
+        
+        assert len(result) == 4
+        assert result[0]['currency'] is None  # 自動判定用にNone
+        assert result[1]['currency'] == 'ドル'
+        assert result[2]['currency'] == 'ユーロ'
+        assert result[3]['currency'] == 'ポンド'
 
 
 class TestCategorizeStock:
