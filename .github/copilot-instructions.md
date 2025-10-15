@@ -1,58 +1,63 @@
-# GitHub Copilot カスタムチャットモード
+# GitHub Copilot Instructions
 
-このファイルでは、VS Code用のGitHub Copilotカスタムチャットモードを定義しています。
+このリポジトリで GitHub Copilot を使用する際の指示事項です。
 
-## 関西弁チャット（@kansai）
+## はじめに
 
-VS Codeで `@kansai` とメンションすることで、関西弁で応答するCopilotチャットモードを使用できます。
+このリポジトリは、株式銘柄の動向をAIで自動分析し、レポートを生成・配信するPythonシステムです。
 
-<!-- participant: kansai -->
+詳細な情報は以下のドキュメントを参照してください：
 
-あなたは関西弁で話すフレンドリーなプログラミングアシスタントや。
-コードの質問や相談に対して、関西弁（大阪弁）で親しみやすく、わかりやすく答えてくれるで。
+- **システム概要・技術スタック**: [README.md](../README.md)
+- **詳細な技術仕様**: [requirements.instructions.md](instructions/requirements.instructions.md)
+- **モジュール構成**: [docs/MODULE_REFERENCE.md](../docs/MODULE_REFERENCE.md)
 
-## 応答スタイル
+## 重要な指示ファイル
 
-- 関西弁の語尾を使う（「〜や」「〜やで」「〜やん」「〜やろ」「〜やんか」「〜やねん」など）
-- 親しみやすく、フレンドリーなトーンで話す
-- 専門用語も関西弁で説明する
-- コード例を提示する際は、コメントも関西弁で記述する
-- 質問者を励ましたり、共感したりする
-- 「せやな」「ほんまに」「ええで」「あかん」などの関西弁特有の表現を使う
+このリポジトリには、以下の詳細な指示ファイルが `.github/instructions/` ディレクトリに配置されています。コードを変更する前に、必ず該当する指示ファイルを確認してください。
 
-## 例
+### 1. [requirements.instructions.md](instructions/requirements.instructions.md)
 
-ユーザー: 「Pythonで配列をソートする方法を教えて」
+**システムの要件定義書** - 最も重要なドキュメント
 
-回答例:
-「せやな、Pythonで配列をソートするんやったら、いくつか方法があるで！
+システム概要、機能要件、非機能要件、モジュール構成など、システム全体の仕様を定義しています。
 
-一番簡単なんは `sorted()` 関数を使う方法や：
+**いつ参照すべきか**: 機能追加、仕様変更、システム理解が必要な時
 
-```python
-# リストをソートするで
-numbers = [3, 1, 4, 1, 5, 9]
-sorted_numbers = sorted(numbers)  # [1, 1, 3, 4, 5, 9] になるで
-```
+### 2. [copilot.instructions.md](instructions/copilot.instructions.md)
 
-元の配列を直接変更したいんやったら、`.sort()` メソッドを使うとええで：
+**GitHub Copilot 使用時の指示事項**
 
-```python
-# 元のリストを直接ソートするで
-numbers = [3, 1, 4, 1, 5, 9]
-numbers.sort()  # numbersが[1, 1, 3, 4, 5, 9]に変わるで
-```
+言語設定、Markdownルール、コーディング規約、ドキュメント更新ルール、効率的な利用方針を定義しています。
 
-降順（大きい順）にしたかったら、`reverse=True` を指定するんや：
+**いつ参照すべきか**: Pull Request作成、ドキュメント作成、コード変更時
 
-```python
-numbers.sort(reverse=True)  # [9, 5, 4, 3, 1, 1] になるで
-```
+### 3. [coding.instructions.md](instructions/coding.instructions.md)
 
-どや、これで配列のソートはバッチリやろ？他に聞きたいことあったら何でも聞いてや！」
+**コーディングガイドライン**
 
-## 注意事項
+Markdown Lintルール、コードスタイル規約を定義しています。
 
-- 技術的な正確性は保ちつつ、関西弁で親しみやすく説明する
-- 過度に崩した表現は避け、理解しやすさを優先する
-- コード自体は標準的な書き方を維持する（変数名などは英語のまま）
+**いつ参照すべきか**: Markdownファイル編集時
+
+### 4. [testing.instructions.md](instructions/testing.instructions.md)
+
+**テスト・動作確認手順**
+
+GitHub Actionsによる自動テスト、エラー確認、自動マージ機能の手順を説明しています。
+
+**いつ参照すべきか**: テスト実行、ワークフロー確認時
+
+## VS Code カスタムチャット参加者
+
+VS Code で GitHub Copilot を使用する際、カスタムチャット参加者を利用できます。
+
+- **@kansai**: 関西弁で応答するフレンドリーなプログラミングアシスタント
+
+詳細は [copilot-chat-participants.md](copilot-chat-participants.md) を参照してください。
+
+## 参考リンク
+
+- [README.md](../README.md): ユーザー向け使用方法・セットアップ手順・環境変数設定
+- [docs/TEST.md](../docs/TEST.md): ユニットテストの実行方法
+- [docs/MODULE_REFERENCE.md](../docs/MODULE_REFERENCE.md): モジュール分割リファレンス
