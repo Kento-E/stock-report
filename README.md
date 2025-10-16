@@ -212,7 +212,8 @@ Pull Requestを作成すると、GitHub Actionsで自動的にテストが実行
 - **Issueテンプレート**: Issue作成時、「GitHub Copilotへの質問」フィールドに自動的に `@copilot` メンションの例が挿入されます。このフィールドを使用することで、Issue作成と同時にGitHub Copilotに質問できます。デフォルトでは、Copilotに修正とPull Request作成まで依頼する内容になっています。また、Issue作成時に自動的にCopilotがAssigneeとして設定されます。
 - **Copilotへの質問**: Issueのコメント欄で `@copilot` とメンションすることで、GitHub Copilotに質問や分析を依頼できます。分析だけでなく、修正とPull Request作成まで自動で依頼することも可能です。
 - **コードレビュー**: Pull Requestでは、CODEOWNERSファイルにより `@copilot` が自動的にレビュアーとして設定されます。
-- **カスタムチャットモード**: VS Codeで `@kansai` とメンションすることで、関西弁で応答するフレンドリーなCopilotチャットモードを使用できます。詳細は `.github/copilot-instructions.md` を参照してください。
+- **カスタムチャットモード**: VS Codeで `@kansai` とメンションすることで、関西弁で応答するフレンドリーなCopilotチャットモードを使用できます。詳細は `.github/copilot-chat-participants.md` を参照してください。
+- **Copilot Instructions**: GitHub Copilot コーディングエージェント向けの詳細な指示は `.github/copilot-instructions.md` にまとめられています。要件定義、コーディング規約、テスト手順などの詳細な指示ファイルへのリンクが含まれています。
 - **効率的な利用**: GitHub Copilot Premium の消費を節約するため、テスト自動化の活用や実用性重視のドキュメント方針など、効率的な作業方針を定めています。詳細は `.github/instructions/copilot.instructions.md` を参照してください。
 
 ### GitHub Copilot Setup Steps
