@@ -97,14 +97,6 @@
 - 最小限の変更と既存コードの再利用により、作業効率を最大化。
 - 自動化ワークフロー（テスト、ビルド、デプロイ、自動マージ）の活用により、手動作業を削減。
 
-### 3.10 GitHub Copilot Setup Steps
-
-- `.github/workflows/copilot-setup-steps.yml` で GitHub Copilot の実行環境を定義。
-- Pull Request 作成時の警告（"Firewall rules blocked me from connecting to one or more addresses"）を解消。
-- 必要な権限（contents: read, pull-requests: write）を明示的に設定。
-- Python 環境、日本語フォント、依存パッケージのセットアップを自動化。
-- GitHub Copilot が適切にリポジトリにアクセスし、PR操作を実行できる環境を提供。
-
 ## 4. 非機能要件
 
 - セキュリティ：API キーや個人情報の安全な管理（.env, Secrets, BCC 運用等）。
@@ -245,5 +237,4 @@ main.py (オーケストレーション)
 - 2025-10-13: GitHub Copilot Premium の効率的な利用方針を追加。テスト自動化の活用、実用性重視のドキュメント方針により、Premium消費を節約しつつコード品質を維持。
 - 2025-10-14: メール分類機能を実装。銘柄を保有状況（保有中、空売り中、購入検討中）に基づいて3つのカテゴリーに分類し、メール本文をセクション分けして読みやすく改善。
 - 2025-10-15: 多通貨対応を実装。stocks.yamlにcurrencyフィールドを追加し、円・ドル・ユーロ・ポンドなど任意の通貨を明示的に指定可能に。未指定の場合は既存ロジック（銘柄シンボルから自動判定）で後方互換性を維持。
-- 2025-10-15: GitHub Copilot Setup Stepsを追加。`.github/workflows/copilot-setup-steps.yml`により、PR作成時の警告（"Firewall rules blocked me"）を解消。Copilotが適切に動作するための環境設定を定義。
 
