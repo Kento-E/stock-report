@@ -7,7 +7,7 @@ Claude SonnetまたはGemini APIを使用して株価・ニュースデータを
 import anthropic
 import requests
 from config import CLAUDE_API_KEY, GEMINI_API_KEY
-from stock_loader import get_currency_for_symbol
+from stock_loader import get_currency_for_symbol, calculate_tax
 
 
 def analyze_with_claude(data):
@@ -135,26 +135,52 @@ def _generate_holding_status(data, currency):
         保有状況を示す文字列
     """
     holding_status = ""
+    account_type = data.get('account_type', '特定')
+    
     if data.get('quantity') is not None:
         quantity = data['quantity']
         acquisition_price = data.get('acquisition_price')
         
         if quantity > 0:
-            holding_status = f"現在の保有状況: {quantity}株を保有中"
+            holding_status = f"現在の保有状況: {quantity}株を保有中（口座種別: {account_type}）"
             if acquisition_price:
                 holding_status += f"（取得単価: {acquisition_price}{currency}）"
                 if data['price']:
                     profit_loss = (data['price'] - acquisition_price) * quantity
                     profit_rate = ((data['price'] - acquisition_price) / acquisition_price) * 100
+                    
+                    # 税額計算
+                    tax_amount = calculate_tax(profit_loss, account_type)
+                    after_tax_profit = profit_loss - tax_amount
+                    
                     holding_status += f"\n現在の損益: {profit_loss:,.0f}{currency}（{profit_rate:+.2f}%）"
+                    
+                    # 課税がある場合は税引後損益も表示
+                    if tax_amount > 0:
+                        holding_status += f"\n税額（約20.315%）: {tax_amount:,.0f}{currency}"
+                        holding_status += f"\n税引後損益: {after_tax_profit:,.0f}{currency}"
+                    elif account_type in ['NISA', '旧NISA']:
+                        holding_status += f"\n税引後損益: {after_tax_profit:,.0f}{currency}（非課税）"
         elif quantity < 0:
-            holding_status = f"現在の保有状況: {abs(quantity)}株を空売り中（信用売り）"
+            holding_status = f"現在の保有状況: {abs(quantity)}株を空売り中（信用売り、口座種別: {account_type}）"
             if acquisition_price:
                 holding_status += f"（空売り価格: {acquisition_price}{currency}）"
                 if data['price']:
                     profit_loss = (acquisition_price - data['price']) * abs(quantity)
                     profit_rate = ((acquisition_price - data['price']) / acquisition_price) * 100
+                    
+                    # 税額計算
+                    tax_amount = calculate_tax(profit_loss, account_type)
+                    after_tax_profit = profit_loss - tax_amount
+                    
                     holding_status += f"\n現在の損益: {profit_loss:,.0f}{currency}（{profit_rate:+.2f}%）"
+                    
+                    # 課税がある場合は税引後損益も表示
+                    if tax_amount > 0:
+                        holding_status += f"\n税額（約20.315%）: {tax_amount:,.0f}{currency}"
+                        holding_status += f"\n税引後損益: {after_tax_profit:,.0f}{currency}"
+                    elif account_type in ['NISA', '旧NISA']:
+                        holding_status += f"\n税引後損益: {after_tax_profit:,.0f}{currency}（非課税）"
         else:
             holding_status = "現在の保有状況: 保有なし（購入または空売りを検討中）"
     else:
