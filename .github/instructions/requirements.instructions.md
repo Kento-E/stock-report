@@ -113,13 +113,13 @@
 
 #### コアモジュール（src/）
 
-- **main.py**：メインエントリーポイント。各モジュールを組み合わせたオーケストレーション処理（76行）
+- **main.py**：メインエントリーポイント。各モジュールを組み合わせたオーケストレーション処理（92行）
 - **config.py**：環境変数の読み込みと設定値の一元管理（31行）
-- **stock_loader.py**：YAML銘柄リストの読み込み、通貨判定、銘柄分類機能（136行）
-- **data_fetcher.py**：Yahoo Finance APIとdefeatbeta-apiによるデータ取得（93行）
+- **stock_loader.py**：YAML銘柄リストの読み込み、通貨判定、銘柄分類機能（156行）
+- **data_fetcher.py**：Yahoo Finance APIとdefeatbeta-apiによるデータ取得（94行）
 - **ai_analyzer.py**：Claude API/Gemini APIによる分析処理と保有状況プロンプト生成（163行）
 - **report_generator.py**：HTMLレポート生成とファイル保存（39行）
-- **mail_utils.py**：メール送信・SMTP 設定・分類別メール本文生成のユーティリティ（103行）
+- **mail_utils.py**：メール送信・SMTP 設定・分類別メール本文生成のユーティリティ（125行）
 
 #### データ・設定ファイル
 
