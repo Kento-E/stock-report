@@ -21,7 +21,7 @@ Markdown ファイルを生成・編集する際の Lint ルールについて�
 
 ## ドキュメント・要件定義書の反映
 
-- ソースコードを修正した場合は、要件定義書（[requirements.instructions.md](requirements.instructions.md)）にも必ず修正内容を反映してください。
+- ソースコードを修正した場合は、要件定義書（[requirements.instructions.md](requirements.instructions.md)）にも必ず要件を反映してください。
 
 ### 要件定義書に記載すべき内容
 
