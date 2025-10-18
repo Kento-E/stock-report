@@ -136,12 +136,7 @@
 
 #### テスト（tests/）
 
-- **tests/__init__.py**：テストパッケージ初期化
-- **tests/test_stock_loader.py**：銘柄リスト読み込みと通貨判定のテスト
-- **tests/test_data_fetcher.py**：データ取得機能のテスト
-- **tests/test_report_generator.py**：HTMLレポート生成のテスト
-- **tests/test_mail_utils.py**：メール関連ユーティリティのテスト
-- **tests/test_ai_analyzer.py**：AI分析機能のテスト
+テストの詳細については [docs/TEST.md](../../docs/TEST.md) を参照してください。
 
 ### 5.2 モジュール間の関係
 
