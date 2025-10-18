@@ -10,6 +10,10 @@
 # - acquisition_price: 取得単価 (任意)
 # - currency: 通貨単位 (任意、円/ドル/ユーロ/ポンドなど。未設定の場合は自動判定)
 # - considering_action: 検討中の行動 (任意、'buy'または'short_sell'、デフォルトは'buy')
+# - account_type: 口座種別 (任意、'特定'/'NISA'/'旧NISA'、デフォルトは'特定')
+#   - 特定: 譲渡益に20.315%課税
+#   - NISA: 非課税
+#   - 旧NISA: 非課税
 
 stocks:
   - symbol: 7203.T
@@ -18,6 +22,7 @@ stocks:
     quantity: 100
     acquisition_price: 2500
     currency: 円
+    account_type: 特定
   
   - symbol: 6758.T
     name: ソニーグループ
@@ -25,16 +30,19 @@ stocks:
     quantity: -50
     acquisition_price: 12000
     note: 空売りポジション
+    account_type: NISA
     # currency未設定の場合は自動判定（.T/.JPなら円）
   
   - symbol: AAPL
     name: Apple Inc.
     added: 2025-10-07
     currency: ドル
+    account_type: 旧NISA
     # 保有数未設定（購入検討中）
   
   - symbol: MSFT
     name: Microsoft Corporation
     added: 2025-10-07
     currency: ドル
+    # account_type未設定の場合はデフォルト（特定）
     # 保有数未設定（購入検討中）

@@ -10,7 +10,7 @@ import sys
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from stock_loader import load_stock_symbols, get_currency_for_symbol, categorize_stock, categorize_stocks
+from stock_loader import load_stock_symbols, get_currency_for_symbol, categorize_stock, categorize_stocks, calculate_tax
 
 
 class TestGetCurrencyForSymbol:
@@ -316,3 +316,149 @@ class TestCategorizeStocks:
         assert len(result['short_selling']) == 0
         assert len(result['considering_buy']) == 0
         assert len(result['considering_short_sell']) == 0
+
+
+class TestAccountType:
+    """account_typeフィールドのテスト"""
+    
+    def test_load_with_account_type_tokutei(self, tmp_path):
+        """特定口座の読み込み"""
+        test_yaml = tmp_path / "tokutei_account.yaml"
+        test_data = {
+            'stocks': [
+                {
+                    'symbol': '7203.T',
+                    'name': 'トヨタ自動車',
+                    'quantity': 100,
+                    'acquisition_price': 2500,
+                    'account_type': '特定'
+                }
+            ]
+        }
+        with open(test_yaml, 'w', encoding='utf-8') as f:
+            yaml.dump(test_data, f, allow_unicode=True)
+        
+        result = load_stock_symbols(str(test_yaml))
+        
+        assert result[0]['account_type'] == '特定'
+    
+    def test_load_with_account_type_nisa(self, tmp_path):
+        """NISA口座の読み込み"""
+        test_yaml = tmp_path / "nisa_account.yaml"
+        test_data = {
+            'stocks': [
+                {
+                    'symbol': 'AAPL',
+                    'name': 'Apple',
+                    'account_type': 'NISA'
+                }
+            ]
+        }
+        with open(test_yaml, 'w', encoding='utf-8') as f:
+            yaml.dump(test_data, f, allow_unicode=True)
+        
+        result = load_stock_symbols(str(test_yaml))
+        
+        assert result[0]['account_type'] == 'NISA'
+    
+    def test_load_with_account_type_old_nisa(self, tmp_path):
+        """旧NISA口座の読み込み"""
+        test_yaml = tmp_path / "old_nisa_account.yaml"
+        test_data = {
+            'stocks': [
+                {
+                    'symbol': 'MSFT',
+                    'name': 'Microsoft',
+                    'account_type': '旧NISA'
+                }
+            ]
+        }
+        with open(test_yaml, 'w', encoding='utf-8') as f:
+            yaml.dump(test_data, f, allow_unicode=True)
+        
+        result = load_stock_symbols(str(test_yaml))
+        
+        assert result[0]['account_type'] == '旧NISA'
+    
+    def test_default_account_type(self, tmp_path):
+        """account_type未設定時はデフォルト（特定）"""
+        test_yaml = tmp_path / "default_account.yaml"
+        test_data = {
+            'stocks': [
+                {
+                    'symbol': '6758.T',
+                    'name': 'ソニー'
+                }
+            ]
+        }
+        with open(test_yaml, 'w', encoding='utf-8') as f:
+            yaml.dump(test_data, f, allow_unicode=True)
+        
+        result = load_stock_symbols(str(test_yaml))
+        
+        assert result[0]['account_type'] == '特定'
+    
+    def test_invalid_account_type_defaults_to_tokutei(self, tmp_path):
+        """無効なaccount_typeは特定にフォールバック"""
+        test_yaml = tmp_path / "invalid_account.yaml"
+        test_data = {
+            'stocks': [
+                {
+                    'symbol': 'TSLA',
+                    'name': 'Tesla',
+                    'account_type': '無効な口座種別'
+                }
+            ]
+        }
+        with open(test_yaml, 'w', encoding='utf-8') as f:
+            yaml.dump(test_data, f, allow_unicode=True)
+        
+        result = load_stock_symbols(str(test_yaml))
+        
+        assert result[0]['account_type'] == '特定'
+
+
+class TestCalculateTax:
+    """calculate_tax関数のテスト"""
+    
+    def test_tax_tokutei_with_profit(self):
+        """特定口座での利益に対する課税"""
+        # 100,000円の利益
+        tax = calculate_tax(100000, '特定')
+        # 20.315%の税金
+        expected = 100000 * 0.20315
+        assert abs(tax - expected) < 0.01
+    
+    def test_tax_nisa_with_profit(self):
+        """NISA口座での利益は非課税"""
+        tax = calculate_tax(100000, 'NISA')
+        assert tax == 0
+    
+    def test_tax_old_nisa_with_profit(self):
+        """旧NISA口座での利益は非課税"""
+        tax = calculate_tax(100000, '旧NISA')
+        assert tax == 0
+    
+    def test_tax_with_loss(self):
+        """損失の場合は課税なし"""
+        tax = calculate_tax(-50000, '特定')
+        assert tax == 0
+    
+    def test_tax_with_zero_profit(self):
+        """損益ゼロの場合は課税なし"""
+        tax = calculate_tax(0, '特定')
+        assert tax == 0
+    
+    def test_tax_tokutei_large_profit(self):
+        """特定口座での大きな利益に対する課税"""
+        # 1,000,000円の利益
+        tax = calculate_tax(1000000, '特定')
+        expected = 1000000 * 0.20315
+        assert abs(tax - expected) < 0.01
+    
+    def test_tax_small_profit(self):
+        """小さな利益に対する課税（端数処理確認）"""
+        # 1円の利益
+        tax = calculate_tax(1, '特定')
+        expected = 1 * 0.20315
+        assert abs(tax - expected) < 0.01

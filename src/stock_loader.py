@@ -46,6 +46,12 @@ def load_stock_symbols(filepath='data/stocks.yaml'):
             for stock in data['stocks']:
                 if isinstance(stock, dict) and 'symbol' in stock:
                     # 銘柄情報を辞書として保存
+                    account_type = stock.get('account_type', '特定')
+                    # 有効な口座種別のバリデーション
+                    valid_account_types = ['特定', 'NISA', '旧NISA']
+                    if account_type not in valid_account_types:
+                        account_type = '特定'  # 無効な値の場合はデフォルトに
+                    
                     stock_info = {
                         'symbol': stock['symbol'],
                         'name': stock.get('name'),
@@ -54,7 +60,8 @@ def load_stock_symbols(filepath='data/stocks.yaml'):
                         'note': stock.get('note'),
                         'added': stock.get('added'),
                         'considering_action': stock.get('considering_action', 'buy'),
-                        'currency': stock.get('currency')
+                        'currency': stock.get('currency'),
+                        'account_type': account_type
                     }
                     stocks.append(stock_info)
                 elif isinstance(stock, str):
@@ -154,3 +161,28 @@ def categorize_stocks(stocks):
         categorized[category].append(stock_info)
     
     return categorized
+
+
+def calculate_tax(profit_loss, account_type):
+    """
+    口座種別に応じて税額を計算する。
+    
+    Args:
+        profit_loss: 譲渡益（円またはドルなど）
+        account_type: 口座種別（'特定', 'NISA', '旧NISA'）
+    
+    Returns:
+        税額（譲渡益がマイナスまたは非課税口座の場合は0）
+    """
+    # 損失の場合は課税なし
+    if profit_loss <= 0:
+        return 0
+    
+    # 口座種別による課税判定
+    if account_type in ['NISA', '旧NISA']:
+        # NISA口座は非課税
+        return 0
+    else:
+        # 特定口座は譲渡益の20.315%課税
+        return profit_loss * 0.20315
+
