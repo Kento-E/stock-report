@@ -60,25 +60,6 @@ jobs:
           path: htmlcov/
           retention-days: 7
       
-      - name: Update test counts in documentation
-        run: |
-          python scripts/update_test_counts.py
-      
-      - name: Commit test count updates
-        run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # 変更があるかチェック
-          if git diff --quiet docs/TEST.md; then
-            echo "TEST.md に変更はありません。コミットをスキップします。"
-          else
-            echo "TEST.md の変更を検出しました。コミットします。"
-            git add docs/TEST.md
-            git commit -m "docs: テストケース数を自動更新"
-            git push
-          fi
-      
       - name: Test Summary
         if: always()
         run: |
