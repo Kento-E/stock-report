@@ -34,22 +34,17 @@ Pull Request を作成すると、自動的に以下が実行されます：
 
 ### テストファイル一覧
 
-| ファイル名 | テスト対象モジュール | テストケース数 |
-|-----------|-------------------|--------------|
-| `test_stock_loader.py` | stock_loader.py | 28 |
-| `test_data_fetcher.py` | data_fetcher.py | 2 |
-| `test_report_generator.py` | report_generator.py | 3 |
-| `test_mail_utils.py` | mail_utils.py | 10 |
-| `test_ai_analyzer.py` | ai_analyzer.py | 9 |
+| テストファイル | テスト対象モジュール | テスト内容 |
+|-----------|-------------------|----------|
+| `test_stock_loader.py` | stock_loader.py | YAML銘柄リスト読み込み、多通貨対応の通貨判定、銘柄分類（保有中、空売り中、購入検討中）、後方互換性、エラーハンドリング |
+| `test_data_fetcher.py` | data_fetcher.py | データ構造の検証、APIレスポンスの整合性確認 |
+| `test_report_generator.py` | report_generator.py | HTMLレポート生成、タイトル形式の検証、マークダウン変換 |
+| `test_mail_utils.py` | mail_utils.py | メール本文生成、分類別メール本文生成（保有中、空売り中、購入検討中）、マークダウン変換 |
+| `test_ai_analyzer.py` | ai_analyzer.py | 保有状況プロンプト生成、多通貨対応の損益計算、売買タイミング分析 |
 
 ### テストカバレッジ
 
-主要なモジュールについてユニットテストを実装しています：
-
-- **stock_loader**: YAML読み込み、多通貨対応の通貨判定、エラーハンドリング
-- **report_generator**: HTMLレポート生成、マークダウン変換
-- **mail_utils**: メール本文生成、マークダウン変換
-- **ai_analyzer**: 保有状況プロンプト生成、多通貨対応の損益計算
+主要なモジュールについてユニットテストを実装しています。各モジュールの重要な機能を網羅的にテストし、コードの品質と信頼性を保証します。
 
 ## テストの種類
 
