@@ -113,13 +113,13 @@
 
 #### コアモジュール（src/）
 
-- **main.py**：メインエントリーポイント。各モジュールを組み合わせたオーケストレーション処理（76行）
-- **config.py**：環境変数の読み込みと設定値の一元管理（31行）
-- **stock_loader.py**：YAML銘柄リストの読み込み、通貨判定、銘柄分類機能（136行）
-- **data_fetcher.py**：Yahoo Finance APIとdefeatbeta-apiによるデータ取得（93行）
-- **ai_analyzer.py**：Claude API/Gemini APIによる分析処理と保有状況プロンプト生成（163行）
-- **report_generator.py**：HTMLレポート生成とファイル保存（39行）
-- **mail_utils.py**：メール送信・SMTP 設定・分類別メール本文生成のユーティリティ（103行）
+- **main.py**：メインエントリーポイント。各モジュールを組み合わせたオーケストレーション処理。全体のワークフローを制御し、データ取得・分析・レポート生成・メール配信の一連の処理を統合する。
+- **config.py**：環境変数の読み込みと設定値の一元管理。API キー、メール設定、モデル名などのシステム設定を管理する。
+- **stock_loader.py**：YAML銘柄リストの読み込み、通貨判定、銘柄分類機能。銘柄データの読み込みと保有状況に基づく分類（保有中、空売り中、購入検討中）を担当する。
+- **data_fetcher.py**：Yahoo Finance APIとdefeatbeta-apiによるデータ取得。株価データとニュースデータの取得を担当し、外部APIとの通信を抽象化する。
+- **ai_analyzer.py**：Claude API/Gemini APIによる分析処理と保有状況プロンプト生成。取得したデータを基にAIで分析を実施し、売買判断と推奨価格を含むレポートを生成する。
+- **report_generator.py**：HTMLレポート生成とファイル保存。分析結果をHTML形式に変換し、ファイルとして保存する。
+- **mail_utils.py**：メール送信・SMTP 設定・分類別メール本文生成のユーティリティ。メール配信機能を提供し、保有状況に応じて分類されたメール本文を生成する。
 
 #### データ・設定ファイル
 
@@ -136,12 +136,7 @@
 
 #### テスト（tests/）
 
-- **tests/__init__.py**：テストパッケージ初期化
-- **tests/test_stock_loader.py**：銘柄リスト読み込みと通貨判定のテスト
-- **tests/test_data_fetcher.py**：データ取得機能のテスト
-- **tests/test_report_generator.py**：HTMLレポート生成のテスト
-- **tests/test_mail_utils.py**：メール関連ユーティリティのテスト
-- **tests/test_ai_analyzer.py**：AI分析機能のテスト
+テストの詳細については [docs/TEST.md](../../docs/TEST.md) を参照してください。
 
 ### 5.2 モジュール間の関係
 
