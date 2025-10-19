@@ -19,3 +19,5 @@ ipo_stocks:
   #   expected_price: 1000
   #   currency: 円
   #   note: 上場予定
+  
+  # 実際の銘柄を追加する場合は、上記のコメントアウトを解除して編集してください

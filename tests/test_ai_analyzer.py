@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 # ネットワーク接続不要のモジュールのみテスト
 try:
-    from ai_analyzer import _generate_holding_status
+    from ai_analyzer import _generate_holding_status, _generate_ipo_prompt
 except Exception as e:
     pytest.skip(f"ai_analyzerのインポートに失敗: {e}", allow_module_level=True)
 
@@ -248,3 +248,95 @@ class TestGenerateHoldingStatus:
         assert '25,000' in result or '25000' in result
         assert '税額' in result
         assert '税引後損益' in result
+
+
+class TestGenerateIpoPrompt:
+    """_generate_ipo_prompt関数のテスト"""
+    
+    def test_ipo_prompt_basic(self):
+        """基本的なIPOプロンプト生成"""
+        data = {
+            'symbol': 'XXXX.T',
+            'name': 'サンプル株式会社',
+            'ipo_date': '2025-11-01',
+            'market': '東証プライム'
+        }
+        currency = '円'
+        
+        result = _generate_ipo_prompt(data, currency)
+        
+        assert 'サンプル株式会社' in result
+        assert 'XXXX.T' in result
+        assert '2025-11-01' in result
+        assert '東証プライム' in result
+        assert 'IPO' in result or '上場予定' in result
+    
+    def test_ipo_prompt_with_expected_price(self):
+        """想定価格が設定されている場合"""
+        data = {
+            'symbol': 'YYYY',
+            'name': 'Test Company',
+            'ipo_date': '2025-11-05',
+            'market': 'NASDAQ',
+            'expected_price': 15
+        }
+        currency = 'ドル'
+        
+        result = _generate_ipo_prompt(data, currency)
+        
+        assert 'Test Company' in result
+        assert 'YYYY' in result
+        assert '2025-11-05' in result
+        assert 'NASDAQ' in result
+        assert '15ドル' in result
+        assert '想定価格' in result or '公募価格' in result
+    
+    def test_ipo_prompt_with_note(self):
+        """備考が設定されている場合"""
+        data = {
+            'symbol': 'ZZZZ.T',
+            'name': 'メモ付き会社',
+            'ipo_date': '2025-11-10',
+            'market': '東証スタンダード',
+            'note': 'AI・データ分析企業'
+        }
+        currency = '円'
+        
+        result = _generate_ipo_prompt(data, currency)
+        
+        assert 'メモ付き会社' in result
+        assert 'AI・データ分析企業' in result
+        assert '備考' in result
+    
+    def test_ipo_prompt_without_date(self):
+        """上場予定日が未設定の場合"""
+        data = {
+            'symbol': 'AAAA',
+            'name': '日付未定会社'
+        }
+        currency = 'ドル'
+        
+        result = _generate_ipo_prompt(data, currency)
+        
+        assert '日付未定会社' in result
+        assert 'AAAA' in result
+        assert '未定' in result
+    
+    def test_ipo_prompt_analysis_points(self):
+        """分析観点が含まれていることを確認"""
+        data = {
+            'symbol': 'TEST.T',
+            'name': 'テスト会社',
+            'ipo_date': '2025-12-01',
+            'market': '東証プライム'
+        }
+        currency = '円'
+        
+        result = _generate_ipo_prompt(data, currency)
+        
+        # 分析観点が含まれていることを確認
+        assert '企業概要' in result or '事業内容' in result
+        assert '魅力' in result or '期待値' in result
+        assert '株価動向' in result or '予測' in result
+        assert '投資判断' in result
+        assert 'リスク' in result
