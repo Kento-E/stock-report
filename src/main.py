@@ -10,13 +10,15 @@ Github Actions上で定期実行可能。APIキーや設定値はSecrets/環境�
 3. AI分析（ai_analyzer）
 4. レポート生成（report_generator）
 5. メール配信（mail_utils）
+6. IPO銘柄の処理（ipo_loader）
 """
 
 import sys
 import datetime
 import yaml
 from config import USE_CLAUDE, MAIL_TO
-from stock_loader import load_stock_symbols, categorize_stocks
+from stock_loader import load_stock_symbols, categorize_stocks, get_currency_for_symbol
+from ipo_loader import load_ipo_stocks, filter_upcoming_ipos
 from data_fetcher import fetch_stock_data
 from ai_analyzer import analyze_with_claude, analyze_with_gemini
 from report_generator import generate_report_html
@@ -89,4 +91,78 @@ if __name__ == "__main__":
                     smtp_conf['MAIL_FROM'], smtp_conf['SMTP_SERVER'], smtp_conf['SMTP_PORT'], smtp_conf['SMTP_USER'], smtp_conf['SMTP_PASS']
                 )
                 print(f"メール送信完了: {category_name}")
+    
+    # 上場予定銘柄の処理
+    print("\n=== 上場予定銘柄のレポート処理 ===")
+    try:
+        ipo_stocks = load_ipo_stocks()
+        if not ipo_stocks:
+            print("上場予定銘柄はありません。")
+        else:
+            # 近日中（7日以内）に上場予定の銘柄をフィルタリング
+            upcoming_ipos = filter_upcoming_ipos(ipo_stocks, days_ahead=7)
+            if not upcoming_ipos:
+                print(f"7日以内に上場予定の銘柄はありません（登録銘柄数: {len(ipo_stocks)}）")
+            else:
+                print(f"7日以内に上場予定の銘柄: {[s['name'] for s in upcoming_ipos]}")
+                
+                ipo_reports = []
+                for ipo_stock in upcoming_ipos:
+                    symbol = ipo_stock['symbol']
+                    name = ipo_stock['name']
+                    
+                    # IPO銘柄用のプロンプトデータを作成
+                    ipo_date = ipo_stock.get('ipo_date', '未定')
+                    market = ipo_stock.get('market', '未定')
+                    expected_price = ipo_stock.get('expected_price')
+                    currency = get_currency_for_symbol(symbol, ipo_stock.get('currency'))
+                    note = ipo_stock.get('note', '')
+                    
+                    # IPO銘柄は株価データを取得せず、公開情報のみで分析
+                    ipo_data = {
+                        'symbol': symbol,
+                        'name': name,
+                        'price': None,
+                        'news': [f"上場予定日: {ipo_date}", f"上場市場: {market}"],
+                        'currency': currency,
+                        'ipo_date': ipo_date,
+                        'market': market,
+                        'expected_price': expected_price,
+                        'note': note
+                    }
+                    
+                    # 想定価格が設定されている場合はニュースに追加
+                    if expected_price:
+                        ipo_data['news'].append(f"想定価格: {expected_price}{currency}")
+                    if note:
+                        ipo_data['news'].append(f"備考: {note}")
+                    
+                    # AI分析（IPO専用のプロンプトを使用）
+                    if USE_CLAUDE:
+                        analysis = analyze_with_claude(ipo_data, is_ipo=True)
+                    else:
+                        analysis = analyze_with_gemini(ipo_data, is_ipo=True)
+                    
+                    # レポート生成
+                    html, filename = generate_report_html(symbol, name, analysis, is_ipo=True)
+                    print(f"IPOレポート生成: {filename}")
+                    
+                    # メール本文用HTML
+                    analysis_html = markdown_to_html(analysis)
+                    report_html = f"<h3>{name} ({symbol})</h3>\n<p style=\"color: #666; font-size: 14px;\">上場予定日: {ipo_date}</p>\n{analysis_html}"
+                    ipo_reports.append(report_html)
+                
+                # IPO銘柄専用のメールを送信
+                if ipo_reports and MAIL_TO and all(smtp_conf.values()):
+                    today = datetime.date.today().isoformat()
+                    subject = f"上場予定銘柄レポート ({today})"
+                    body = generate_single_category_mail_body(subject, "上場予定銘柄（7日以内）", ipo_reports)
+                    send_report_via_mail(
+                        subject, body, MAIL_TO,
+                        smtp_conf['MAIL_FROM'], smtp_conf['SMTP_SERVER'], smtp_conf['SMTP_PORT'], smtp_conf['SMTP_USER'], smtp_conf['SMTP_PASS']
+                    )
+                    print(f"メール送信完了: 上場予定銘柄レポート")
+    except Exception as e:
+        print(f"上場予定銘柄の処理中にエラーが発生しました: {e}")
+        # IPOレポートの失敗は全体の処理を止めない
 

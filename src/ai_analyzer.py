@@ -10,9 +10,16 @@ from config import CLAUDE_API_KEY, GEMINI_API_KEY
 from stock_loader import get_currency_for_symbol, calculate_tax
 
 
-def analyze_with_claude(data):
+def analyze_with_claude(data, is_ipo=False):
     """
     Claude Sonnet APIを用いて株価・ニュースデータを分析し、要約・トレンド抽出・リスク/チャンスの指摘と売買判断を返す。
+    
+    Args:
+        data: 株価データと保有情報を含む辞書
+        is_ipo: IPO銘柄の場合True（デフォルト: False）
+    
+    Returns:
+        分析結果のテキスト
     """
     if not CLAUDE_API_KEY or CLAUDE_API_KEY.strip() == "":
         error_msg = "Claude APIエラー: APIキーが未設定です。環境変数CLAUDE_API_KEYを確認してください。"
@@ -21,10 +28,14 @@ def analyze_with_claude(data):
     client = anthropic.Anthropic(api_key=CLAUDE_API_KEY)
     currency = get_currency_for_symbol(data['symbol'], data.get('currency'))
     
-    # 保有状況に基づいたプロンプトの生成
-    holding_status = _generate_holding_status(data, currency)
-    
-    prompt = f"""
+    # IPO銘柄用のプロンプト
+    if is_ipo:
+        prompt = _generate_ipo_prompt(data, currency)
+    else:
+        # 保有状況に基づいたプロンプトの生成
+        holding_status = _generate_holding_status(data, currency)
+        
+        prompt = f"""
 {data['symbol']}の分析をお願いします。
 
 現在の株価: {data['price']}{currency}
@@ -68,9 +79,16 @@ def analyze_with_claude(data):
         return f"## 分析失敗\n\n**エラー内容:** {error_msg}\n\n**エラータイプ:** {type(e).__name__}"
 
 
-def analyze_with_gemini(data):
+def analyze_with_gemini(data, is_ipo=False):
     """
     Gemini APIを用いて株価・ニュースデータを分析し、要約・トレンド抽出・リスク/チャンスの指摘と売買判断を返す。
+    
+    Args:
+        data: 株価データと保有情報を含む辞書
+        is_ipo: IPO銘柄の場合True（デフォルト: False）
+    
+    Returns:
+        分析結果のテキスト
     """
     if not GEMINI_API_KEY or GEMINI_API_KEY.strip() == "":
         error_msg = "Gemini APIエラー: APIキーが未設定です。環境変数GEMINI_API_KEYを確認してください。"
@@ -79,24 +97,28 @@ def analyze_with_gemini(data):
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
     currency = get_currency_for_symbol(data['symbol'], data.get('currency'))
     
-    # 保有状況に基づいたプロンプトの生成
-    holding_status = _generate_holding_status(data, currency)
-    
-    prompt = (
-        "あなたは株式分析の専門家です。データに基づいて客観的な分析と売買判断を提供してください。\n\n"
-        f"{data['symbol']}の分析をお願いします。\n\n"
-        f"現在の株価: {data['price']}{currency}\n"
-        f"{holding_status}\n\n"
-        f"最近のニュース:\n"
-        f"{chr(10).join(f'- {news}' for news in data['news'])}\n\n"
-        "以下の観点から分析してください：\n"
-        "1. 株価とニュースの要約\n"
-        "2. 現在のトレンドと今後の見通し\n"
-        "3. リスク要因とチャンス要因\n"
-        "4. 売買判断（買い/売り/ホールド/様子見）とその理由\n"
-        "5. 推奨する指値価格（買い注文または売り注文）\n\n"
-        "保有状況を考慮して、具体的な売買アクションを提案してください。"
-    )
+    # IPO銘柄用のプロンプト
+    if is_ipo:
+        prompt = "あなたは株式分析の専門家です。データに基づいて客観的な分析と投資判断を提供してください。\n\n" + _generate_ipo_prompt(data, currency)
+    else:
+        # 保有状況に基づいたプロンプトの生成
+        holding_status = _generate_holding_status(data, currency)
+        
+        prompt = (
+            "あなたは株式分析の専門家です。データに基づいて客観的な分析と売買判断を提供してください。\n\n"
+            f"{data['symbol']}の分析をお願いします。\n\n"
+            f"現在の株価: {data['price']}{currency}\n"
+            f"{holding_status}\n\n"
+            f"最近のニュース:\n"
+            f"{chr(10).join(f'- {news}' for news in data['news'])}\n\n"
+            "以下の観点から分析してください：\n"
+            "1. 株価とニュースの要約\n"
+            "2. 現在のトレンドと今後の見通し\n"
+            "3. リスク要因とチャンス要因\n"
+            "4. 売買判断（買い/売り/ホールド/様子見）とその理由\n"
+            "5. 推奨する指値価格（買い注文または売り注文）\n\n"
+            "保有状況を考慮して、具体的な売買アクションを提案してください。"
+        )
     headers = {"Content-Type": "application/json"}
     payload = {
         "contents": [
@@ -187,3 +209,48 @@ def _generate_holding_status(data, currency):
         holding_status = "現在の保有状況: 保有なし（購入または空売りを検討中）"
     
     return holding_status
+
+
+def _generate_ipo_prompt(data, currency):
+    """
+    IPO銘柄用のプロンプトを生成する。
+    
+    Args:
+        data: IPO銘柄の情報を含む辞書
+        currency: 通貨単位（「円」または「ドル」）
+    
+    Returns:
+        IPO分析用のプロンプト文字列
+    """
+    name = data.get('name', data['symbol'])
+    ipo_date = data.get('ipo_date', '未定')
+    market = data.get('market', '未定')
+    expected_price = data.get('expected_price')
+    note = data.get('note', '')
+    
+    prompt = f"""
+{name} ({data['symbol']})の上場予定銘柄について分析をお願いします。
+
+上場予定日: {ipo_date}
+上場市場: {market}
+"""
+    
+    if expected_price:
+        prompt += f"想定価格・公募価格: {expected_price}{currency}\n"
+    
+    if note:
+        prompt += f"備考: {note}\n"
+    
+    prompt += """
+以下の観点から分析してください：
+1. 企業概要と事業内容（可能な範囲で）
+2. IPO銘柄としての魅力と期待値
+3. 上場後の株価動向の予測
+4. 投資判断（購入検討/様子見/見送り）とその理由
+5. 公募価格が設定されている場合、その妥当性
+6. リスク要因と注意点
+
+上場予定銘柄として、初値や上場後の値動きを考慮した投資判断を提案してください。
+"""
+    
+    return prompt

@@ -66,3 +66,25 @@ class TestGenerateReportHtml:
         # マークダウンがHTMLに変換されていることを確認
         assert '<h2>' in html or '見出し' in html
         assert '太字' in html
+    
+    def test_generate_ipo_report(self, tmp_path, monkeypatch):
+        """IPO銘柄のレポート生成"""
+        monkeypatch.chdir(tmp_path)
+        
+        symbol = 'XXXX.T'
+        name = 'サンプル株式会社'
+        analysis = '## IPO分析\n\n上場予定の銘柄です。'
+        
+        html, filename = generate_report_html(symbol, name, analysis, is_ipo=True)
+        
+        # IPOレポートのタイトルが含まれることを確認
+        assert '上場予定銘柄レポート' in html
+        assert f'{name}（上場予定）' in html or f'{name}(上場予定)' in html
+        
+        # ファイル名にipo_プレフィックスが含まれることを確認
+        assert filename.startswith('ipo_report_')
+        assert symbol in filename
+        assert filename.endswith('.html')
+        
+        # ファイルが生成されることを確認
+        assert os.path.exists(tmp_path / filename)
