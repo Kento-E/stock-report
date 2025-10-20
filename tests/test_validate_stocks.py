@@ -176,6 +176,25 @@ class TestValidateStockEntry:
         }
         errors = validate_stock_entry(stock, 0)
         assert len(errors) == 0
+    
+    def test_numeric_symbol_allowed(self):
+        """数値型のsymbolも許可される"""
+        stock = {'symbol': 7203}
+        errors = validate_stock_entry(stock, 0)
+        assert len(errors) == 0
+    
+    def test_numeric_4digit_symbol(self):
+        """4桁数値のsymbol（日本株）"""
+        stock = {'symbol': 6758, 'name': 'ソニーグループ'}
+        errors = validate_stock_entry(stock, 0)
+        assert len(errors) == 0
+    
+    def test_invalid_symbol_type(self):
+        """無効な型のsymbol（リストなど）"""
+        stock = {'symbol': ['invalid']}
+        errors = validate_stock_entry(stock, 0)
+        assert len(errors) > 0
+        assert any('symbol' in err for err in errors)
 
 
 class TestValidateStocksYaml:
@@ -319,6 +338,24 @@ class TestValidateStocksYaml:
                 '7203.T',
                 {'symbol': 'AAPL', 'name': 'Apple'},
                 'MSFT'
+            ]
+        }
+        with open(test_yaml, 'w', encoding='utf-8') as f:
+            yaml.dump(test_data, f)
+        
+        success, errors = validate_stocks_yaml(str(test_yaml))
+        
+        assert success is True
+        assert len(errors) == 0
+    
+    def test_numeric_symbols_valid(self, tmp_path):
+        """数値型のsymbolも有効"""
+        test_yaml = tmp_path / "numeric_symbols.yaml"
+        test_data = {
+            'stocks': [
+                {'symbol': 7203, 'name': 'トヨタ自動車'},
+                {'symbol': 6758, 'name': 'ソニーグループ'},
+                {'symbol': 1234}
             ]
         }
         with open(test_yaml, 'w', encoding='utf-8') as f:

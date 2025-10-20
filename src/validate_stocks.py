@@ -41,9 +41,12 @@ def validate_stock_entry(stock: Any, index: int) -> List[str]:
         errors.append(f"銘柄[{index}]: 必須フィールド 'symbol' が見つかりません")
         return errors
     
-    # symbolが空でないことを確認
-    if not stock['symbol'] or not isinstance(stock['symbol'], str):
-        errors.append(f"銘柄[{index}]: 'symbol' は空でない文字列である必要があります")
+    # symbolが空でないことを確認（文字列または数値を許可）
+    symbol = stock['symbol']
+    if symbol is None or symbol == '':
+        errors.append(f"銘柄[{index}]: 'symbol' が空です")
+    elif not isinstance(symbol, (str, int)):
+        errors.append(f"銘柄[{index}]: 'symbol' は文字列または数値である必要があります")
     
     # 任意フィールドの型チェック
     if 'name' in stock and stock['name'] is not None:

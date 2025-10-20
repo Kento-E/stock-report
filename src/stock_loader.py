@@ -8,6 +8,33 @@ import os
 import yaml
 
 
+def normalize_symbol(symbol):
+    """
+    銘柄コードを正規化する。
+    
+    Args:
+        symbol: 銘柄コード（文字列または数値）
+    
+    Returns:
+        正規化された銘柄コード（文字列）
+    
+    数値の場合は文字列に変換し、4桁の数字の場合は日本株として.Tサフィックスを追加する。
+    """
+    # 数値の場合は文字列に変換
+    if isinstance(symbol, int):
+        symbol = str(symbol)
+    
+    # 文字列でない場合はそのまま返す（バリデーションで弾かれる）
+    if not isinstance(symbol, str):
+        return symbol
+    
+    # 4桁の数字のみで構成されている場合、日本株として.Tを追加
+    if symbol.isdigit() and len(symbol) == 4:
+        return f"{symbol}.T"
+    
+    return symbol
+
+
 def load_stock_symbols(filepath='data/stocks.yaml'):
     """
     銘柄リストファイル（YAML形式）から銘柄情報を読み込む。
@@ -45,6 +72,9 @@ def load_stock_symbols(filepath='data/stocks.yaml'):
         if data and 'stocks' in data and data['stocks']:
             for stock in data['stocks']:
                 if isinstance(stock, dict) and 'symbol' in stock:
+                    # symbolを正規化（数値の場合は文字列に変換し、4桁なら.Tを追加）
+                    symbol = normalize_symbol(stock['symbol'])
+                    
                     # 銘柄情報を辞書として保存
                     account_type = stock.get('account_type', '特定')
                     # 有効な口座種別のバリデーション
@@ -53,7 +83,7 @@ def load_stock_symbols(filepath='data/stocks.yaml'):
                         account_type = '特定'  # 無効な値の場合はデフォルトに
                     
                     stock_info = {
-                        'symbol': stock['symbol'],
+                        'symbol': symbol,
                         'name': stock.get('name'),
                         'quantity': stock.get('quantity'),
                         'acquisition_price': stock.get('acquisition_price'),
@@ -102,13 +132,20 @@ def get_currency_for_symbol(symbol, explicit_currency=None):
     
     明示的に通貨が指定されている場合はそれを優先し、
     未指定の場合は銘柄シンボルから自動判定する。
-    日本株（.T、.JPなどのサフィックス）の場合は「円」、それ以外は「ドル」を返す。
+    日本株（.T、.JPなどのサフィックス、または4桁数字）の場合は「円」、それ以外は「ドル」を返す。
     """
     if explicit_currency:
         return explicit_currency
     
-    if symbol.endswith('.T') or symbol.endswith('.JP'):
+    # 文字列に変換（数値の場合に備えて）
+    symbol_str = str(symbol)
+    
+    # 日本株の判定：.TまたはJPサフィックス、または4桁の数字のみ
+    if symbol_str.endswith('.T') or symbol_str.endswith('.JP'):
         return '円'
+    if symbol_str.isdigit() and len(symbol_str) == 4:
+        return '円'
+    
     return 'ドル'
 
 
