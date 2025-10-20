@@ -9,7 +9,7 @@ GitHub Copilot がこのリポジトリで作業を行う際は、以下の指�
 - コードレビュー時のコメントも日本語で記述してください。
 - Issue への返信やコメントも日本語で記述してください。
 
-**注意**: ブラウザ上での編集時のコミットメッセージ生成には、別途 [.github/copilot/commit-message-instructions.md](../copilot/commit-message-instructions.md) が使用されます。このファイルにより、コミットメッセージが日本語で生成されるよう設定されています。
+**注意**: ブラウザ上での編集時のコミットメッセージ生成には、別途 [.github/copilot/commit-message-instructions.md](../copilot/commit-message-instructions.md) が使用されます。
 
 ## Markdown ルール
 
