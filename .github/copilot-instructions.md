@@ -14,7 +14,7 @@
 
 ## コミットメッセージの言語設定
 
-ブラウザ上で編集した内容に対するコミットメッセージの生成には、[copilot/commit-message-instructions.md](copilot/commit-message-instructions.md) が使用されます。このファイルにより、コミットメッセージが日本語で生成されるよう設定されています。
+ブラウザ上で編集した内容に対するコミットメッセージの生成には、[copilot/commit-message-instructions.md](copilot/commit-message-instructions.md) が使用されます。
 
 ## 重要な指示ファイル
 
