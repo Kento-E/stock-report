@@ -85,10 +85,26 @@
   - report_generator（HTMLレポート生成）
   - mail_utils（メール本文生成、分類別メール本文生成、マークダウン変換）
   - ai_analyzer（保有状況プロンプト生成、多通貨対応の損益計算、口座種別を考慮した税引後損益計算）
+  - validate_stocks（stocks.yamlのバリデーション）
 - CI/CD パイプラインでテストが失敗した場合、マージをブロック。
 - GitHub Copilot Premium の消費を節約しつつ、コード品質を維持。
 
-### 3.9 GitHub Copilot Premium の効率的な利用
+### 3.9 stocks.yamlバリデーション機能
+
+- `data/stocks.yaml` ファイルの形式を自動的に検証し、不正なデータの混入を防止。
+- GitHub Actions により、dataフォルダ内のファイルが更新されるたびに自動実行。
+- 検証項目：
+  - YAML構文の正確性
+  - 必須フィールド（`symbol`）の存在確認
+  - フィールドの型チェック（`quantity`、`acquisition_price`は数値、など）
+  - 値の範囲チェック（`acquisition_price`は正の数、など）
+  - `account_type`の有効値チェック（'特定'、'NISA'、'旧NISA'）
+  - `considering_action`の有効値チェック（'buy'、'short_sell'）
+  - 後方互換性（文字列形式の銘柄リストもサポート）
+- バリデーションエラー時は詳細なエラーメッセージを表示し、問題箇所を明示。
+- Pull Request作成時にバリデーションが失敗した場合、マージをブロック。
+
+### 3.10 GitHub Copilot Premium の効率的な利用
 
 - GitHub Copilot への明確な指示により、不要な処理を抑制し、Premium消費を節約。
 - テスト自動化（pytest + GitHub Actions）の活用により、手動テスト実施を最小化。
@@ -116,6 +132,7 @@
 - **main.py**：メインエントリーポイント。各モジュールを組み合わせたオーケストレーション処理。全体のワークフローを制御し、データ取得・分析・レポート生成・メール配信の一連の処理を統合する。
 - **config.py**：環境変数の読み込みと設定値の一元管理。API キー、メール設定、モデル名などのシステム設定を管理する。
 - **stock_loader.py**：YAML銘柄リストの読み込み、通貨判定、銘柄分類機能。銘柄データの読み込みと保有状況に基づく分類（保有中、空売り中、購入検討中）を担当する。
+- **validate_stocks.py**：stocks.yamlファイルのバリデーションスクリプト。YAML構文、必須フィールド、型、値の範囲などを検証し、不正なデータの混入を防止する。
 - **data_fetcher.py**：Yahoo Finance APIとdefeatbeta-apiによるデータ取得。株価データとニュースデータの取得を担当し、外部APIとの通信を抽象化する。
 - **ai_analyzer.py**：Claude API/Gemini APIによる分析処理と保有状況プロンプト生成。取得したデータを基にAIで分析を実施し、売買判断と推奨価格を含むレポートを生成する。
 - **report_generator.py**：HTMLレポート生成とファイル保存。分析結果をHTML形式に変換し、ファイルとして保存する。
@@ -132,6 +149,7 @@
 - **.github/workflows/report.yml**：自動実行ワークフロー
 - **.github/workflows/auto-merge.yml**：PR 承認時の自動マージワークフロー
 - **.github/workflows/test.yml**：テスト自動実行ワークフロー
+- **.github/workflows/validate-stocks.yml**：stocks.yamlバリデーション自動実行ワークフロー
 - **.github/copilot-instructions.md**：VS Code 用カスタムチャットモード定義
 
 #### テスト（tests/）

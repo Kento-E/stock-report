@@ -12,6 +12,7 @@
 - 📑 **分類別レポート**: 保有銘柄、空売り銘柄、購入検討中の銘柄を自動分類してメール配信
 - ⏰ **自動実行**: GitHub Actionsによる日次実行
 - 🔧 **モジュール設計**: 保守性・拡張性の高い構造
+- ✅ **自動バリデーション**: stocks.yamlファイルの形式を自動検証
 
 ## システム構成
 
@@ -21,6 +22,7 @@
 src/
 ├── config.py              # 環境変数と設定管理
 ├── stock_loader.py        # YAML銘柄リスト読み込み・分類
+├── validate_stocks.py     # stocks.yamlバリデーション
 ├── data_fetcher.py        # 株価・ニュースデータ取得
 ├── ai_analyzer.py         # AI分析（Claude/Gemini）
 ├── report_generator.py    # HTMLレポート生成
@@ -135,6 +137,30 @@ stocks:
 - YAMLのコメント機能（`#`で始まる行）を使用可能
 - 構造化されたデータで銘柄ごとに複数の情報を管理可能
 - 読みやすく、編集しやすい形式
+- **自動バリデーション**: Pull RequestやPush時に自動的にファイル形式を検証し、不正なデータの混入を防止
+
+#### stocks.yamlバリデーション機能
+
+`data/stocks.yaml` ファイルの形式は自動的に検証されます。以下の場合に自動バリデーションが実行されます：
+
+- `data/` フォルダ内のファイルを変更してPull Requestを作成した時
+- `main` ブランチに `data/` フォルダ内のファイルをPushした時
+
+**検証項目:**
+- YAML構文の正確性
+- 必須フィールド（`symbol`）の存在
+- フィールドの型チェック（`quantity`、`acquisition_price`は数値など）
+- 値の範囲チェック（`acquisition_price`は正の数など）
+- `account_type`の有効値チェック（'特定'、'NISA'、'旧NISA'）
+- `considering_action`の有効値チェック（'buy'、'short_sell'）
+
+**手動でバリデーションを実行する場合:**
+
+```bash
+python src/validate_stocks.py data/stocks.yaml
+```
+
+バリデーションが失敗した場合、詳細なエラーメッセージが表示されます。
 
 #### Claude Sonnet APIキー発行手順
 
@@ -193,6 +219,7 @@ python -m pytest tests/ -v --cov=src --cov-report=html
 
 - **ユニットテスト**: 各モジュールの個別機能をテスト
   - `test_stock_loader.py`: 銘柄リスト読み込み、通貨判定
+  - `test_validate_stocks.py`: stocks.yamlのバリデーション
   - `test_data_fetcher.py`: データ構造の検証
   - `test_report_generator.py`: HTMLレポート生成
   - `test_mail_utils.py`: メール本文生成、マークダウン変換
