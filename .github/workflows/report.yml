@@ -2,8 +2,15 @@ name: Daily Stock Report
 
 on:
   schedule:
-    - cron: "0 0 * * 1-5"
-  workflow_dispatch:
+    - cron: "0 0 * * 1-5"  # 平日（月〜金）の午前9時10分（JST）に自動実行
+  workflow_dispatch:  # 任意のブランチから手動実行が可能
+    # 手動実行方法:
+    # 1. GitHubの「Actions」タブを開く
+    # 2. 左サイドバーから「Daily Stock Report」を選択
+    # 3. 「Run workflow」ボタンをクリック
+    # 4. ドロップダウンから実行したいブランチを選択
+    # 5. 「Run workflow」をクリック
+    # PRブランチでも実行可能なため、マージ前のテストに活用できます
 
 jobs:
   build-and-report:
