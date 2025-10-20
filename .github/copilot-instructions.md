@@ -12,6 +12,10 @@
 - **詳細な技術仕様**: [requirements.instructions.md](instructions/requirements.instructions.md)
 - **モジュール構成**: [docs/MODULE_REFERENCE.md](../docs/MODULE_REFERENCE.md)
 
+## コミットメッセージの言語設定
+
+ブラウザ上で編集した内容に対するコミットメッセージの生成には、[copilot/commit-message-instructions.md](copilot/commit-message-instructions.md) が使用されます。このファイルにより、コミットメッセージが日本語で生成されるよう設定されています。
+
 ## 重要な指示ファイル
 
 このリポジトリには、以下の詳細な指示ファイルが `.github/instructions/` ディレクトリに配置されています。コードを変更する前に、必ず該当する指示ファイルを確認してください。
