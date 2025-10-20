@@ -29,6 +29,7 @@ jobs:
           pip install pyyaml
       
       - name: Validate stocks.yaml
+        id: validate
         run: |
           python src/validate_stocks.py data/stocks.yaml
       
@@ -37,7 +38,7 @@ jobs:
         run: |
           echo "## stocks.yaml バリデーション結果 📋" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          if [ $? -eq 0 ]; then
+          if [ "${{ steps.validate.outcome }}" = "success" ]; then
             echo "✅ 検証成功: stocks.yamlファイルは正しい形式です" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ 検証失敗: stocks.yamlファイルにエラーがあります" >> $GITHUB_STEP_SUMMARY
