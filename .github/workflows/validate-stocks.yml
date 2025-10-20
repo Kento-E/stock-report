@@ -1,0 +1,46 @@
+name: Validate stocks.yaml
+
+on:
+  pull_request:
+    paths:
+      - 'data/**'
+  push:
+    branches: [ main ]
+    paths:
+      - 'data/**'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install pyyaml
+      
+      - name: Validate stocks.yaml
+        run: |
+          python src/validate_stocks.py data/stocks.yaml
+      
+      - name: Validation Summary
+        if: always()
+        run: |
+          echo "## stocks.yaml バリデーション結果 📋" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ $? -eq 0 ]; then
+            echo "✅ 検証成功: stocks.yamlファイルは正しい形式です" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ 検証失敗: stocks.yamlファイルにエラーがあります" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "詳細は上記のログを確認してください。" >> $GITHUB_STEP_SUMMARY
+          fi
