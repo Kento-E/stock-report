@@ -10,7 +10,42 @@ import sys
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from stock_loader import load_stock_symbols, get_currency_for_symbol, categorize_stock, categorize_stocks, calculate_tax
+from stock_loader import load_stock_symbols, get_currency_for_symbol, categorize_stock, categorize_stocks, calculate_tax, normalize_symbol
+
+
+class TestNormalizeSymbol:
+    """normalize_symbol関数のテスト"""
+    
+    def test_numeric_4digit_to_string_with_suffix(self):
+        """4桁数値を文字列に変換し.Tサフィックスを追加"""
+        assert normalize_symbol(7203) == '7203.T'
+        assert normalize_symbol(6758) == '6758.T'
+        assert normalize_symbol(1234) == '1234.T'
+    
+    def test_string_4digit_adds_suffix(self):
+        """4桁文字列に.Tサフィックスを追加"""
+        assert normalize_symbol('7203') == '7203.T'
+        assert normalize_symbol('6758') == '6758.T'
+    
+    def test_string_with_suffix_unchanged(self):
+        """すでにサフィックスがある場合は変更なし"""
+        assert normalize_symbol('7203.T') == '7203.T'
+        assert normalize_symbol('6758.JP') == '6758.JP'
+    
+    def test_us_stock_unchanged(self):
+        """米国株コードは変更なし"""
+        assert normalize_symbol('AAPL') == 'AAPL'
+        assert normalize_symbol('MSFT') == 'MSFT'
+    
+    def test_non_4digit_number_unchanged(self):
+        """4桁以外の数字は変更なし（ただし文字列に変換）"""
+        assert normalize_symbol(123) == '123'
+        assert normalize_symbol(12345) == '12345'
+    
+    def test_alphanumeric_unchanged(self):
+        """英数字混在は変更なし"""
+        assert normalize_symbol('BMW.DE') == 'BMW.DE'
+        assert normalize_symbol('HSBA.L') == 'HSBA.L'
 
 
 class TestGetCurrencyForSymbol:
@@ -56,6 +91,20 @@ class TestGetCurrencyForSymbol:
         """明示的な通貨がNoneの場合は自動判定"""
         assert get_currency_for_symbol('7203.T', None) == '円'
         assert get_currency_for_symbol('AAPL', None) == 'ドル'
+    
+    def test_4digit_number_detects_yen(self):
+        """4桁数字は円と判定"""
+        assert get_currency_for_symbol(7203) == '円'
+        assert get_currency_for_symbol(6758) == '円'
+        assert get_currency_for_symbol('7203') == '円'
+        assert get_currency_for_symbol('6758') == '円'
+    
+    def test_non_4digit_number_detects_dollar(self):
+        """4桁以外の数字はドルと判定"""
+        assert get_currency_for_symbol(123) == 'ドル'
+        assert get_currency_for_symbol(12345) == 'ドル'
+        assert get_currency_for_symbol('123') == 'ドル'
+        assert get_currency_for_symbol('12345') == 'ドル'
 
 
 class TestLoadStockSymbols:
@@ -233,6 +282,26 @@ class TestLoadStockSymbols:
         assert result[1]['currency'] == 'ドル'
         assert result[2]['currency'] == 'ユーロ'
         assert result[3]['currency'] == 'ポンド'
+    
+    def test_numeric_symbol_conversion(self, tmp_path):
+        """数値型のsymbolが文字列に変換され、4桁なら.Tが追加される"""
+        test_yaml = tmp_path / "numeric_symbols.yaml"
+        test_data = {
+            'stocks': [
+                {'symbol': 7203, 'name': 'トヨタ自動車'},
+                {'symbol': 6758, 'name': 'ソニーグループ'},
+                {'symbol': 1234, 'name': 'テスト銘柄'}
+            ]
+        }
+        with open(test_yaml, 'w', encoding='utf-8') as f:
+            yaml.dump(test_data, f)
+        
+        result = load_stock_symbols(str(test_yaml))
+        
+        assert len(result) == 3
+        assert result[0]['symbol'] == '7203.T'
+        assert result[1]['symbol'] == '6758.T'
+        assert result[2]['symbol'] == '1234.T'
 
 
 class TestCategorizeStock:
