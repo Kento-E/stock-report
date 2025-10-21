@@ -22,6 +22,9 @@ MAIL_TO = os.getenv('MAIL_TO')
 # 実行オプション判定（デフォルトGemini、--claude指定時のみClaude）
 USE_CLAUDE = "--claude" in sys.argv
 
+# レポート簡略化オプション（デフォルト: true）
+SIMPLIFY_HOLD_REPORTS = os.getenv('SIMPLIFY_HOLD_REPORTS', 'true').lower() in ('true', '1', 'yes')
+
 # defeatbeta-apiの可用性チェック
 try:
     from defeatbeta_api.data.ticker import Ticker
