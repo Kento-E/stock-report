@@ -75,6 +75,8 @@ src/
 
 分析対象の銘柄リストは、リポジトリ内の `data/stocks.yaml` ファイルで管理します。
 
+> **詳細な編集ガイド**: [data/README.md](data/README.md) に、フィールドの詳細説明や編集方法の詳細を記載しています。
+
 ### 銘柄リストファイルの編集方法
 
 1. GitHub上で `data/stocks.yaml` ファイルを開く
@@ -87,7 +89,6 @@ src/
 ### 銘柄リストの書式（YAML形式）
 
 ```yaml
-# 銘柄リスト
 stocks:
   - symbol: 7203.T
     name: トヨタ自動車
