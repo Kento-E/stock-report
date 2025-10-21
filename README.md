@@ -30,8 +30,7 @@ src/
 └── main.py                # メインエントリーポイント
 ```
 
-詳細は以下のドキュメントを参照してください：
-- [モジュール分割リファレンス](docs/MODULE_REFERENCE.md)
+詳細なモジュール構成とシステムアーキテクチャについては、[要件定義書](.github/instructions/requirements.instructions.md#5-システム構成) を参照してください。
 
 ## Github Actions用 Secrets and variables 設定方法
 
