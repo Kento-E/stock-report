@@ -64,7 +64,7 @@ GitHub Copilot Premium の消費を節約しつつ、コード品質を維持す
 - **既存ドキュメントの活用**: 以下の既存ドキュメントを優先的に更新してください。新規ファイルの作成は最小限に。
   - [README.md](../../README.md): ユーザー向け使用方法・セットアップ手順
   - [docs/TEST.md](../../docs/TEST.md): テスト実行方法
-  - [docs/MODULE_REFERENCE.md](../../docs/MODULE_REFERENCE.md): モジュール構成
+  - [requirements.instructions.md](requirements.instructions.md): システム全体の要件定義とモジュール構成
 - **サンプルやテンプレートファイル**: 実際に使用されないサンプルファイルやテンプレートファイルの作成は避けてください。
 
 ### 作業効率化

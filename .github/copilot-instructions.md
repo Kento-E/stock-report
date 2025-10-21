@@ -9,8 +9,7 @@
 詳細な情報は以下のドキュメントを参照してください：
 
 - **システム概要・技術スタック**: [README.md](../README.md)
-- **詳細な技術仕様**: [requirements.instructions.md](instructions/requirements.instructions.md)
-- **モジュール構成**: [docs/MODULE_REFERENCE.md](../docs/MODULE_REFERENCE.md)
+- **詳細な技術仕様・モジュール構成**: [requirements.instructions.md](instructions/requirements.instructions.md)
 
 ## 重要な指示ファイル
 
@@ -60,4 +59,4 @@ VS Code で GitHub Copilot を使用する際、カスタムチャット参加�
 
 - [README.md](../README.md): ユーザー向け使用方法・セットアップ手順・環境変数設定
 - [docs/TEST.md](../docs/TEST.md): ユニットテストの実行方法
-- [docs/MODULE_REFERENCE.md](../docs/MODULE_REFERENCE.md): モジュール分割リファレンス
+- [requirements.instructions.md](instructions/requirements.instructions.md): システム全体の要件定義とモジュール構成
