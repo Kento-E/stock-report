@@ -39,19 +39,31 @@ src/
 
 ### 必須Secrets（リポジトリ設定 > Settings > Secrets and variables > Actions）
 
-| Secret名         | 用途                         | 例・備考           |
-| ---------------- | ---------------------------- | ------------------ |
-| `CLAUDE_API_KEY` | Claude Sonnet APIキー        |                    |
-| `GEMINI_API_KEY` | GEMINI APIキー               |                    |
-| `MAIL_TO`        | レポート送信先メールアドレス |                    |
-| `MAIL_FROM`      | 送信元メールアドレス         |                    |
-| `SMTP_SERVER`    | SMTPサーバー                 | 例: smtp.gmail.com |
-| `SMTP_PORT`      | SMTPポート                   | 通常587            |
-| `SMTP_USER`      | SMTP認証ユーザー             |                    |
-| `SMTP_PASS`      | SMTP認証パスワード           |                    |
-| `YAHOO_API_KEY`  | Yahoo Finance APIキー        |                    |
+| Secret名                  | 用途                                 | 例・備考           |
+| ------------------------- | ------------------------------------ | ------------------ |
+| `CLAUDE_API_KEY`          | Claude Sonnet APIキー                |                    |
+| `GEMINI_API_KEY`          | GEMINI APIキー                       |                    |
+| `MAIL_TO`                 | レポート送信先メールアドレス         |                    |
+| `MAIL_FROM`               | 送信元メールアドレス                 |                    |
+| `SMTP_SERVER`             | SMTPサーバー                         | 例: smtp.gmail.com |
+| `SMTP_PORT`               | SMTPポート                           | 通常587            |
+| `SMTP_USER`               | SMTP認証ユーザー                     |                    |
+| `SMTP_PASS`               | SMTP認証パスワード                   |                    |
+| `YAHOO_API_KEY`           | Yahoo Finance APIキー                |                    |
+| `SIMPLIFY_HOLD_REPORTS`   | ホールド判断時のレポート簡略化       | デフォルト: `true` |
 
 > これらは「Repository secrets」として登録してください。値は外部に公開されません。
+
+### オプション設定
+
+#### レポート簡略化オプション
+
+`SIMPLIFY_HOLD_REPORTS` を設定することで、AI分析の売買判断が「ホールド」の場合にレポートを簡略化できます。
+
+- **`true` (デフォルト)**: ホールド判断時は銘柄名、現在価格、ホールド理由の要約のみ表示
+- **`false`**: ホールド判断でも詳細な分析レポートを表示
+
+メール本文が長すぎて読みづらい場合は、この機能により読みやすさが向上します。
 
 ## 銘柄リストの管理
 

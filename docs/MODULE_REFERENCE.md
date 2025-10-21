@@ -8,10 +8,11 @@ main.pyファイルを機能別・API別に分割し、保守性と拡張性を�
 
 | 項目 | 分割前 | 分割後 | 最新 |
 |------|--------|--------|------|
-| main.pyの行数 | 428行 | 64行 | 76行 |
-| ファイル数 | 2ファイル | 7ファイル | 7ファイル |
+| main.pyの行数 | 428行 | 64行 | 93行 |
+| ファイル数 | 2ファイル | 7ファイル | 8ファイル |
 | 責任の分離 | 単一ファイルに集約 | 機能別に明確に分離 | 機能別に明確に分離 |
 | メール分類 | なし | なし | 3分類対応 |
+| レポート簡略化 | なし | なし | ホールド判断時対応 |
 
 ## モジュール一覧
 
@@ -31,6 +32,7 @@ main.pyファイルを機能別・API別に分割し、保守性と拡張性を�
 - `YAHOO_API_KEY`: Yahoo Finance APIキー
 - `MAIL_TO`: メール送信先
 - `USE_CLAUDE`: Claude使用フラグ
+- `SIMPLIFY_HOLD_REPORTS`: レポート簡略化フラグ（デフォルト: true）
 - `DEFEATBETA_AVAILABLE`: defeatbeta-api可用性フラグ
 
 ### 2. stock_loader.py (136行)
@@ -91,7 +93,7 @@ main.pyファイルを機能別・API別に分割し、保守性と拡張性を�
 - `config.GEMINI_API_KEY`
 - `stock_loader.get_currency_for_symbol`
 
-### 5. report_generator.py (39行)
+### 5. report_generator.py (57行)
 
 **責務**: HTMLレポートの生成
 
@@ -99,14 +101,39 @@ main.pyファイルを機能別・API別に分割し、保守性と拡張性を�
 - 分析結果のHTMLフォーマット化
 - レポートファイルの生成と保存
 - Markdown→HTML変換
+- ホールド判断時のレポート簡略化
 
 **公開される関数**:
-- `generate_report_html(symbol, name, analysis)`: HTMLレポート生成
+- `generate_report_html(symbol, name, analysis, stock_data=None)`: HTMLレポート生成
 
 **依存関係**:
 - `mail_utils.markdown_to_html`
+- `report_simplifier.detect_hold_judgment`
+- `report_simplifier.simplify_hold_report`
 
-### 6. main.py (76行)
+### 5.1. report_simplifier.py (120行)
+
+**責務**: レポート簡略化処理
+
+**主な機能**:
+- AI分析結果からホールド判断の検出
+- 簡略化されたレポートの生成
+- ホールド理由の抽出
+
+**公開される関数**:
+- `detect_hold_judgment(analysis_text)`: ホールド判断検出
+- `simplify_hold_report(symbol, name, analysis_text, current_price, currency)`: 簡略化レポート生成
+
+**内部関数**:
+- `_extract_hold_reason(analysis_text)`: ホールド理由抽出
+
+**検出キーワード**:
+- ホールド / hold
+- 保有継続
+- 様子見
+- 現状維持
+
+### 6. main.py (93行)
 
 **責務**: メインエントリーポイント・オーケストレーション
 
@@ -115,12 +142,12 @@ main.pyファイルを機能別・API別に分割し、保守性と拡張性を�
 2. 銘柄の分類（保有中、空売り中、購入検討中）
 3. 各分類の銘柄のデータ収集
 4. AI分析の実行
-5. レポート生成
+5. レポート生成（ホールド判断時は簡略化）
 6. 分類別メール配信
 
 **依存関係**: すべてのモジュール
 
-### 7. mail_utils.py (103行)
+### 7. mail_utils.py (126行)
 
 **責務**: メール配信処理
 
@@ -150,7 +177,9 @@ main.py
 │   ├── config.py
 │   └── stock_loader.py
 ├── report_generator.py
-│   └── mail_utils.py
+│   ├── mail_utils.py
+│   └── report_simplifier.py
+├── report_simplifier.py
 └── mail_utils.py
 ```
 
