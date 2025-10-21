@@ -15,12 +15,13 @@ Github Actions上で定期実行可能。APIキーや設定値はSecrets/環境�
 import sys
 import datetime
 import yaml
-from config import USE_CLAUDE, MAIL_TO
-from stock_loader import load_stock_symbols, categorize_stocks
+from config import USE_CLAUDE, MAIL_TO, SIMPLIFY_HOLD_REPORTS
+from stock_loader import load_stock_symbols, categorize_stocks, get_currency_for_symbol
 from data_fetcher import fetch_stock_data
 from ai_analyzer import analyze_with_claude, analyze_with_gemini
 from report_generator import generate_report_html
 from mail_utils import send_report_via_mail, get_smtp_config, generate_single_category_mail_body, markdown_to_html
+from report_simplifier import detect_hold_judgment, simplify_hold_report
 
 if __name__ == "__main__":
     try:
@@ -57,9 +58,23 @@ if __name__ == "__main__":
                 analysis = analyze_with_claude(data)
             else:
                 analysis = analyze_with_gemini(data)
-            html, filename = generate_report_html(symbol, name, analysis)
+            
+            # 通貨情報を取得
+            currency = get_currency_for_symbol(symbol, stock_info.get('currency'))
+            data['currency'] = currency
+            
+            # レポート生成（stock_dataを渡す）
+            html, filename = generate_report_html(symbol, name, analysis, data)
             print(f"レポート生成: {filename} (分類: {category})")
-            analysis_html = markdown_to_html(analysis)
+            
+            # メール本文用のHTML生成（簡略化を適用）
+            if SIMPLIFY_HOLD_REPORTS and detect_hold_judgment(analysis):
+                # ホールド判断の場合は簡略化
+                simplified_analysis = simplify_hold_report(symbol, name, analysis, data['price'], currency)
+                analysis_html = markdown_to_html(simplified_analysis)
+            else:
+                analysis_html = markdown_to_html(analysis)
+            
             # メール本文でも企業名を見出しに使用
             report_html = f"<h3>{name}</h3>\n<p style=\"color: #666; font-size: 14px;\">銘柄コード: {symbol}</p>\n{analysis_html}"
             categorized_reports[category].append(report_html)
