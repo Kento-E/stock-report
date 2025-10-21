@@ -39,20 +39,27 @@ src/
 
 ### 必須Secrets（リポジトリ設定 > Settings > Secrets and variables > Actions）
 
-| Secret名                  | 用途                                 | 例・備考           |
-| ------------------------- | ------------------------------------ | ------------------ |
-| `CLAUDE_API_KEY`          | Claude Sonnet APIキー                |                    |
-| `GEMINI_API_KEY`          | GEMINI APIキー                       |                    |
-| `MAIL_TO`                 | レポート送信先メールアドレス         |                    |
-| `MAIL_FROM`               | 送信元メールアドレス                 |                    |
-| `SMTP_SERVER`             | SMTPサーバー                         | 例: smtp.gmail.com |
-| `SMTP_PORT`               | SMTPポート                           | 通常587            |
-| `SMTP_USER`               | SMTP認証ユーザー                     |                    |
-| `SMTP_PASS`               | SMTP認証パスワード                   |                    |
-| `YAHOO_API_KEY`           | Yahoo Finance APIキー                |                    |
-| `SIMPLIFY_HOLD_REPORTS`   | ホールド判断時のレポート簡略化       | デフォルト: `true` |
+| Secret名         | 用途                         | 例・備考           |
+| ---------------- | ---------------------------- | ------------------ |
+| `CLAUDE_API_KEY` | Claude Sonnet APIキー        |                    |
+| `GEMINI_API_KEY` | GEMINI APIキー               |                    |
+| `MAIL_TO`        | レポート送信先メールアドレス |                    |
+| `MAIL_FROM`      | 送信元メールアドレス         |                    |
+| `SMTP_SERVER`    | SMTPサーバー                 | 例: smtp.gmail.com |
+| `SMTP_PORT`      | SMTPポート                   | 通常587            |
+| `SMTP_USER`      | SMTP認証ユーザー             |                    |
+| `SMTP_PASS`      | SMTP認証パスワード           |                    |
+| `YAHOO_API_KEY`  | Yahoo Finance APIキー        |                    |
 
 > これらは「Repository secrets」として登録してください。値は外部に公開されません。
+
+### Variables（リポジトリ設定 > Settings > Secrets and variables > Actions > Variables）
+
+| Variable名               | 用途                           | 設定値             |
+| ------------------------ | ------------------------------ | ------------------ |
+| `SIMPLIFY_HOLD_REPORTS`  | ホールド判断時のレポート簡略化 | `true` または `false` |
+
+> これらは「Repository variables」として登録してください。デフォルト値は`true`です。
 
 ### オプション設定
 
