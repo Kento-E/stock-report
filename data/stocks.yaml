@@ -1,222 +1,191 @@
-# 銘柄リスト
-# YAML形式で管理
-# 
-# 各銘柄は以下の情報を持ちます:
-# - symbol: 銘柄コード (必須)
-# - name: 企業名 (任意)
-# - added: 追加日 (任意)
-# - note: メモ (任意)
-# - quantity: 保有数 (任意、マイナスは空売り、0または未設定は検討中)
-# - acquisition_price: 取得単価 (任意)
-# - currency: 通貨単位 (任意、円/ドル/ユーロ/ポンドなど。未設定の場合は自動判定)
-# - considering_action: 検討中の行動 (任意、'buy'または'short_sell'、デフォルトは'buy')
-# - account_type: 口座種別 (任意、'特定'/'NISA'/'旧NISA'、デフォルトは'特定')
-#   - 特定: 譲渡益に20.315%課税
-#   - NISA: 非課税
-#   - 旧NISA: 非課税
-
 stocks:
   - name: WTI原油ETF
     symbol: 1671
     acquisition_price: 2827
     quantity: 2
-    currency: 円
 
   - name: 極楽湯HD
     symbol: 2340
     unit: NISA
     acquisition_price: 487
     quantity: 100
-    currency: 円
 
   - name: ディーエヌエー
     symbol: 2432
     acquisition_price: 3135
     quantity: 1
-    currency: 円
+
+  - name: JT
+    symbol: 2914
+    unit: 売建
+    acquisition_price: 4300
+    quantity: 100
 
   - name: 神戸物産
     symbol: 3038
     unit: 旧NISA
     acquisition_price: 3188
     quantity: 10
-    currency: 円
 
   - name: 星野
     symbol: 3287
     acquisition_price: 335500
     quantity: 2
-    currency: 円
 
   - name: 東レ
     symbol: 3402
     acquisition_price: 1002
     quantity: 2
-    currency: 円
 
   - name: マネーフォワード
     symbol: 3994
     acquisition_price: 4831
     quantity: 4
-    currency: 円
 
   - name: メルカリ
     symbol: 4385
     acquisition_price: 2305
     quantity: 103
-    currency: 円
 
   - name: OLC
     symbol: 4661
     acquisition_price: 4503
     quantity: 100
-    currency: 円
 
   - name: OLC
     symbol: 4661
     unit: NISA
     acquisition_price: 3000
     quantity: 100
-    currency: 円
 
   - name: LINEヤフー
     symbol: 4689
     unit: 旧NISA
     acquisition_price: 595
     quantity: 100
-    currency: 円
 
   - name: サイバーエージェント
     symbol: 4751
     unit: 旧NISA
     acquisition_price: 1200
     quantity: 100
-    currency: 円
 
   - name: CYBOZU
     symbol: 4776
     acquisition_price: 2897
     quantity: 2
-    currency: 円
 
   - name: ディスコ
     symbol: 6146
     unit: 旧NISA
     acquisition_price: 12787
     quantity: 3
-    currency: 円
 
   - name: 安川電
     symbol: 6506
     unit: 旧NISA
     acquisition_price: 5671
     quantity: 3
-    currency: 円
 
   - name: オムロン
     symbol: 6645
     acquisition_price: 5353
     quantity: 1
-    currency: 円
 
   - name: ソニーグループ
     symbol: 6758
     acquisition_price: 2268
     quantity: 5
-    currency: 円
 
   - name: レーザーテック
     symbol: 6920
     unit: 旧NISA
     acquisition_price: 17846
     quantity: 1
-    currency: 円
+
+  - name: 良品計画
+    symbol: 7453
+    unit: 売建
+    acquisition_price: 3150
+    quantity: 200
 
   - name: 島津製
     symbol: 7701
     unit: 旧NISA
     acquisition_price: 4108
     quantity: 3
-    currency: 円
+
+  - name: バンダイナムコ
+    symbol: 7832
+    unit: 売建
+    acquisition_price: 5000
+    quantity: 100
 
   - name: 住天堂
     symbol: 7974
     acquisition_price: 6933
     quantity: 10
-    currency: 円
 
   - name: 東工レク
     symbol: 8035
     acquisition_price: 14854
     quantity: 3
-    currency: 円
 
   - name: 青山商
     symbol: 8219
     unit: 旧NISA
     acquisition_price: 1499
     quantity: 100
-    currency: 円
 
   - name: イオン
     symbol: 8267
     unit: NISA
     acquisition_price: 1026
     quantity: 390
-    currency: 円
 
   - name: SBI
     symbol: 8473
     acquisition_price: 3982
     quantity: 10
-    currency: 円
 
   - name: オリックス
     symbol: 8591
     acquisition_price: 2612
     quantity: 1
-    currency: 円
 
   - name: ソニーFG
     symbol: 8729
     acquisition_price: 589
     quantity: 5
-    currency: 円
 
   - name: JR西
     symbol: 9021
     unit: NISA
     acquisition_price: 3040
     quantity: 100
-    currency: 円
 
   - name: ヤマトHD
     symbol: 9064
     unit: 旧NISA
     acquisition_price: 2590
     quantity: 100
-    currency: 円
 
   - name: JAL
     symbol: 9201
     acquisition_price: 2691
     quantity: 100
-    currency: 円
 
   - name: ANA
     symbol: 9202
     acquisition_price: 2751
     quantity: 100
-    currency: 円
 
   - name: H.I.S.
     symbol: 9603
     acquisition_price: 1983
     quantity: 100
-    currency: 円
 
   - name: ファーストリテ
     symbol: 9983
     acquisition_price: 25446
     quantity: 3
-    currency: 円
