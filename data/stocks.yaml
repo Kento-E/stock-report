@@ -1,20 +1,3 @@
-# 銘柄リスト
-# YAML形式で管理
-# 
-# 各銘柄は以下の情報を持ちます:
-# - symbol: 銘柄コード (必須)
-# - name: 企業名 (任意)
-# - added: 追加日 (任意)
-# - note: メモ (任意)
-# - quantity: 保有数 (任意、マイナスは空売り、0または未設定は検討中)
-# - acquisition_price: 取得単価 (任意)
-# - currency: 通貨単位 (任意、円/ドル/ユーロ/ポンドなど。未設定の場合は自動判定)
-# - considering_action: 検討中の行動 (任意、'buy'または'short_sell'、デフォルトは'buy')
-# - account_type: 口座種別 (任意、'特定'/'NISA'/'旧NISA'、デフォルトは'特定')
-#   - 特定: 譲渡益に20.315%課税
-#   - NISA: 非課税
-#   - 旧NISA: 
-
 stocks:
   - name: WTI原油ETF
     symbol: 1671
