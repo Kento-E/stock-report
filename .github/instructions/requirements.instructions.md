@@ -103,6 +103,7 @@
   - mail_utils（メール本文生成、分類別メール本文生成、マークダウン変換）
   - ai_analyzer（保有状況プロンプト生成、多通貨対応の損益計算、口座種別を考慮した税引後損益計算）
   - validate_stocks（stocks.yamlのバリデーション）
+  - format_yaml（YAMLファイルの自動フォーマット、コメント保持、インデント修正）
 - CI/CD パイプラインでテストが失敗した場合、マージをブロック。
 - GitHub Copilot Premium の消費を節約しつつ、コード品質を維持。
 
@@ -140,14 +141,34 @@
 - デフォルト設定が用意されており、ファイルが存在しない場合はデフォルト値（balanced、medium、medium、medium、[fundamental, news]）を使用。
 - 設定変更は次回の分析実行時から自動的に反映される。
 
-### 3.11 GitHub Copilot Premium の効率的な利用
+### 3.11 YAML自動フォーマット機能
+
+- `data/` ディレクトリ以下のYAMLファイルを自動的にフォーマットし、インデントのズレを修正。
+- スマートフォンから編集した際のインデント不整合を自動で修正。
+- GitHub Actions により、Pull RequestおよびMainブランチへのPush時に自動実行。
+- `ruamel.yaml`ライブラリを使用し、コメントを保持したままフォーマット。
+- フォーマット仕様：
+  - インデント：2スペース統一
+  - リスト項目のマッピング：4スペースインデント、ダッシュオフセット2
+  - 引用符の保持
+  - コメントの保持
+- フォーマット対象ファイル：
+  - `data/stocks.yaml`
+  - `data/investment_preferences.yaml`
+  - その他 `data/` ディレクトリ内の `.yaml`, `.yml` ファイル
+- フォーマット実行方法：
+  - 自動：GitHub Actions で Pull Request 作成時またはPush時
+  - 手動：`python src/format_yaml.py <filepath>` コマンド
+  - チェックのみ：`python src/format_yaml.py <filepath> --check` コマンド
+
+### 3.12 GitHub Copilot Premium の効率的な利用
 
 - GitHub Copilot への明確な指示により、不要な処理を抑制し、Premium消費を節約。
 - テスト自動化（pytest + GitHub Actions）の活用により、手動テスト実施を最小化。
 - 既存ドキュメントの優先的な更新により、実用性の低いドキュメントファイルの作成を回避。
 - 要件定義書の更新は必須としつつ、その他のドキュメント作成は実用性が明確な場合のみ実施。
 - 最小限の変更と既存コードの再利用により、作業効率を最大化。
-- 自動化ワークフロー（テスト、ビルド、デプロイ、自動マージ）の活用により、手動作業を削減。
+- 自動化ワークフロー（テスト、ビルド、デプロイ、自動マージ、YAML自動フォーマット）の活用により、手動作業を削減。
 
 ## 4. 非機能要件
 
@@ -171,6 +192,7 @@
 - **preference_loader.py**：投資志向性設定の読み込みとプロンプト生成。YAML形式の投資志向性設定ファイルを読み込み、AI分析用のプロンプト文字列を生成する。
 - **validate_stocks.py**：stocks.yamlファイルのバリデーションスクリプト。YAML構文、必須フィールド、型、値の範囲などを検証し、不正なデータの混入を防止する。
 - **validate_preferences.py**：investment_preferences.yamlファイルのバリデーションスクリプト。投資志向性設定の形式を検証し、不正な設定値の混入を防止する。
+- **format_yaml.py**：YAMLファイルの自動フォーマットスクリプト。インデントのズレを修正し、コメントを保持したままフォーマット。`--check` オプションでフォーマットが必要かチェックのみ可能。
 - **data_fetcher.py**：Yahoo Finance APIとdefeatbeta-apiによるデータ取得。株価データとニュースデータの取得を担当し、外部APIとの通信を抽象化する。
 - **ai_analyzer.py**：Claude API/Gemini APIによる分析処理と保有状況プロンプト生成。取得したデータと投資志向性設定を基にAIで分析を実施し、売買判断と推奨価格を含むレポートを生成する。
 - **report_generator.py**：HTMLレポート生成とファイル保存。分析結果をHTML形式に変換し、ファイルとして保存する。ホールド判断時の簡略化ロジックを含む。
@@ -191,6 +213,7 @@
 - **.github/workflows/test.yml**：テスト自動実行ワークフロー
 - **.github/workflows/validate-stocks.yml**：stocks.yamlバリデーション自動実行ワークフロー
 - **.github/workflows/validate-preferences.yml**：investment_preferences.yamlバリデーション自動実行ワークフロー
+- **.github/workflows/format-yaml.yml**：YAML自動フォーマットワークフロー
 - **.github/copilot-instructions.md**：VS Code 用カスタムチャットモード定義
 
 #### テスト（tests/）
@@ -223,6 +246,7 @@ main.py (オーケストレーション)
 - anthropic（Claude Sonnet API 公式パッケージ）
 - defeatbeta-api（市場ニュースデータ取得）
 - PyYAML（YAML ファイルの解析）
+- ruamel.yaml（コメント保持可能なYAMLフォーマッター）
 - requests, python-dotenv, smtplib, email, markdown
 - pytest, pytest-cov（テストフレームワーク・カバレッジ測定）
 - GitHub Actions（スケジューラ・自動化・CI/CD）

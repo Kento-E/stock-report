@@ -13,6 +13,7 @@
 - ⏰ **自動実行**: GitHub Actionsによる日次実行
 - 🔧 **モジュール設計**: 保守性・拡張性の高い構造
 - ✅ **自動バリデーション**: stocks.yamlファイルの形式を自動検証
+- 🔧 **YAML自動フォーマット**: インデントのズレを自動修正
 
 ## システム構成
 
@@ -25,6 +26,7 @@ src/
 ├── preference_loader.py       # 投資志向性設定読み込み・プロンプト生成
 ├── validate_stocks.py         # stocks.yamlバリデーション
 ├── validate_preferences.py    # investment_preferences.yamlバリデーション
+├── format_yaml.py             # YAML自動フォーマット
 ├── data_fetcher.py            # 株価・ニュースデータ取得
 ├── ai_analyzer.py             # AI分析（Claude/Gemini）
 ├── report_generator.py        # HTMLレポート生成
@@ -128,6 +130,31 @@ python src/validate_stocks.py data/stocks.yaml
 ```
 
 バリデーションが失敗した場合、詳細なエラーメッセージが表示されます。
+
+#### YAML自動フォーマット機能
+
+`data/` ディレクトリ以下のYAMLファイルは、自動的にフォーマットされます。スマートフォンから編集した際のインデントのズレも自動修正されます。
+
+**自動フォーマット実行タイミング:**
+- Pull Request作成時
+- `main` ブランチへのPush時
+
+**フォーマット内容:**
+- インデントを2スペースに統一
+- 余分な空白を削除
+- コメントと引用符は保持
+
+**手動でフォーマットを実行する場合:**
+
+```bash
+# フォーマットを実行
+python src/format_yaml.py data/stocks.yaml
+
+# フォーマットが必要かチェックのみ（ファイルは変更しない）
+python src/format_yaml.py data/stocks.yaml --check
+```
+
+フォーマットが実行されると、GitHub Actionsが自動的に変更をコミットします。
 
 #### Claude Sonnet APIキー発行手順
 
