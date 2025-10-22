@@ -8,6 +8,7 @@ import anthropic
 import requests
 from config import CLAUDE_API_KEY, GEMINI_API_KEY
 from stock_loader import get_currency_for_symbol, calculate_tax
+from preference_loader import generate_preference_prompt
 
 
 def analyze_with_claude(data):
@@ -24,6 +25,9 @@ def analyze_with_claude(data):
     # 保有状況に基づいたプロンプトの生成
     holding_status = _generate_holding_status(data, currency)
     
+    # 投資志向性プロンプトの生成
+    preference_prompt = generate_preference_prompt()
+    
     prompt = f"""
 {data['symbol']}の分析をお願いします。
 
@@ -33,6 +37,8 @@ def analyze_with_claude(data):
 最近のニュース:
 {chr(10).join(f"- {news}" for news in data['news'])}
 
+{preference_prompt}
+
 以下の観点から分析してください：
 1. 株価とニュースの要約
 2. 現在のトレンドと今後の見通し
@@ -40,7 +46,7 @@ def analyze_with_claude(data):
 4. 売買判断（買い/買い増し/売り/ホールド/様子見）とその理由
 5. 推奨する指値価格（買い注文または売り注文）
 
-保有状況を考慮して、具体的な売買アクションを提案してください。
+上記の投資家の志向性を考慮して、具体的な売買アクションを提案してください。
 保有中の銘柄については、売却だけでなく買い増しの検討も含めて判断してください。
 """
     
@@ -83,6 +89,9 @@ def analyze_with_gemini(data):
     # 保有状況に基づいたプロンプトの生成
     holding_status = _generate_holding_status(data, currency)
     
+    # 投資志向性プロンプトの生成
+    preference_prompt = generate_preference_prompt()
+    
     prompt = (
         "あなたは株式分析の専門家です。データに基づいて客観的な分析と売買判断を提供してください。\n\n"
         f"{data['symbol']}の分析をお願いします。\n\n"
@@ -90,13 +99,14 @@ def analyze_with_gemini(data):
         f"{holding_status}\n\n"
         f"最近のニュース:\n"
         f"{chr(10).join(f'- {news}' for news in data['news'])}\n\n"
+        f"{preference_prompt}\n\n"
         "以下の観点から分析してください：\n"
         "1. 株価とニュースの要約\n"
         "2. 現在のトレンドと今後の見通し\n"
         "3. リスク要因とチャンス要因\n"
         "4. 売買判断（買い/買い増し/売り/ホールド/様子見）とその理由\n"
         "5. 推奨する指値価格（買い注文または売り注文）\n\n"
-        "保有状況を考慮して、具体的な売買アクションを提案してください。\n"
+        "上記の投資家の志向性を考慮して、具体的な売買アクションを提案してください。\n"
         "保有中の銘柄については、売却だけでなく買い増しの検討も含めて判断してください。"
     )
     headers = {"Content-Type": "application/json"}

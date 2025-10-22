@@ -20,14 +20,16 @@
 
 ```
 src/
-├── config.py              # 環境変数と設定管理
-├── stock_loader.py        # YAML銘柄リスト読み込み・分類
-├── validate_stocks.py     # stocks.yamlバリデーション
-├── data_fetcher.py        # 株価・ニュースデータ取得
-├── ai_analyzer.py         # AI分析（Claude/Gemini）
-├── report_generator.py    # HTMLレポート生成
-├── mail_utils.py          # メール配信・分類別本文生成
-└── main.py                # メインエントリーポイント
+├── config.py                  # 環境変数と設定管理
+├── stock_loader.py            # YAML銘柄リスト読み込み・分類
+├── preference_loader.py       # 投資志向性設定読み込み・プロンプト生成
+├── validate_stocks.py         # stocks.yamlバリデーション
+├── validate_preferences.py    # investment_preferences.yamlバリデーション
+├── data_fetcher.py            # 株価・ニュースデータ取得
+├── ai_analyzer.py             # AI分析（Claude/Gemini）
+├── report_generator.py        # HTMLレポート生成
+├── mail_utils.py              # メール配信・分類別本文生成
+└── main.py                    # メインエントリーポイント
 ```
 
 詳細なモジュール構成とシステムアーキテクチャについては、[要件定義書](.github/instructions/requirements.instructions.md#5-システム構成) を参照してください。
@@ -70,6 +72,14 @@ src/
 - **`false`**: ホールド判断でも詳細な分析レポートを表示
 
 メール本文が長すぎて読みづらい場合は、この機能により読みやすさが向上します。
+
+## 投資志向性の設定
+
+ユーザーの投資に対する志向性（投資スタイル、リスク許容度、投資期間など）を設定し、AI分析の視点を調整できます。
+
+`data/investment_preferences.yaml` ファイルを編集することで、個人の投資方針に合わせた分析結果を得られます。
+
+**詳細な設定方法**: [data/README.md](data/README.md#投資志向性設定-investment_preferencesyaml) を参照してください。
 
 ## 銘柄リストの管理
 

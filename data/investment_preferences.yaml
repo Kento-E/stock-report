@@ -1,0 +1,54 @@
+# 投資志向性設定ファイル
+# ユーザーの投資に対する志向性を設定します。
+# この設定はAI分析時のプロンプトに反映され、ユーザーの投資スタイルに合わせた分析結果を提供します。
+
+# 投資スタイル (investment_style)
+# 選択肢: 'growth', 'value', 'income', 'balanced', 'speculative'
+# - growth: 成長投資（成長性重視、高リスク・高リターン）
+# - value: バリュー投資（割安株投資、中リスク・中リターン）
+# - income: インカムゲイン投資（配当・優待重視、低リスク・安定志向）
+# - balanced: バランス投資（成長と配当のバランス、中リスク）
+# - speculative: 投機的投資（短期売買、高リスク・高リターン）
+investment_style: value
+
+# リスク許容度 (risk_tolerance)
+# 選択肢: 'low', 'medium', 'high'
+# - low: 低リスク（元本重視、安全性優先）
+# - medium: 中リスク（適度なリスクとリターンのバランス）
+# - high: 高リスク（積極的なリターン追求、損失許容度が高い）
+risk_tolerance: high
+
+# 投資期間 (investment_horizon)
+# 選択肢: 'short', 'medium', 'long'
+# - short: 短期（数日～数週間）
+# - medium: 中期（数ヶ月～1年）
+# - long: 長期（数年以上）
+investment_horizon: long
+
+# 売買頻度の傾向 (trading_frequency)
+# 選択肢: 'high', 'medium', 'low'
+# - high: 頻繁（デイトレード、スイングトレード）
+# - medium: 適度（週次～月次で売買）
+# - low: 少ない（バイ&ホールド、長期保有）
+trading_frequency: low
+
+# 重視する指標 (focus_areas)
+# 複数選択可能: ['technical', 'fundamental', 'news', 'dividend', 'momentum']
+# - technical: テクニカル分析（チャート、移動平均、RSIなど）
+# - fundamental: ファンダメンタル分析（PER、PBR、財務状況）
+# - news: ニュース・イベント（市場センチメント、企業ニュース）
+# - dividend: 配当利回り（株主優待、インカムゲイン）
+# - momentum: モメンタム（トレンド、勢い）
+focus_areas:
+  - fundamental
+  - news
+
+# カスタムメッセージ (custom_message)
+# AIへの追加の指示や好みを自由記述できます（任意）
+# 例: 「環境に配慮した企業を優先したい」「テクノロジー企業に関心がある」
+custom_message: "テクノロジー企業に関心がある。日本企業の株主優待に関心がある。"
+
+# 注意事項:
+# - このファイルを編集することで、AI分析の視点を調整できます
+# - 設定を変更したら、次回の分析実行時から反映されます
+# - 銘柄ごとの個別設定は stocks.yaml で行います

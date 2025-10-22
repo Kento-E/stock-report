@@ -36,6 +36,13 @@
   - 未指定の場合は銘柄シンボルから自動判定（日本株→円、その他→ドル）
   - 円、ドル、ユーロ、ポンドなど、任意の通貨に対応
 - エラー発生時は、詳細なエラーメッセージ（例外内容、HTTPステータスコード、API応答など）をマークダウン形式で返し、メール本文に含める。
+- **投資志向性の反映**：ユーザーの投資スタイル、リスク許容度、投資期間などの志向性をAI分析のプロンプトに含め、個人の投資方針に合わせた分析を提供：
+  - 投資スタイル：成長投資、バリュー投資、インカムゲイン投資、バランス投資、投機的投資から選択
+  - リスク許容度：低・中・高の3段階
+  - 投資期間：短期・中期・長期
+  - 売買頻度の傾向：頻繁・適度・少ない
+  - 重視する指標：テクニカル分析、ファンダメンタル分析、ニュース、配当、モメンタムから複数選択可能
+  - カスタムメッセージ：追加の要望を自由記述
 
 ### 3.3 レポート生成
 
@@ -90,6 +97,7 @@
 - テストカバレッジレポートの生成とアーティファクト保存。
 - テスト対象モジュール：
   - stock_loader（銘柄リスト読み込み、多通貨対応の通貨判定、銘柄分類、口座種別管理、課税計算）
+  - preference_loader（投資志向性設定読み込み、バリデーション、プロンプト生成）
   - data_fetcher（データ構造検証）
   - report_generator（HTMLレポート生成）
   - mail_utils（メール本文生成、分類別メール本文生成、マークダウン変換）
@@ -114,7 +122,25 @@
 - バリデーションエラー時は詳細なエラーメッセージを表示し、問題箇所を明示。
 - Pull Request作成時にバリデーションが失敗した場合、マージをブロック。
 
-### 3.10 GitHub Copilot Premium の効率的な利用
+### 3.10 投資志向性設定機能
+
+- ユーザーの投資に対する志向性を独立した設定ファイル（`data/investment_preferences.yaml`）で管理。
+- 投資スタイル、リスク許容度、投資期間、売買頻度、重視する指標などを設定可能。
+- 設定内容はAI分析時のプロンプトに含まれ、個人の投資方針に合わせた分析を提供。
+- テンプレートと選択肢を明示し、初見のユーザーでも迷わずに設定可能。
+- バリデーション機能により、設定ファイルの形式を自動検証。
+- GitHub Actionsにより、設定ファイル更新時に自動でバリデーションを実行。
+- 設定項目：
+  - **投資スタイル** (`investment_style`): growth（成長投資）、value（バリュー投資）、income（インカムゲイン投資）、balanced（バランス投資）、speculative（投機的投資）
+  - **リスク許容度** (`risk_tolerance`): low（低リスク）、medium（中リスク）、high（高リスク）
+  - **投資期間** (`investment_horizon`): short（短期）、medium（中期）、long（長期）
+  - **売買頻度** (`trading_frequency`): high（頻繁）、medium（適度）、low（少ない）
+  - **重視する指標** (`focus_areas`): technical（テクニカル分析）、fundamental（ファンダメンタル分析）、news（ニュース）、dividend（配当）、momentum（モメンタム）から複数選択
+  - **カスタムメッセージ** (`custom_message`): 追加の要望を自由記述
+- デフォルト設定が用意されており、ファイルが存在しない場合はデフォルト値（balanced、medium、medium、medium、[fundamental, news]）を使用。
+- 設定変更は次回の分析実行時から自動的に反映される。
+
+### 3.11 GitHub Copilot Premium の効率的な利用
 
 - GitHub Copilot への明確な指示により、不要な処理を抑制し、Premium消費を節約。
 - テスト自動化（pytest + GitHub Actions）の活用により、手動テスト実施を最小化。
@@ -142,9 +168,11 @@
 - **main.py**：メインエントリーポイント。各モジュールを組み合わせたオーケストレーション処理。全体のワークフローを制御し、データ取得・分析・レポート生成・メール配信の一連の処理を統合する。
 - **config.py**：環境変数の読み込みと設定値の一元管理。API キー、メール設定、モデル名などのシステム設定を管理する。
 - **stock_loader.py**：YAML銘柄リストの読み込み、通貨判定、銘柄分類機能。銘柄データの読み込みと保有状況に基づく分類（保有中、空売り中、購入検討中）を担当する。
+- **preference_loader.py**：投資志向性設定の読み込みとプロンプト生成。YAML形式の投資志向性設定ファイルを読み込み、AI分析用のプロンプト文字列を生成する。
 - **validate_stocks.py**：stocks.yamlファイルのバリデーションスクリプト。YAML構文、必須フィールド、型、値の範囲などを検証し、不正なデータの混入を防止する。
+- **validate_preferences.py**：investment_preferences.yamlファイルのバリデーションスクリプト。投資志向性設定の形式を検証し、不正な設定値の混入を防止する。
 - **data_fetcher.py**：Yahoo Finance APIとdefeatbeta-apiによるデータ取得。株価データとニュースデータの取得を担当し、外部APIとの通信を抽象化する。
-- **ai_analyzer.py**：Claude API/Gemini APIによる分析処理と保有状況プロンプト生成。取得したデータを基にAIで分析を実施し、売買判断と推奨価格を含むレポートを生成する。
+- **ai_analyzer.py**：Claude API/Gemini APIによる分析処理と保有状況プロンプト生成。取得したデータと投資志向性設定を基にAIで分析を実施し、売買判断と推奨価格を含むレポートを生成する。
 - **report_generator.py**：HTMLレポート生成とファイル保存。分析結果をHTML形式に変換し、ファイルとして保存する。ホールド判断時の簡略化ロジックを含む。
 - **report_simplifier.py**：レポート簡略化モジュール。ホールド判断の検出とレポートの簡略化を担当する。
 - **mail_utils.py**：メール送信・SMTP 設定・分類別メール本文生成のユーティリティ。メール配信機能を提供し、保有状況に応じて分類されたメール本文を生成する。
@@ -152,6 +180,7 @@
 #### データ・設定ファイル
 
 - **data/stocks.yaml**：分析対象銘柄リスト（YAML形式、Git で変更履歴管理）
+- **data/investment_preferences.yaml**：投資志向性設定ファイル（YAML形式、Git で変更履歴管理）
 - **requirements.txt**：依存パッケージ管理
 - **.env/.env.example**：環境変数テンプレート
 
@@ -161,6 +190,7 @@
 - **.github/workflows/auto-merge.yml**：PR 承認時の自動マージワークフロー
 - **.github/workflows/test.yml**：テスト自動実行ワークフロー
 - **.github/workflows/validate-stocks.yml**：stocks.yamlバリデーション自動実行ワークフロー
+- **.github/workflows/validate-preferences.yml**：investment_preferences.yamlバリデーション自動実行ワークフロー
 - **.github/copilot-instructions.md**：VS Code 用カスタムチャットモード定義
 
 #### テスト（tests/）
@@ -173,11 +203,13 @@
 main.py (オーケストレーション)
   ├── config.py (設定管理)
   ├── stock_loader.py (銘柄データ読み込み)
+  ├── preference_loader.py (投資志向性設定読み込み)
   ├── data_fetcher.py (外部API: Yahoo Finance, defeatbeta-api)
   │     └── config.py
   ├── ai_analyzer.py (AI分析: Claude, Gemini)
   │     ├── config.py
-  │     └── stock_loader.py
+  │     ├── stock_loader.py
+  │     └── preference_loader.py (投資志向性プロンプト生成)
   ├── report_generator.py (レポート生成)
   │     ├── mail_utils.py
   │     └── report_simplifier.py (ホールド判断検出・簡略化)
