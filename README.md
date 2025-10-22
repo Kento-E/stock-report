@@ -75,86 +75,11 @@ src/
 
 ## 投資志向性の設定
 
-ユーザーの投資に対する志向性を設定し、AI分析の視点を調整できます。
+ユーザーの投資に対する志向性（投資スタイル、リスク許容度、投資期間など）を設定し、AI分析の視点を調整できます。
 
-### 投資志向性設定ファイルの編集方法
+`data/investment_preferences.yaml` ファイルを編集することで、個人の投資方針に合わせた分析結果を得られます。
 
-1. GitHub上で `data/investment_preferences.yaml` ファイルを開く
-2. 編集ボタン（鉛筆アイコン）をクリック
-3. 投資スタイル、リスク許容度などの設定を編集
-4. 変更をコミット
-
-スマートフォンのブラウザからも同様の手順で編集できます。
-
-### 設定項目
-
-#### 投資スタイル (`investment_style`)
-
-- `growth`: 成長投資（成長性重視、高リスク・高リターン）
-- `value`: バリュー投資（割安株投資、中リスク・中リターン）
-- `income`: インカムゲイン投資（配当・優待重視、低リスク・安定志向）
-- `balanced`: バランス投資（成長と配当のバランス、中リスク）
-- `speculative`: 投機的投資（短期売買、高リスク・高リターン）
-
-#### リスク許容度 (`risk_tolerance`)
-
-- `low`: 低リスク（元本重視、安全性優先）
-- `medium`: 中リスク（適度なリスクとリターンのバランス）
-- `high`: 高リスク（積極的なリターン追求、損失許容度が高い）
-
-#### 投資期間 (`investment_horizon`)
-
-- `short`: 短期（数日～数週間）
-- `medium`: 中期（数ヶ月～1年）
-- `long`: 長期（数年以上）
-
-#### 売買頻度の傾向 (`trading_frequency`)
-
-- `high`: 頻繁（デイトレード、スイングトレード）
-- `medium`: 適度（週次～月次で売買）
-- `low`: 少ない（バイ&ホールド、長期保有）
-
-#### 重視する指標 (`focus_areas`)
-
-複数選択可能：
-
-- `technical`: テクニカル分析（チャート、移動平均、RSIなど）
-- `fundamental`: ファンダメンタル分析（PER、PBR、財務状況）
-- `news`: ニュース・イベント（市場センチメント、企業ニュース）
-- `dividend`: 配当利回り（株主優待、インカムゲイン）
-- `momentum`: モメンタム（トレンド、勢い）
-
-#### カスタムメッセージ (`custom_message`)
-
-AIへの追加の指示や好みを自由記述できます。
-
-例: 「環境に配慮した企業を優先したい」「テクノロジー企業に関心がある」
-
-### 設定例
-
-```yaml
-# 成長投資家の例
-investment_style: growth
-risk_tolerance: high
-investment_horizon: long
-trading_frequency: low
-focus_areas:
-  - technical
-  - momentum
-custom_message: "テクノロジー企業を優先したい"
-```
-
-```yaml
-# 配当重視の安定志向投資家の例
-investment_style: income
-risk_tolerance: low
-investment_horizon: long
-trading_frequency: low
-focus_areas:
-  - dividend
-  - fundamental
-custom_message: "安定した配当が期待できる企業を優先"
-```
+**詳細な設定方法**: [data/README.md](data/README.md#投資志向性設定-investment_preferencesyaml) を参照してください。
 
 ## 銘柄リストの管理
 
