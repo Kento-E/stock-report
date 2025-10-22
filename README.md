@@ -156,8 +156,6 @@ focus_areas:
 custom_message: "安定した配当が期待できる企業を優先"
 ```
 
-**より多くの設定例**: [投資志向性設定の例](docs/INVESTMENT_PREFERENCES_EXAMPLES.md) を参照してください。
-
 ## 銘柄リストの管理
 
 分析対象の銘柄リストは、リポジトリ内の `data/stocks.yaml` ファイルで管理します。
