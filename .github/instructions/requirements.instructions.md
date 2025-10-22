@@ -149,6 +149,15 @@
 - 最小限の変更と既存コードの再利用により、作業効率を最大化。
 - 自動化ワークフロー（テスト、ビルド、デプロイ、自動マージ）の活用により、手動作業を削減。
 
+### 3.12 README ファイル構造自動更新機能
+
+- README.md のファイル構造セクションを自動的に更新し、手動メンテナンスの負担を軽減。
+- GitHub Actions により、`src/` ディレクトリ内の Python ファイルが追加・削除・変更されるたびに自動実行。
+- `scripts/update_readme_structure.py` スクリプトが現在のファイル構造を読み取り、README.md を更新。
+- Pull Request の場合は PR ブランチに、main ブランチへの push の場合は main ブランチに直接コミット。
+- ユニットテストにより、スクリプトの動作を継続的に検証。
+- ファイル構造が変更されていない場合は更新をスキップし、不要なコミットを防止。
+
 ## 4. 非機能要件
 
 - セキュリティ：API キーや個人情報の安全な管理（.env, Secrets, BCC 運用等）。
@@ -191,11 +200,16 @@
 - **.github/workflows/test.yml**：テスト自動実行ワークフロー
 - **.github/workflows/validate-stocks.yml**：stocks.yamlバリデーション自動実行ワークフロー
 - **.github/workflows/validate-preferences.yml**：investment_preferences.yamlバリデーション自動実行ワークフロー
+- **.github/workflows/update-readme-structure.yml**：README.mdファイル構造自動更新ワークフロー
 - **.github/copilot-instructions.md**：VS Code 用カスタムチャットモード定義
 
 #### テスト（tests/）
 
 テストの詳細については [docs/TEST.md](../../docs/TEST.md) を参照してください。
+
+#### スクリプト（scripts/）
+
+- **update_readme_structure.py**：README.mdのファイル構造セクション自動更新スクリプト。src/ディレクトリ内の.pyファイルを読み取り、README.mdのファイル構造セクションを自動的に更新する。
 
 ### 5.2 モジュール間の関係
 
