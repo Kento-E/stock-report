@@ -1,0 +1,80 @@
+name: Auto Format YAML
+
+on:
+  pull_request:
+    paths:
+      - 'data/**/*.yaml'
+      - 'data/**/*.yml'
+  push:
+    branches: [ main ]
+    paths:
+      - 'data/**/*.yaml'
+      - 'data/**/*.yml'
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install ruamel.yaml
+      
+      - name: Format YAML files
+        id: format
+        run: |
+          echo "formatted_files=" >> $GITHUB_OUTPUT
+          formatted=false
+          
+          for file in data/*.yaml data/*.yml; do
+            if [ -f "$file" ]; then
+              echo "Checking $file..."
+              if python src/format_yaml.py "$file"; then
+                echo "  ✓ Formatted: $file"
+                formatted=true
+                echo "formatted_files=$file " >> $GITHUB_OUTPUT
+              else
+                echo "  - No changes: $file"
+              fi
+            fi
+          done
+          
+          echo "formatted=$formatted" >> $GITHUB_OUTPUT
+      
+      - name: Commit formatted files
+        if: steps.format.outputs.formatted == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/*.yaml data/*.yml
+          git commit -m "🔧 自動フォーマット: YAMLファイルのインデント修正"
+          git push
+      
+      - name: Format Summary
+        if: always()
+        run: |
+          echo "## YAML自動フォーマット結果 🔧" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.format.outputs.formatted }}" = "true" ]; then
+            echo "✅ フォーマット完了: 以下のファイルをフォーマットしました" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "${{ steps.format.outputs.formatted_files }}" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✓ フォーマット不要: すべてのYAMLファイルは正しい形式です" >> $GITHUB_STEP_SUMMARY
+          fi
