@@ -17,9 +17,8 @@ stocks:
 
   - name: JT
     symbol: 2914
-    unit: 売建
     acquisition_price: 4300
-    quantity: 100
+    quantity: -100
 
   - name: 神戸物産
     symbol: 3038
@@ -35,6 +34,159 @@ stocks:
   - name: 東レ
     symbol: 3402
     acquisition_price: 1002
+    quantity: 2
+
+  - name: マネーフォワード
+    symbol: 3994
+    acquisition_price: 4831
+    quantity: 4
+
+  - name: メルカリ
+    symbol: 4385
+    acquisition_price: 2305
+    quantity: 103
+
+  - name: OLC
+    symbol: 4661
+    acquisition_price: 4503
+    quantity: 100
+
+  - name: OLC
+    symbol: 4661
+    unit: NISA
+    acquisition_price: 3000
+    quantity: 100
+
+  - name: LINEヤフー
+    symbol: 4689
+    unit: 旧NISA
+    acquisition_price: 595
+    quantity: 100
+
+  - name: サイバーエージェント
+    symbol: 4751
+    unit: 旧NISA
+    acquisition_price: 1200
+    quantity: 100
+
+  - name: CYBOZU
+    symbol: 4776
+    acquisition_price: 2897
+    quantity: 2
+
+  - name: ディスコ
+    symbol: 6146
+    unit: 旧NISA
+    acquisition_price: 12787
+    quantity: 3
+
+  - name: 安川電
+    symbol: 6506
+    unit: 旧NISA
+    acquisition_price: 5671
+    quantity: 3
+
+  - name: オムロン
+    symbol: 6645
+    acquisition_price: 5353
+    quantity: 1
+
+  - name: ソニーグループ
+    symbol: 6758
+    acquisition_price: 2268
+    quantity: 5
+
+  - name: レーザーテック
+    symbol: 6920
+    unit: 旧NISA
+    acquisition_price: 17846
+    quantity: 1
+
+  - name: 良品計画
+    symbol: 7453
+    acquisition_price: 3150
+    quantity: -200
+
+  - name: 島津製
+    symbol: 7701
+    unit: 旧NISA
+    acquisition_price: 4108
+    quantity: 3
+
+  - name: バンダイナムコ
+    symbol: 7832
+    acquisition_price: 5000
+    quantity: -100
+
+  - name: 住天堂
+    symbol: 7974
+    acquisition_price: 6933
+    quantity: 10
+
+  - name: 東工レク
+    symbol: 8035
+    acquisition_price: 14854
+    quantity: 3
+
+  - name: 青山商
+    symbol: 8219
+    unit: 旧NISA
+    acquisition_price: 1499
+    quantity: 100
+
+  - name: イオン
+    symbol: 8267
+    unit: NISA
+    acquisition_price: 1026
+    quantity: 390
+
+  - name: SBI
+    symbol: 8473
+    acquisition_price: 3982
+    quantity: 10
+
+  - name: オリックス
+    symbol: 8591
+    acquisition_price: 2612
+    quantity: 1
+
+  - name: ソニーFG
+    symbol: 8729
+    acquisition_price: 589
+    quantity: 5
+
+  - name: JR西
+    symbol: 9021
+    unit: NISA
+    acquisition_price: 3040
+    quantity: 100
+
+  - name: ヤマトHD
+    symbol: 9064
+    unit: 旧NISA
+    acquisition_price: 2590
+    quantity: 100
+
+  - name: JAL
+    symbol: 9201
+    acquisition_price: 2691
+    quantity: 100
+
+  - name: ANA
+    symbol: 9202
+    acquisition_price: 2751
+    quantity: 100
+
+  - name: H.I.S.
+    symbol: 9603
+    acquisition_price: 1983
+    quantity: 100
+
+  - name: ファーストリテ
+    symbol: 9983
+    acquisition_price: 25446
+    quantity: 3
+```    acquisition_price: 1002
     quantity: 2
 
   - name: マネーフォワード
