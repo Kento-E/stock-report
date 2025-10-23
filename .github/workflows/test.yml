@@ -60,6 +60,11 @@ jobs:
           python -c "import nltk; nltk.download('punkt', quiet=True); nltk.download('stopwords', quiet=True); nltk.download('wordnet', quiet=True); nltk.download('averaged_perceptron_tagger', quiet=True)"
         timeout-minutes: 5
       
+      - name: Pre-download defeatbeta-api data
+        run: |
+          python -c "import sys; sys.path.insert(0, 'src'); from defeatbeta_api.data.ticker import Ticker; print('defeatbeta-api data downloaded successfully')" || echo "defeatbeta-api data download skipped or failed (may not be critical)"
+        timeout-minutes: 5
+      
       - name: Run tests with pytest
         run: |
           python -m pytest tests/ -v --cov=src --cov-report=term --cov-report=html
