@@ -11,7 +11,7 @@ GitHub Copilot がこのリポジトリで作業を行う際は、以下の指�
 
 ## Markdown ルール
 
-Markdown ファイルを生成・編集する際の Lint ルールについては、[coding.instructions.md](coding.instructions.md) を参照してください。
+Markdown ファイルを生成・編集する際の Lint ルールについては、<a>coding.instructions.md</a> を参照してください。
 
 ## コーディング規約
 
@@ -21,7 +21,7 @@ Markdown ファイルを生成・編集する際の Lint ルールについて�
 
 ## ドキュメント・要件定義書の反映
 
-- ソースコードを修正した場合は、要件定義書（[requirements.instructions.md](requirements.instructions.md)）にも必ず要件を反映してください。
+- ソースコードを修正した場合は、要件定義書（<a>requirements.instructions.md</a>）にも必ず要件を反映してください。
 
 ### 要件定義書に記載すべき内容
 
@@ -50,7 +50,7 @@ GitHub Copilot Premium の消費を節約しつつ、コード品質を維持す
 
 ### テスト戦略
 
-テスト自動化の詳細については [docs/TEST.md](../../docs/TEST.md) を参照してください。
+テスト自動化の詳細については <a>docs/TEST.md</a> を参照してください。
 
 重要なポイント：
 - Pull Request作成時に自動的にテストが実行されるため、手動でのテスト実施は不要
@@ -59,12 +59,12 @@ GitHub Copilot Premium の消費を節約しつつ、コード品質を維持す
 
 ### ドキュメント方針
 
-- **要件定義書の更新は必須**: システムの機能や構成に変更があった場合、要件定義書（[requirements.instructions.md](requirements.instructions.md)）への反映は必須です。
+- **要件定義書の更新は必須**: システムの機能や構成に変更があった場合、要件定義書（<a>requirements.instructions.md</a>）への反映は必須です。
 - **実用性の確認**: 新規ドキュメントの作成は、明確な実用性がある場合のみ行ってください。例えば、新しい機能の使用方法、複雑な設定手順、トラブルシューティングガイドなど。
 - **既存ドキュメントの活用**: 以下の既存ドキュメントを優先的に更新してください。新規ファイルの作成は最小限に。
-  - [README.md](../../README.md): ユーザー向け使用方法・セットアップ手順
-  - [docs/TEST.md](../../docs/TEST.md): テスト実行方法
-  - [requirements.instructions.md](requirements.instructions.md): システム全体の要件定義とモジュール構成
+  - <a>README.md</a>: ユーザー向け使用方法・セットアップ手順
+  - <a>docs/TEST.md</a>: テスト実行方法
+  - <a>requirements.instructions.md</a>: システム全体の要件定義とモジュール構成
 - **サンプルやテンプレートファイル**: 実際に使用されないサンプルファイルやテンプレートファイルの作成は避けてください。
 
 ### 作業効率化
