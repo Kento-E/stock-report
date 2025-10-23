@@ -198,14 +198,16 @@
 
 #### GitHub Actions・設定
 
-- **.github/workflows/report.yml**：自動実行ワークフロー（NLTKデータ・defeatbeta-apiデータの事前ダウンロードを含む）
+- **.github/workflows/report.yml**：自動実行ワークフロー
 - **.github/workflows/auto-merge.yml**：PR 承認時の自動マージワークフロー
-- **.github/workflows/test.yml**：テスト自動実行ワークフロー（NLTKデータ・defeatbeta-apiデータの事前ダウンロードを含む）
-- **.github/workflows/copilot-setup-steps.yml**：GitHub Copilot用セットアップワークフロー（ファイアウォール有効化前にNLTKデータ・defeatbeta-apiデータをダウンロード）
+- **.github/workflows/test.yml**：テスト自動実行ワークフロー
+- **.github/workflows/copilot-setup-steps.yml**：GitHub Copilot用セットアップワークフロー
 - **.github/workflows/validate-stocks.yml**：stocks.yamlバリデーション自動実行ワークフロー
 - **.github/workflows/validate-preferences.yml**：investment_preferences.yamlバリデーション自動実行ワークフロー
 - **.github/workflows/format-yaml.yml**：YAML自動フォーマットワークフロー
 - **.github/copilot-instructions.md**：VS Code 用カスタムチャットモード定義
+
+**Note**: report.yml、test.yml、copilot-setup-steps.ymlには、ファイアウォール対策として外部データの事前ダウンロード機能が含まれています（詳細は9.1節を参照）。
 
 #### テスト（tests/）
 
