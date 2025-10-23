@@ -22,6 +22,7 @@ from ai_analyzer import analyze_with_claude, analyze_with_gemini
 from report_generator import generate_report_html
 from mail_utils import send_report_via_mail, get_smtp_config, generate_single_category_mail_body, markdown_to_html
 from report_simplifier import detect_hold_judgment, simplify_hold_report
+from preference_loader import generate_preference_prompt
 
 if __name__ == "__main__":
     try:
@@ -40,6 +41,9 @@ if __name__ == "__main__":
     # 銘柄を分類
     categorized = categorize_stocks(stocks)
     
+    # 投資志向性プロンプトを1回だけ生成（全銘柄で共通利用）
+    preference_prompt = generate_preference_prompt()
+    
     # 分類別のレポート
     categorized_reports = {
         'holding': [],
@@ -55,9 +59,9 @@ if __name__ == "__main__":
             name = stock_info.get('name', symbol)  # 企業名がなければ銘柄コードを使用
             data = fetch_stock_data(symbol, stock_info)
             if USE_CLAUDE:
-                analysis = analyze_with_claude(data)
+                analysis = analyze_with_claude(data, preference_prompt)
             else:
-                analysis = analyze_with_gemini(data)
+                analysis = analyze_with_gemini(data, preference_prompt)
             
             # 通貨情報を取得
             currency = get_currency_for_symbol(symbol, stock_info.get('currency'))
