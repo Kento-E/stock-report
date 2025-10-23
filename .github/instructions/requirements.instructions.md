@@ -147,14 +147,9 @@
 - スマートフォンから編集した際のインデント不整合を自動で修正。
 - GitHub Actions により、Pull RequestおよびMainブランチへのPush時に自動実行。
 - `ruamel.yaml`ライブラリを使用し、コメントと引用符を保持したままフォーマット。
-- フォーマット対象ファイル：
-  - `data/stocks.yaml`
-  - `data/investment_preferences.yaml`
-  - その他 `data/` ディレクトリ内の `.yaml`, `.yml` ファイル
-- フォーマット実行方法：
-  - 自動：GitHub Actions で Pull Request 作成時またはPush時
-  - 手動：`python src/format_yaml.py <filepath>` コマンド
-  - チェックのみ：`python src/format_yaml.py <filepath> --check` コマンド
+- フォーマット対象：`data/` ディレクトリ内の `.yaml`, `.yml` ファイル
+
+**詳細な使用方法**: [README.md](../../README.md#yaml自動フォーマット機能) を参照してください。
 
 ### 3.12 GitHub Copilot Premium の効率的な利用
 
