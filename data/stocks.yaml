@@ -3,186 +3,455 @@ stocks:
     symbol: 1671
     acquisition_price: 2827
     quantity: 2
+    added: 2025-10-24
 
   - name: 極楽湯HD
     symbol: 2340
     unit: NISA
     acquisition_price: 487
     quantity: 100
+    added: 2025-10-24
 
   - name: ディーエヌエー
     symbol: 2432
     acquisition_price: 3135
     quantity: 1
+    added: 2025-10-24
 
   - name: JT
     symbol: 2914
     acquisition_price: 4300
     quantity: -100
+    added: 2025-10-24
 
   - name: 神戸物産
     symbol: 3038
     unit: 旧NISA
     acquisition_price: 3188
     quantity: 10
+    added: 2025-10-24
 
   - name: 星野
     symbol: 3287
     acquisition_price: 335500
     quantity: 2
+    added: 2025-10-24
 
   - name: 東レ
     symbol: 3402
     acquisition_price: 1002
     quantity: 2
+    added: 2025-10-24
 
   - name: マネーフォワード
     symbol: 3994
     acquisition_price: 4831
     quantity: 4
+    added: 2025-10-24
 
   - name: メルカリ
     symbol: 4385
     acquisition_price: 2305
     quantity: 103
+    added: 2025-10-24
 
   - name: OLC
     symbol: 4661
     acquisition_price: 4503
     quantity: 100
+    added: 2025-10-24
 
   - name: OLC
     symbol: 4661
     unit: NISA
     acquisition_price: 3000
     quantity: 100
+    added: 2025-10-24
 
   - name: LINEヤフー
     symbol: 4689
     unit: 旧NISA
     acquisition_price: 595
     quantity: 100
+    added: 2025-10-24
 
   - name: サイバーエージェント
     symbol: 4751
     unit: 旧NISA
     acquisition_price: 1200
     quantity: 100
+    added: 2025-10-24
 
   - name: CYBOZU
     symbol: 4776
     acquisition_price: 2897
     quantity: 2
+    added: 2025-10-24
 
   - name: ディスコ
     symbol: 6146
     unit: 旧NISA
     acquisition_price: 12787
     quantity: 3
+    added: 2025-10-24
 
   - name: 安川電
     symbol: 6506
     unit: 旧NISA
     acquisition_price: 5671
     quantity: 3
+    added: 2025-10-24
 
   - name: オムロン
     symbol: 6645
     acquisition_price: 5353
     quantity: 1
+    added: 2025-10-24
 
   - name: ソニーグループ
     symbol: 6758
     acquisition_price: 2268
     quantity: 5
+    added: 2025-10-24
 
   - name: レーザーテック
     symbol: 6920
     unit: 旧NISA
     acquisition_price: 17846
     quantity: 1
+    added: 2025-10-24
 
   - name: 良品計画
     symbol: 7453
     acquisition_price: 3150
     quantity: -200
+    added: 2025-10-24
 
   - name: 島津製
     symbol: 7701
     unit: 旧NISA
     acquisition_price: 4108
     quantity: 3
+    added: 2025-10-24
 
   - name: バンダイナムコ
     symbol: 7832
     acquisition_price: 5000
     quantity: -100
+    added: 2025-10-24
 
   - name: 住天堂
     symbol: 7974
     acquisition_price: 6933
     quantity: 10
+    added: 2025-10-24
 
   - name: 東工レク
     symbol: 8035
     acquisition_price: 14854
     quantity: 3
+    added: 2025-10-24
 
   - name: 青山商
     symbol: 8219
     unit: 旧NISA
     acquisition_price: 1499
     quantity: 100
+    added: 2025-10-24
 
   - name: イオン
     symbol: 8267
     unit: NISA
     acquisition_price: 1026
     quantity: 390
+    added: 2025-10-24
 
   - name: SBI
     symbol: 8473
     acquisition_price: 3982
     quantity: 10
+    added: 2025-10-24
 
   - name: オリックス
     symbol: 8591
     acquisition_price: 2612
     quantity: 1
+    added: 2025-10-24
 
   - name: ソニーFG
     symbol: 8729
     acquisition_price: 589
     quantity: 5
+    added: 2025-10-24
 
   - name: JR西
     symbol: 9021
     unit: NISA
     acquisition_price: 3040
     quantity: 100
+    added: 2025-10-24
 
   - name: ヤマトHD
     symbol: 9064
     unit: 旧NISA
     acquisition_price: 2590
     quantity: 100
+    added: 2025-10-24
 
   - name: JAL
     symbol: 9201
     acquisition_price: 2691
     quantity: 100
+    added: 2025-10-24
 
   - name: ANA
     symbol: 9202
     acquisition_price: 2751
     quantity: 100
+    added: 2025-10-24
 
   - name: H.I.S.
     symbol: 9603
     acquisition_price: 1983
     quantity: 100
+    added: 2025-10-24
 
   - name: ファーストリテ
     symbol: 9983
     acquisition_price: 25446
     quantity: 3
+    added: 2025-10-24
+
+  - name: アドバンスト マイクロ デバイシズ
+    symbol: AMD
+    acquisition_price: 155.77
+    quantity: 10
+    added: 2025-10-24
+
+  - name: シースリーエーアイ A
+    symbol: AI
+    unit: 旧NISA
+    acquisition_price: 156.17
+    quantity: 7
+    added: 2025-10-24
+
+  - name: アマゾン ドットコム
+    symbol: AMZN
+    unit: 旧NISA
+    acquisition_price: 162.61
+    quantity: 20
+    added: 2025-10-24
+
+  - name: アップル
+    symbol: AAPL
+    unit: 旧NISA
+    acquisition_price: 192.95
+    quantity: 1
+    added: 2025-10-24
+
+  - name: ASML ホールディングス NYRS
+    symbol: ASML
+    acquisition_price: 863.45
+    quantity: 2
+    added: 2025-10-24
+
+  - name: アストラゼネカ ADR
+    symbol: AZN
+    acquisition_price: 65.52
+    quantity: 1
+    added: 2025-10-24
+
+  - name: コストコ ホールセール
+    symbol: COST
+    acquisition_price: 520.85
+    quantity: 2
+    added: 2025-10-24
+
+  - name: セールスフォース
+    symbol: CRM
+    acquisition_price: 309.30
+    quantity: 1
+    added: 2025-10-24
+
+  - name: ウォルト ディズニー
+    symbol: DIS
+    unit: NISA
+    acquisition_price: 107.00
+    quantity: 5
+    added: 2025-10-24
+
+  - name: ジェイフロッグ
+    symbol: FROG
+    unit: NISA
+    acquisition_price: 25.00
+    quantity: 5
+    added: 2025-10-24
+
+  - name: ヴァンエック 金鉱株ETF
+    symbol: GDX
+    acquisition_price: 30.14
+    quantity: 1
+    added: 2025-10-24
+
+  - name: ゼネラルミルズ
+    symbol: GIS
+    unit: NISA
+    acquisition_price: 57.94
+    quantity: 1
+    added: 2025-10-24
+
+  - name: ギリアド サイエンシズ
+    symbol: GILD
+    acquisition_price: 92.37
+    quantity: 3
+    added: 2025-10-24
+
+  - name: SPDRゴールド シェア
+    symbol: GLD
+    acquisition_price: 179.98
+    quantity: 1
+    added: 2025-10-24
+
+  - name: ゴールドマン サックス
+    symbol: GS
+    unit: 旧NISA
+    acquisition_price: 364.79
+    quantity: 1
+    added: 2025-10-24
+
+  - name: iシェアーズ ゴールド トラスト
+    symbol: IAU
+    acquisition_price: 35.17
+    quantity: 1
+    added: 2025-10-24
+
+  - name: ガートナー
+    symbol: IT
+    acquisition_price: 484.47
+    quantity: 1
+    added: 2025-10-24
+
+  - name: イーライ リリィ
+    symbol: LLY
+    acquisition_price: 258.08
+    quantity: 2
+    added: 2025-10-24
+
+  - name: マクドナルド
+    symbol: MCD
+    unit: NISA
+    acquisition_price: 250.00
+    quantity: 2
+    added: 2025-10-24
+
+  - name: モルガン スタンレー
+    symbol: MS
+    acquisition_price: 99.02
+    quantity: 3
+    added: 2025-10-24
+
+  - name: マイクロソフト
+    symbol: MSFT
+    unit: 旧NISA
+    acquisition_price: 214.85
+    quantity: 2
+    added: 2025-10-24
+
+  - name: ネットフリックス
+    symbol: NFLX
+    acquisition_price: 682.31
+    quantity: 1
+    added: 2025-10-24
+
+  - name: ネットフリックス
+    symbol: NFLX
+    unit: 旧NISA
+    acquisition_price: 422.07
+    quantity: 1
+    added: 2025-10-24
+
+  - name: ヌー ホールディングス
+    symbol: NU
+    acquisition_price: 5.11
+    quantity: 2
+    added: 2025-10-24
+
+  - name: エヌビディア
+    symbol: NVDA
+    unit: 旧NISA
+    acquisition_price: 17.34
+    quantity: 40
+    added: 2025-10-24
+
+  - name: オラクル
+    symbol: ORCL
+    acquisition_price: 92.68
+    quantity: 1
+    added: 2025-10-24
+
+  - name: パラマウント スカイダンス B
+    symbol: PSKY
+    unit: NISA
+    acquisition_price: 7.25
+    quantity: 1
+    added: 2025-10-24
+
+  - name: クアルコム
+    symbol: QCOM
+    acquisition_price: 153.62
+    quantity: 1
+    added: 2025-10-24
+
+  - name: フェラーリ
+    symbol: RACE
+    unit: NISA
+    acquisition_price: 419.94
+    quantity: 1
+    added: 2025-10-24
+
+  - name: スターバックス
+    symbol: SBUX
+    unit: NISA
+    acquisition_price: 86.00
+    quantity: 1
+    added: 2025-10-24
+
+  - name: SPDR S&P 500 ETF トラスト
+    symbol: SPY
+    acquisition_price: 434.91
+    quantity: 2
+    added: 2025-10-24
+
+  - name: アトラシアン
+    symbol: TEAM
+    unit: NISA
+    acquisition_price: 182.73
+    quantity: 1
+    added: 2025-10-24
+
+  - name: テンパスAI インク
+    symbol: TEM
+    unit: NISA
+    acquisition_price: 43.00
+    quantity: 2
+    added: 2025-10-24
+
+  - name: テスラ
+    symbol: TSLA
+    unit: 旧NISA
+    acquisition_price: 179.88
+    quantity: 1
+    added: 2025-10-24
+
+  - name: ビザ A
+    symbol: V
+    unit: 旧NISA
+    acquisition_price: 239.17
+    quantity: 1
+    added: 2025-10-24
+
+  - name: バンガード 米国エネルギーセクター
+    symbol: VDE
+    acquisition_price: 106.46
+    quantity: 1
+    added: 2025-10-24
