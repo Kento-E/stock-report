@@ -17,21 +17,6 @@
 
 本プロジェクトは機能別にモジュール化されており、各モジュールが単一の責任を持つ設計になっています。
 
-```
-src/
-├── config.py                  # 環境変数と設定管理
-├── stock_loader.py            # YAML銘柄リスト読み込み・分類
-├── preference_loader.py       # 投資志向性設定読み込み・プロンプト生成
-├── validate_stocks.py         # stocks.yamlバリデーション
-├── validate_preferences.py    # investment_preferences.yamlバリデーション
-├── format_yaml.py             # YAML自動フォーマット
-├── data_fetcher.py            # 株価・ニュースデータ取得
-├── ai_analyzer.py             # AI分析（Claude/Gemini）
-├── report_generator.py        # HTMLレポート生成
-├── mail_utils.py              # メール配信・分類別本文生成
-└── main.py                    # メインエントリーポイント
-```
-
 詳細なモジュール構成とシステムアーキテクチャについては、[要件定義書](.github/instructions/requirements.instructions.md#5-システム構成) を参照してください。
 
 ## Github Actions用 Secrets and variables 設定方法
