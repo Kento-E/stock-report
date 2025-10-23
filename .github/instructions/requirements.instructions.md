@@ -273,15 +273,15 @@ main.py (オーケストレーション)
 
 ### 9.1 ファイアウォール対策
 
-GitHub Copilotがワークフロー内でpytestなどのコマンドを実行する際、ファイアウォールルールによって外部ネットワークへのアクセスが制限されます。本システムでは以下の対策を実施しています：
+GitHub Copilotがワークフロー内でpytestなどのコマンドを実行する際、ファイアウォールルールによって外部ネットワークへのアクセスが制限されます。本システムでは、`.github/actions/setup-python-env`という再利用可能なComposite Actionを使用して、以下の対策を実施しています：
 
-- **NLTKデータの事前ダウンロード**：defeatbeta-apiが依存するnltkパッケージが必要とするデータ（punkt, stopwords, wordnet, averaged_perceptron_tagger）を、ファイアウォール有効化前にダウンロード・キャッシュします。
-- **defeatbeta-apiデータの事前ダウンロード**：defeatbeta-apiパッケージがhuggingface.coから取得する株式データ情報を、GitHub Actionsのセットアップステップ内で事前にダウンロードします。
-- **キャッシュ機能の活用**：ダウンロードしたデータをGitHub Actionsのキャッシュに保存し、2回目以降のワークフロー実行を高速化します。
+- **NLTKデータの事前ダウンロード**：defeatbeta-apiが依存するnltkパッケージのデータをファイアウォール有効化前にダウンロード
+- **defeatbeta-apiデータの事前ダウンロード**：huggingface.coからの株式データ情報を事前取得
+- **キャッシュ機能の活用**：2回目以降のワークフロー実行を高速化
 
-これらの対策は、`.github/actions/setup-python-env`という再利用可能なComposite Actionに集約されており、複数のワークフロー（test.yml、report.yml、copilot-setup-steps.yml）から参照されています。これにより、メンテナンス性が向上し、変更が必要な場合は一箇所を修正するだけで済みます。
+このアクションは複数のワークフロー（test.yml、report.yml、copilot-setup-steps.yml）から参照されており、メンテナンス性が向上しています。
 
-これらの対策により、GitHub Copilotがコマンドを実行する際には、すでに必要なデータがローカルに存在するため、外部ネットワークへのアクセスが不要となり、ファイアウォールブロックの警告が表示されなくなります。
+**詳細な実装内容・使用方法・トラブルシューティングについては、[setup-python-envアクションのREADME](../../actions/setup-python-env/README.md)を参照してください。**
 
 ## 10. 銘柄リスト管理
 
