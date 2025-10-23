@@ -20,6 +20,17 @@ jobs:
           pip install --upgrade pip
           # 必要なパッケージをrequirements.txtに記載
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Cache NLTK data
+        uses: actions/cache@v3
+        with:
+          path: ~/nltk_data
+          key: ${{ runner.os }}-nltk-data-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-nltk-data-
+      - name: Download NLTK data
+        run: |
+          python -c "import nltk; nltk.download('punkt', quiet=True); nltk.download('stopwords', quiet=True); nltk.download('wordnet', quiet=True); nltk.download('averaged_perceptron_tagger', quiet=True)"
+        timeout-minutes: 5
       - name: Run main.py
         run: |
           python src/main.py
