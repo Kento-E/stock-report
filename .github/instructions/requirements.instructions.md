@@ -198,9 +198,10 @@
 
 #### GitHub Actions・設定
 
-- **.github/workflows/report.yml**：自動実行ワークフロー
+- **.github/workflows/report.yml**：自動実行ワークフロー（NLTKデータ・defeatbeta-apiデータの事前ダウンロードを含む）
 - **.github/workflows/auto-merge.yml**：PR 承認時の自動マージワークフロー
-- **.github/workflows/test.yml**：テスト自動実行ワークフロー
+- **.github/workflows/test.yml**：テスト自動実行ワークフロー（NLTKデータ・defeatbeta-apiデータの事前ダウンロードを含む）
+- **.github/workflows/copilot-setup-steps.yml**：GitHub Copilot用セットアップワークフロー（ファイアウォール有効化前にNLTKデータ・defeatbeta-apiデータをダウンロード）
 - **.github/workflows/validate-stocks.yml**：stocks.yamlバリデーション自動実行ワークフロー
 - **.github/workflows/validate-preferences.yml**：investment_preferences.yamlバリデーション自動実行ワークフロー
 - **.github/workflows/format-yaml.yml**：YAML自動フォーマットワークフロー
@@ -266,6 +267,16 @@ main.py (オーケストレーション)
 - レポート生成・配信処理も Actions workflow で自動化する。
 
 **環境変数の詳細はREADME.mdを参照してください。**
+
+### 9.1 ファイアウォール対策
+
+GitHub Copilotがワークフロー内でpytestなどのコマンドを実行する際、ファイアウォールルールによって外部ネットワークへのアクセスが制限されます。本システムでは以下の対策を実施しています：
+
+- **NLTKデータの事前ダウンロード**：defeatbeta-apiが依存するnltkパッケージが必要とするデータ（punkt, stopwords, wordnet, averaged_perceptron_tagger）を、ファイアウォール有効化前にダウンロード・キャッシュします。
+- **defeatbeta-apiデータの事前ダウンロード**：defeatbeta-apiパッケージがhuggingface.coから取得する株式データ情報を、GitHub Actionsのセットアップステップ内で事前にダウンロードします。
+- **キャッシュ機能の活用**：ダウンロードしたデータをGitHub Actionsのキャッシュに保存し、2回目以降のワークフロー実行を高速化します。
+
+これらの対策により、GitHub Copilotがコマンドを実行する際には、すでに必要なデータがローカルに存在するため、外部ネットワークへのアクセスが不要となり、ファイアウォールブロックの警告が表示されなくなります。
 
 ## 10. 銘柄リスト管理
 
