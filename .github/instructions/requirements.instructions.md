@@ -205,9 +205,10 @@
 - **.github/workflows/validate-stocks.yml**：stocks.yamlバリデーション自動実行ワークフロー
 - **.github/workflows/validate-preferences.yml**：investment_preferences.yamlバリデーション自動実行ワークフロー
 - **.github/workflows/format-yaml.yml**：YAML自動フォーマットワークフロー
+- **.github/actions/setup-python-env**：Python環境セットアップ用の再利用可能アクション（NLTKデータ・defeatbeta-apiデータの事前ダウンロード処理を集約）
 - **.github/copilot-instructions.md**：VS Code 用カスタムチャットモード定義
 
-**Note**: report.yml、test.yml、copilot-setup-steps.ymlには、ファイアウォール対策として外部データの事前ダウンロード機能が含まれています（詳細は9.1節を参照）。
+**Note**: report.yml、test.yml、copilot-setup-steps.ymlは、setup-python-envアクションを使用してファイアウォール対策を実施しています（詳細は9.1節を参照）。
 
 #### テスト（tests/）
 
@@ -277,6 +278,8 @@ GitHub Copilotがワークフロー内でpytestなどのコマンドを実行す
 - **NLTKデータの事前ダウンロード**：defeatbeta-apiが依存するnltkパッケージが必要とするデータ（punkt, stopwords, wordnet, averaged_perceptron_tagger）を、ファイアウォール有効化前にダウンロード・キャッシュします。
 - **defeatbeta-apiデータの事前ダウンロード**：defeatbeta-apiパッケージがhuggingface.coから取得する株式データ情報を、GitHub Actionsのセットアップステップ内で事前にダウンロードします。
 - **キャッシュ機能の活用**：ダウンロードしたデータをGitHub Actionsのキャッシュに保存し、2回目以降のワークフロー実行を高速化します。
+
+これらの対策は、`.github/actions/setup-python-env`という再利用可能なComposite Actionに集約されており、複数のワークフロー（test.yml、report.yml、copilot-setup-steps.yml）から参照されています。これにより、メンテナンス性が向上し、変更が必要な場合は一箇所を修正するだけで済みます。
 
 これらの対策により、GitHub Copilotがコマンドを実行する際には、すでに必要なデータがローカルに存在するため、外部ネットワークへのアクセスが不要となり、ファイアウォールブロックの警告が表示されなくなります。
 
