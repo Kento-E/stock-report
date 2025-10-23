@@ -2,7 +2,7 @@
 
 このファイルでは、VS Code用のGitHub Copilotカスタムチャット参加者を定義しています。
 
-> **Note**: このファイルはVS Codeのチャット機能専用です。GitHub Copilot コーディングエージェント向けの指示は [copilot-instructions.md](copilot-instructions.md) を参照してください。
+> **Note**: このファイルはVS Codeのチャット機能専用です。GitHub Copilot コーディングエージェント向けの指示は <a>copilot-instructions.md</a> を参照してください。
 
 ## 関西弁チャット（@kansai）
 

@@ -1,6 +1,6 @@
 # 動作確認手順
 
-> **Note**: ユニットテストの実行方法については [docs/TEST.md](../../docs/TEST.md) を参照してください。  
+> **Note**: ユニットテストの実行方法については <a>docs/TEST.md</a> を参照してください。  
 > このファイルは、システム全体の統合テストとワークフローの動作確認手順を記載しています。
 
 ## 1. GitHub Actions による自動実行テスト
@@ -17,7 +17,7 @@
 
 - エラーが発生した場合は、GitHub Actions のログを確認し、原因を特定する。
 - Secrets の設定漏れや SMTP 認証エラー、API キーの不備などが主な原因となる。
-- Secrets設定については [README.md](../../README.md) の「Github Actions用 Secrets and variables 設定方法」を参照してください。
+- Secrets設定については <a>README.md</a> の「Github Actions用 Secrets and variables 設定方法」を参照してください。
 
 ## 3. 自動マージ機能の動作確認
 
