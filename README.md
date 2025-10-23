@@ -2,7 +2,7 @@
 
 株式銘柄の動向をAI（Claude Sonnet / Gemini）で自動分析し、HTML形式のレポートを生成・メール配信するシステムです。
 
-> **開発者向け情報**: 詳細な技術仕様・要件定義は [requirements.instructions.md](.github/instructions/requirements.instructions.md) を参照してください。
+> **開発者向け情報**: 詳細な技術仕様・要件定義は <a>requirements.instructions.md</a> を参照してください。
 
 ## 特徴
 
@@ -17,7 +17,7 @@
 
 本プロジェクトは機能別にモジュール化されており、各モジュールが単一の責任を持つ設計になっています。
 
-詳細なモジュール構成とシステムアーキテクチャについては、[要件定義書](.github/instructions/requirements.instructions.md#5-システム構成) を参照してください。
+詳細なモジュール構成とシステムアーキテクチャについては、<a>requirements.instructions.md</a> を参照してください。
 
 ## Github Actions用 Secrets and variables 設定方法
 
