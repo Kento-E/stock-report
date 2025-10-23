@@ -23,9 +23,13 @@ ANALYSIS_VIEWPOINTS = """以下の観点から分析してください（結論�
 保有中の銘柄については、売却だけでなく買い増しの検討も含めて判断してください。"""
 
 
-def analyze_with_claude(data):
+def analyze_with_claude(data, preference_prompt=None):
     """
     Claude Sonnet APIを用いて株価・ニュースデータを分析し、要約・トレンド抽出・リスク/チャンスの指摘と売買判断を返す。
+    
+    Args:
+        data: 株価データと保有情報を含む辞書
+        preference_prompt: 投資志向性プロンプト（省略時は毎回生成）
     """
     if not CLAUDE_API_KEY or CLAUDE_API_KEY.strip() == "":
         error_msg = "Claude APIエラー: APIキーが未設定です。環境変数CLAUDE_API_KEYを確認してください。"
@@ -37,8 +41,9 @@ def analyze_with_claude(data):
     # 保有状況に基づいたプロンプトの生成
     holding_status = _generate_holding_status(data, currency)
     
-    # 投資志向性プロンプトの生成
-    preference_prompt = generate_preference_prompt()
+    # 投資志向性プロンプトの生成（渡されていない場合のみ）
+    if preference_prompt is None:
+        preference_prompt = generate_preference_prompt()
     
     prompt = f"""
 {data['symbol']}の分析をお願いします。
@@ -79,9 +84,13 @@ def analyze_with_claude(data):
         return f"## 分析失敗\n\n**エラー内容:** {error_msg}\n\n**エラータイプ:** {type(e).__name__}"
 
 
-def analyze_with_gemini(data):
+def analyze_with_gemini(data, preference_prompt=None):
     """
     Gemini APIを用いて株価・ニュースデータを分析し、要約・トレンド抽出・リスク/チャンスの指摘と売買判断を返す。
+    
+    Args:
+        data: 株価データと保有情報を含む辞書
+        preference_prompt: 投資志向性プロンプト（省略時は毎回生成）
     """
     if not GEMINI_API_KEY or GEMINI_API_KEY.strip() == "":
         error_msg = "Gemini APIエラー: APIキーが未設定です。環境変数GEMINI_API_KEYを確認してください。"
@@ -93,8 +102,9 @@ def analyze_with_gemini(data):
     # 保有状況に基づいたプロンプトの生成
     holding_status = _generate_holding_status(data, currency)
     
-    # 投資志向性プロンプトの生成
-    preference_prompt = generate_preference_prompt()
+    # 投資志向性プロンプトの生成（渡されていない場合のみ）
+    if preference_prompt is None:
+        preference_prompt = generate_preference_prompt()
     
     prompt = (
         "あなたは株式分析の専門家です。データに基づいて客観的な分析と売買判断を提供してください。\n\n"
