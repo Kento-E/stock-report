@@ -201,10 +201,14 @@
 - **.github/workflows/report.yml**：自動実行ワークフロー
 - **.github/workflows/auto-merge.yml**：PR 承認時の自動マージワークフロー
 - **.github/workflows/test.yml**：テスト自動実行ワークフロー
+- **.github/workflows/copilot-setup-steps.yml**：GitHub Copilot用セットアップワークフロー
 - **.github/workflows/validate-stocks.yml**：stocks.yamlバリデーション自動実行ワークフロー
 - **.github/workflows/validate-preferences.yml**：investment_preferences.yamlバリデーション自動実行ワークフロー
 - **.github/workflows/format-yaml.yml**：YAML自動フォーマットワークフロー
+- **.github/actions/setup-python-env**：Python環境セットアップ用の再利用可能アクション（NLTKデータ・defeatbeta-apiデータの事前ダウンロード処理を集約）
 - **.github/copilot-instructions.md**：VS Code 用カスタムチャットモード定義
+
+**Note**: report.yml、test.yml、copilot-setup-steps.ymlは、setup-python-envアクションを使用してファイアウォール対策を実施しています（詳細は9.1節を参照）。
 
 #### テスト（tests/）
 
@@ -266,6 +270,18 @@ main.py (オーケストレーション)
 - レポート生成・配信処理も Actions workflow で自動化する。
 
 **環境変数の詳細はREADME.mdを参照してください。**
+
+### 9.1 ファイアウォール対策
+
+GitHub Copilotがワークフロー内でpytestなどのコマンドを実行する際、ファイアウォールルールによって外部ネットワークへのアクセスが制限されます。本システムでは、`.github/actions/setup-python-env`という再利用可能なComposite Actionを使用して、以下の対策を実施しています：
+
+- **NLTKデータの事前ダウンロード**：defeatbeta-apiが依存するnltkパッケージのデータをファイアウォール有効化前にダウンロード
+- **defeatbeta-apiデータの事前ダウンロード**：huggingface.coからの株式データ情報を事前取得
+- **キャッシュ機能の活用**：2回目以降のワークフロー実行を高速化
+
+このアクションは複数のワークフロー（test.yml、report.yml、copilot-setup-steps.yml）から参照されており、メンテナンス性が向上しています。
+
+**詳細な実装内容・使用方法・トラブルシューティングについては、[setup-python-envアクションのREADME](../../actions/setup-python-env/README.md)を参照してください。**
 
 ## 10. 銘柄リスト管理
 

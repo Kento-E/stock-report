@@ -47,6 +47,10 @@ jobs:
           pip install --timeout=100 -r requirements.txt
         timeout-minutes: 10
       
+      - name: Setup Python environment with data downloads
+        uses: ./.github/actions/setup-python-env
+        timeout-minutes: 10
+      
       - name: Run tests with pytest
         run: |
           python -m pytest tests/ -v --cov=src --cov-report=term --cov-report=html

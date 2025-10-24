@@ -20,6 +20,11 @@ jobs:
           pip install --upgrade pip
           # 必要なパッケージをrequirements.txtに記載
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      
+      - name: Setup Python environment with data downloads
+        uses: ./.github/actions/setup-python-env
+        timeout-minutes: 10
+      
       - name: Run main.py
         run: |
           python src/main.py
