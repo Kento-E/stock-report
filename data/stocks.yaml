@@ -18,12 +18,6 @@ stocks:
     quantity: 1
     added: 2025-10-24
 
-  - name: JT
-    symbol: 2914
-    acquisition_price: 4300
-    quantity: -100
-    added: 2025-10-24
-
   - name: 神戸物産
     symbol: 3038
     unit: 旧NISA
