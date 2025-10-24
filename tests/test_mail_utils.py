@@ -90,7 +90,7 @@ class TestGenerateSingleCategoryMailBody:
         assert '<html>' in body
         assert '</html>' in body
         assert subject in body
-        assert category_name in body
+        # カテゴリー名はタイトルタグにのみ含まれ、本文には表示されない
         assert '銘柄1' in body
         assert '銘柄2' in body
     
@@ -103,24 +103,28 @@ class TestGenerateSingleCategoryMailBody:
         body = generate_single_category_mail_body(subject, category_name, reports)
         
         assert '<html>' in body
-        assert category_name in body
+        # カテゴリー名は件名に含まれているため、本文には不要
     
-    def test_single_category_uses_h2_for_category(self):
-        """カテゴリー名にH2を使用することを確認"""
-        subject = "テスト件名"
+    def test_single_category_no_category_heading_in_body(self):
+        """本文にカテゴリー見出しが表示されないことを確認"""
+        subject = "株式日次レポート - 保有銘柄"
         category_name = "保有銘柄"
-        reports = ['<h2>銘柄1</h2><p>分析1</p>']
+        reports = ['<h2>トヨタ自動車</h2><p>分析内容</p>']
         
         body = generate_single_category_mail_body(subject, category_name, reports)
         
-        # H2タグでカテゴリー名が表示されることを確認
-        assert f'<h2' in body
-        assert category_name in body
-        # bodyタグ内にH1が使用されていないことを確認
+        # タイトルタグにはカテゴリー名が含まれる
+        assert f'<title>{subject}</title>' in body
+        # bodyタグ内の最初の見出しは銘柄名であり、カテゴリー名ではない
         body_start = body.find('<body')
         body_end = body.find('</body>')
         if body_start != -1 and body_end != -1:
             body_content = body[body_start:body_end]
+            # 最初のh2は銘柄名
+            assert '<h2>トヨタ自動車</h2>' in body_content
+            # カテゴリー名の見出しは存在しない
+            assert '<h2' in body_content  # 銘柄見出しは存在
+            # H1は使用されていない
             assert '<h1' not in body_content
 
 
