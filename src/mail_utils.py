@@ -52,7 +52,7 @@ def generate_single_category_mail_body(subject, category_name, reports):
     <html>
     <head><meta charset='utf-8'><title>{subject}</title></head>
     <body style="font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px;">
-    <h1 style="color: #333; border-bottom: 3px solid #007bff; padding-bottom: 15px;">{category_name}</h1>
+    <h2 style="color: #333; border-bottom: 3px solid #007bff; padding-bottom: 15px;">{category_name}</h2>
     {''.join(reports)}
     </body>
     </html>

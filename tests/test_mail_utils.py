@@ -104,6 +104,24 @@ class TestGenerateSingleCategoryMailBody:
         
         assert '<html>' in body
         assert category_name in body
+    
+    def test_single_category_uses_h2_for_category(self):
+        """カテゴリー名にH2を使用することを確認"""
+        subject = "テスト件名"
+        category_name = "保有銘柄"
+        reports = ['<h2>銘柄1</h2><p>分析1</p>']
+        
+        body = generate_single_category_mail_body(subject, category_name, reports)
+        
+        # H2タグでカテゴリー名が表示されることを確認
+        assert f'<h2' in body
+        assert category_name in body
+        # bodyタグ内にH1が使用されていないことを確認
+        body_start = body.find('<body')
+        body_end = body.find('</body>')
+        if body_start != -1 and body_end != -1:
+            body_content = body[body_start:body_end]
+            assert '<h1' not in body_content
 
 
 class TestGenerateCategorizedMailBody:
