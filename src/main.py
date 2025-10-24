@@ -79,7 +79,7 @@ if __name__ == "__main__":
             else:
                 analysis_html = markdown_to_html(analysis)
             
-            # メール本文でも企業名を見出しに使用（h2に変更）
+            # メール本文で企業名をh2見出しとして使用
             # 詳細レポートを折りたたみ可能にする
             report_html = f"""<h2 style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">{name}</h2>
 <p style="color: #666; font-size: 14px;">銘柄コード: {symbol}</p>
