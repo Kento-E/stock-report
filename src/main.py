@@ -79,8 +79,16 @@ if __name__ == "__main__":
             else:
                 analysis_html = markdown_to_html(analysis)
             
-            # メール本文でも企業名を見出しに使用
-            report_html = f"<h3>{name}</h3>\n<p style=\"color: #666; font-size: 14px;\">銘柄コード: {symbol}</p>\n{analysis_html}"
+            # メール本文でも企業名を見出しに使用（h2に変更）
+            # 詳細レポートを折りたたみ可能にする
+            report_html = f"""<h2 style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">{name}</h2>
+<p style="color: #666; font-size: 14px;">銘柄コード: {symbol}</p>
+<details>
+<summary style="cursor: pointer; font-weight: bold; color: #007bff; padding: 10px 0;">詳細レポートを表示</summary>
+<div style="margin-top: 15px; padding-left: 20px; border-left: 3px solid #007bff;">
+{analysis_html}
+</div>
+</details>"""
             categorized_reports[category].append(report_html)
 
     # 分類別に個別のメールを送信
