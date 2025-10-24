@@ -106,3 +106,22 @@ class TestGenerateReportHtml:
         # （SIMPLIFY_HOLD_REPORTSがtrueの場合）
         assert name in html
         assert symbol in html
+    
+    def test_generate_html_uses_h2_not_h1(self, tmp_path, monkeypatch):
+        """個別レポートファイルではh1ではなくh2を使用することを確認"""
+        monkeypatch.chdir(tmp_path)
+        
+        symbol = '7203.T'
+        name = 'トヨタ自動車'
+        analysis = 'テスト分析'
+        
+        html, filename = generate_report_html(symbol, name, analysis)
+        
+        # h2タグが使用されていることを確認
+        assert '<h2>' in html
+        assert f'<h2>{name}</h2>' in html
+        # h1タグは使用されていないことを確認（タイトルタグ内のh1は除外）
+        body_start = html.find('<body>')
+        body_end = html.find('</body>')
+        body_content = html[body_start:body_end]
+        assert '<h1>' not in body_content

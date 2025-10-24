@@ -47,7 +47,7 @@ def generate_report_html(symbol, name, analysis, stock_data=None):
     <html>
     <head><meta charset='utf-8'><title>{name} ({symbol}) 日次レポート ({today})</title></head>
     <body>
-    <h1>{name}</h1>
+    <h2>{name}</h2>
     <p style="color: #666; font-size: 14px;">銘柄コード: {symbol} | 日付: {today}</p>
     {analysis_html}
     </body>
