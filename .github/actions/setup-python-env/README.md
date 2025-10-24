@@ -44,14 +44,6 @@ steps:
     uses: ./.github/actions/setup-python-env
 ```
 
-**Note**: タイムアウトを設定したい場合は、ワークフローファイル側でステップレベルで指定してください：
-
-```yaml
-  - name: Setup Python environment with data downloads
-    uses: ./.github/actions/setup-python-env
-    timeout-minutes: 10
-```
-
 ## 使用しているワークフロー
 
 このアクションは以下のワークフローで使用されています：
