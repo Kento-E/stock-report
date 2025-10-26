@@ -56,7 +56,7 @@ if __name__ == "__main__":
     for category, stock_list in categorized.items():
         for stock_info in stock_list:
             symbol = stock_info['symbol']
-            name = stock_info.get('name', symbol)  # 企業名がなければ銘柄コードを使用
+            company_name = stock_info.get('name', symbol)  # 企業名がなければ銘柄コードを使用
             data = fetch_stock_data(symbol, stock_info)
             if USE_CLAUDE:
                 analysis = analyze_with_claude(data, preference_prompt)
@@ -68,20 +68,20 @@ if __name__ == "__main__":
             data['currency'] = currency
             
             # レポート生成（stock_dataを渡す）
-            html, filename = generate_report_html(symbol, name, analysis, data)
+            html, filename = generate_report_html(symbol, company_name, analysis, data)
             print(f"レポート生成: {filename} (分類: {category})")
             
             # メール本文用のHTML生成（簡略化を適用）
             if SIMPLIFY_HOLD_REPORTS and detect_hold_judgment(analysis):
                 # ホールド判断の場合は簡略化
-                simplified_analysis = simplify_hold_report(symbol, name, analysis, data['price'], currency)
+                simplified_analysis = simplify_hold_report(symbol, company_name, analysis, data['price'], currency)
                 analysis_html = markdown_to_html(simplified_analysis)
             else:
                 analysis_html = markdown_to_html(analysis)
             
-            # メール本文で企業名をh2見出しとして使用
+            # メール本文で企業名を見出しとして使用
             # 詳細レポートを折りたたみ可能にする
-            report_html = f"""<h2 style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">{name}</h2>
+            report_html = f"""<h1 style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">{company_name}</h1>
 <p style="color: #666; font-size: 14px;">銘柄コード: {symbol}</p>
 <details>
 <summary style="cursor: pointer; font-weight: bold; color: #007bff; padding: 10px 0;">詳細レポートを表示</summary>
