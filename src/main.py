@@ -110,7 +110,7 @@ if __name__ == "__main__":
             if reports:  # 銘柄が存在する場合のみメール送信
                 category_name = category_names[category]
                 subject = f"株式日次レポート - {category_name} ({today})"
-                body = generate_single_category_mail_body(subject, category_name, reports)
+                body = generate_single_category_mail_body(subject, reports)
                 send_report_via_mail(
                     subject, body, MAIL_TO,
                     smtp_conf['MAIL_FROM'], smtp_conf['SMTP_SERVER'], smtp_conf['SMTP_PORT'], smtp_conf['SMTP_USER'], smtp_conf['SMTP_PASS']

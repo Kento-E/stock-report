@@ -36,13 +36,12 @@ def generate_mail_body(subject, all_reports):
     return body
 
 
-def generate_single_category_mail_body(subject, category_name, reports):
+def generate_single_category_mail_body(subject, reports):
     """
     単一カテゴリーのレポートからHTMLメール本文を生成する。
     
     Args:
         subject: メール件名
-        category_name: カテゴリー名（日本語）- 現在は未使用（後方互換性のため保持）
         reports: レポートのリスト
     
     Returns:
