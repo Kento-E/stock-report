@@ -79,6 +79,11 @@
 - マージ方式はスカッシュマージ（Squash Merge）を採用し、コミット履歴を整理。
 - マージ後、自動的にブランチを削除してリポジトリを整理。
 - GitHub Actions の `pull_request_review` イベントをトリガーとして実行。
+- **PRマージ後の自動更新機能**：PRがマージされた際、同じベースブランチを対象とする他のオープンなPRを自動的に更新（Update branch）する。
+  - `pull_request` の `closed` イベント（マージ済み条件）をトリガーとして実行。
+  - マージコンフリクトが発生しているPRはスキップする。
+  - 複数のPR更新時にエラーが発生しても、他のPRの更新処理は継続する。
+  - 更新結果（成功、スキップ、失敗）をサマリーとして出力する。
 
 ### 3.7 カスタムチャットモード
 
@@ -198,6 +203,7 @@
 
 - **.github/workflows/report.yml**：自動実行ワークフロー
 - **.github/workflows/auto-merge.yml**：PR 承認時の自動マージワークフロー
+- **.github/workflows/update-other-prs.yml**：PRマージ後の他PR自動更新ワークフロー
 - **.github/workflows/test.yml**：テスト自動実行ワークフロー
 - **.github/workflows/copilot-setup-steps.yml**：GitHub Copilot用セットアップワークフロー
 - **.github/workflows/validate-stocks.yml**：stocks.yamlバリデーション自動実行ワークフロー
