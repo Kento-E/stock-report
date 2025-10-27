@@ -5,6 +5,7 @@ import os
 import datetime
 import markdown
 import re
+import html
 
 def get_smtp_config():
     """
@@ -38,6 +39,7 @@ def extract_judgment_from_analysis(analysis_text):
         return "-"
     
     # 判断を示すキーワードとパターン
+    # [：:\s] は全角コロン（：）、半角コロン（:）、空白文字をマッチ
     judgment_patterns = [
         r'(?:売買判断|判断|推奨|アクション)[：:\s]*([^\n]+)',
         r'(?:judgment|recommendation|action)[：:\s]*([^\n]+)',
@@ -96,20 +98,26 @@ def generate_toc(stock_reports_info):
 """
     
     for i, info in enumerate(stock_reports_info):
+        # HTMLエスケープを適用してXSS対策
+        escaped_name = html.escape(info['name'])
+        escaped_symbol = html.escape(info['symbol'])
+        escaped_judgment = html.escape(info['judgment'])
+        escaped_id = html.escape(info['id'])
+        
         # 行の背景色を交互に変更
         bg_color = "#f8f9fa" if i % 2 == 0 else "white"
         toc_html += f"""
                 <tr style="background-color: {bg_color};">
                     <td style="padding: 10px; border: 1px solid #dee2e6;">
-                        <a href="#{info['id']}" style="color: #007bff; text-decoration: none; font-weight: bold;">
-                            {info['name']}
+                        <a href="#{escaped_id}" style="color: #007bff; text-decoration: none; font-weight: bold;">
+                            {escaped_name}
                         </a>
                     </td>
                     <td style="padding: 10px; border: 1px solid #dee2e6; color: #666;">
-                        {info['symbol']}
+                        {escaped_symbol}
                     </td>
                     <td style="padding: 10px; border: 1px solid #dee2e6; font-weight: bold;">
-                        {info['judgment']}
+                        {escaped_judgment}
                     </td>
                 </tr>
 """

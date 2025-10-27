@@ -352,6 +352,27 @@ class TestGenerateToc:
         
         # 背景色の指定が含まれることを確認
         assert 'background-color' in toc
+    
+    def test_generate_toc_html_escaping(self):
+        """HTMLエスケープの確認（XSS対策）"""
+        stock_info = [
+            {
+                'symbol': '<script>alert("xss")</script>',
+                'name': '<img src=x onerror=alert(1)>',
+                'judgment': '<b>危険</b>',
+                'id': 'stock-test'
+            }
+        ]
+        
+        toc = generate_toc(stock_info)
+        
+        # 危険なHTMLタグがエスケープされていることを確認
+        assert '<script>' not in toc
+        assert '<img src=' not in toc  # タグとして解釈されないこと
+        # エスケープされた形式で含まれていることを確認
+        assert '&lt;script&gt;' in toc
+        assert '&lt;img' in toc
+        assert '&lt;b&gt;' in toc
 
 
 class TestGenerateSingleCategoryMailBodyWithToc:
