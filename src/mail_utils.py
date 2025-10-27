@@ -4,6 +4,7 @@ from email.utils import formatdate
 import os
 import datetime
 import markdown
+import re
 
 def get_smtp_config():
     """
@@ -23,6 +24,104 @@ def markdown_to_html(markdown_text):
     """
     return markdown.markdown(markdown_text, extensions=['extra', 'nl2br'])
 
+def extract_judgment_from_analysis(analysis_text):
+    """
+    AI分析結果から売買判断を抽出する
+    
+    Args:
+        analysis_text: AI分析結果のテキスト（マークダウン形式）
+    
+    Returns:
+        str: 抽出された売買判断（見つからない場合は「-」）
+    """
+    if not analysis_text:
+        return "-"
+    
+    # 判断を示すキーワードとパターン
+    judgment_patterns = [
+        r'(?:売買判断|判断|推奨|アクション)[：:\s]*([^\n]+)',
+        r'(?:judgment|recommendation|action)[：:\s]*([^\n]+)',
+        # マークダウンの見出し形式も考慮
+        r'##?\s*(?:売買判断|判断)[：:\s]*([^\n]+)',
+    ]
+    
+    for pattern in judgment_patterns:
+        match = re.search(pattern, analysis_text, re.IGNORECASE)
+        if match:
+            judgment = match.group(1).strip()
+            # 最初の文または最初のカンマまでを取得
+            judgment = re.split(r'[。、\.,]', judgment)[0].strip()
+            # マークダウン記号を削除
+            judgment = re.sub(r'[*#]', '', judgment)
+            return judgment[:30]  # 最大30文字
+    
+    # パターンが見つからない場合、キーワードを含む行を探す
+    lines = analysis_text.split('\n')
+    for line in lines:
+        line_lower = line.lower()
+        if any(kw in line_lower for kw in ['買い', 'buy', '売り', 'sell', 'ホールド', 'hold', '様子見']):
+            # マークダウン記号を削除
+            clean_line = re.sub(r'[*#:\-]', '', line).strip()
+            if len(clean_line) > 5:
+                return clean_line[:30]
+    
+    return "-"
+
+def generate_toc(stock_reports_info):
+    """
+    銘柄レポートの目次（TOC）をHTML形式で生成する
+    
+    Args:
+        stock_reports_info: 銘柄レポート情報のリスト
+            [{'symbol': '7203.T', 'name': 'トヨタ自動車', 'judgment': '買い', 'id': 'stock-7203-T'}, ...]
+    
+    Returns:
+        str: HTML形式の目次
+    """
+    if not stock_reports_info:
+        return ""
+    
+    toc_html = """
+    <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px; padding: 20px; margin-bottom: 30px;">
+        <h2 style="color: #333; margin-top: 0; font-size: 20px;">📊 銘柄一覧</h2>
+        <table style="width: 100%; border-collapse: collapse; background-color: white;">
+            <thead>
+                <tr style="background-color: #007bff; color: white;">
+                    <th style="padding: 10px; text-align: left; border: 1px solid #dee2e6;">銘柄名</th>
+                    <th style="padding: 10px; text-align: left; border: 1px solid #dee2e6;">銘柄コード</th>
+                    <th style="padding: 10px; text-align: left; border: 1px solid #dee2e6;">売買判断</th>
+                </tr>
+            </thead>
+            <tbody>
+"""
+    
+    for i, info in enumerate(stock_reports_info):
+        # 行の背景色を交互に変更
+        bg_color = "#f8f9fa" if i % 2 == 0 else "white"
+        toc_html += f"""
+                <tr style="background-color: {bg_color};">
+                    <td style="padding: 10px; border: 1px solid #dee2e6;">
+                        <a href="#{info['id']}" style="color: #007bff; text-decoration: none; font-weight: bold;">
+                            {info['name']}
+                        </a>
+                    </td>
+                    <td style="padding: 10px; border: 1px solid #dee2e6; color: #666;">
+                        {info['symbol']}
+                    </td>
+                    <td style="padding: 10px; border: 1px solid #dee2e6; font-weight: bold;">
+                        {info['judgment']}
+                    </td>
+                </tr>
+"""
+    
+    toc_html += """
+            </tbody>
+        </table>
+    </div>
+"""
+    
+    return toc_html
+
 def generate_mail_body(subject, all_reports):
     today = datetime.date.today().isoformat()
     body = f"""
@@ -36,13 +135,14 @@ def generate_mail_body(subject, all_reports):
     return body
 
 
-def generate_single_category_mail_body(subject, reports):
+def generate_single_category_mail_body(subject, reports, toc_html=""):
     """
     単一カテゴリーのレポートからHTMLメール本文を生成する。
     
     Args:
         subject: メール件名
         reports: レポートのリスト
+        toc_html: 目次のHTML（省略可能）
     
     Returns:
         HTML形式のメール本文
@@ -51,6 +151,7 @@ def generate_single_category_mail_body(subject, reports):
     <html>
     <head><meta charset='utf-8'><title>{subject}</title></head>
     <body style="font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px;">
+    {toc_html}
     {''.join(reports)}
     </body>
     </html>
@@ -58,7 +159,7 @@ def generate_single_category_mail_body(subject, reports):
     return body
 
 
-def generate_categorized_mail_body(subject, categorized_reports):
+def generate_categorized_mail_body(subject, categorized_reports, toc_html=""):
     """
     分類別のレポートからHTMLメール本文を生成する。
     
@@ -66,6 +167,7 @@ def generate_categorized_mail_body(subject, categorized_reports):
         subject: メール件名
         categorized_reports: 分類別のレポート辞書
             {'holding': [...], 'short_selling': [...], 'considering_buy': [...], 'considering_short_sell': [...]}
+        toc_html: 目次のHTML（省略可能）
     
     Returns:
         HTML形式のメール本文
@@ -92,6 +194,7 @@ def generate_categorized_mail_body(subject, categorized_reports):
     <html>
     <head><meta charset='utf-8'><title>{subject}</title></head>
     <body style="font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px;">
+    {toc_html}
     {''.join(sections)}
     </body>
     </html>
