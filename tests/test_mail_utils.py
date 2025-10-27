@@ -188,8 +188,7 @@ class TestGenerateCategorizedMailBody:
         """レポートに折りたたみ可能な<details>タグが含まれることを確認"""
         subject = "テスト件名"
         # 実際のmain.pyで生成される形式のレポートをシミュレート
-        report_with_details = """<h1 style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">テスト銘柄</h1>
-<p style="color: #666; font-size: 14px;">銘柄コード: TEST</p>
+        report_with_details = """<h1 style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">テスト銘柄 (TEST)</h1>
 <details>
 <summary style="cursor: pointer; font-weight: bold; color: #007bff; padding: 10px 0;">詳細レポートを表示</summary>
 <div style="margin-top: 15px; padding-left: 20px; border-left: 3px solid #007bff;">
