@@ -27,8 +27,7 @@ def create_collapsible_section(content, title="詳細レポート", collapsed=Tr
     """
     レポートセクションを生成する。
     
-    注意: Gmail等の多くのメールクライアントはCSSベースの折りたたみ機能を
-    サポートしていないため、コンテンツは常に表示されます。
+    注意: メールクライアントの制限により、コンテンツは常に表示されます。
     
     Args:
         content: 表示対象のHTMLコンテンツ
