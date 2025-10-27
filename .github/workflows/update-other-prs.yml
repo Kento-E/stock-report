@@ -29,7 +29,7 @@ jobs:
           echo "🔍 ベースブランチ '${BASE_BRANCH}' を対象とする他のオープンなPRを検索中..."
           
           # 同じベースブランチを持つオープンなPRを取得（マージされたPRを除外）
-          OTHER_PRS=$(gh pr list --base "${BASE_BRANCH}" --state open --json number,headRefName,title --jq '.[] | select(.number != '$MERGED_PR_NUMBER') | .number')
+          OTHER_PRS=$(gh pr list --base "${BASE_BRANCH}" --state open --json number,headRefName,title --jq --argjson merged_pr "$MERGED_PR_NUMBER" '.[] | select(.number != $merged_pr) | .number')
           
           if [ -z "$OTHER_PRS" ]; then
             echo "ℹ️ 更新対象のPRはありません"
@@ -73,6 +73,7 @@ jobs:
             CURRENT_HEAD_SHA=$(gh api /repos/${{ github.repository }}/pulls/${PR_NUM} --jq .head.sha)
             
             # update-branchを実行
+            UPDATE_STATUS=0
             UPDATE_RESULT=$(gh api \
               --method PUT \
               -H "Accept: application/vnd.github+json" \
@@ -80,7 +81,7 @@ jobs:
               "/repos/${{ github.repository }}/pulls/${PR_NUM}/update-branch" \
               -f expected_head_sha="${CURRENT_HEAD_SHA}" 2>&1) || UPDATE_STATUS=$?
             
-            if [ -z "${UPDATE_STATUS}" ]; then
+            if [ "${UPDATE_STATUS}" -eq 0 ]; then
               echo "  ✅ PR #${PR_NUM} を正常に更新しました"
               SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
             else
