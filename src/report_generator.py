@@ -10,13 +10,13 @@ from mail_utils import markdown_to_html
 from report_simplifier import detect_hold_judgment, simplify_hold_report
 
 
-def generate_report_html(symbol, name, analysis, stock_data=None):
+def generate_report_html(symbol, company_name, analysis, stock_data=None):
     """
     HTMLレポートを生成する。
     
     Args:
         symbol: 銘柄コード (例: '7203.T')
-        name: 企業名 (例: 'トヨタ自動車')
+        company_name: 企業名 (例: 'トヨタ自動車')
         analysis: 分析結果のテキスト
         stock_data: 株価データ（簡略化レポート用、オプション）
     
@@ -39,15 +39,15 @@ def generate_report_html(symbol, name, analysis, stock_data=None):
             currency = '円'
         
         # 簡略化されたレポートを生成
-        analysis = simplify_hold_report(symbol, name, analysis, current_price, currency)
+        analysis = simplify_hold_report(symbol, company_name, analysis, current_price, currency)
     
     analysis_html = markdown_to_html(analysis)
     # 見出しに企業名を使用し、銘柄コードを副題として表示
     html = f"""
     <html>
-    <head><meta charset='utf-8'><title>{name} ({symbol}) 日次レポート ({today})</title></head>
+    <head><meta charset='utf-8'><title>{company_name} ({symbol}) 日次レポート ({today})</title></head>
     <body>
-    <h1>{name}</h1>
+    <h1>{company_name}</h1>
     <p style="color: #666; font-size: 14px;">銘柄コード: {symbol} | 日付: {today}</p>
     {analysis_html}
     </body>
