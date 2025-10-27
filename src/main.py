@@ -79,7 +79,6 @@ if __name__ == "__main__":
             else:
                 analysis_html = markdown_to_html(analysis)
             
-            # メール本文で企業名と銘柄コードを1行にまとめて表示
             # 詳細レポートを折りたたみ可能にする
             report_html = f"""<h1 style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">{company_name} ({symbol})</h1>
 <details>
