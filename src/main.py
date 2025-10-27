@@ -20,7 +20,7 @@ from stock_loader import load_stock_symbols, categorize_stocks, get_currency_for
 from data_fetcher import fetch_stock_data
 from ai_analyzer import analyze_with_claude, analyze_with_gemini
 from report_generator import generate_report_html
-from mail_utils import send_report_via_mail, get_smtp_config, generate_single_category_mail_body, markdown_to_html
+from mail_utils import send_report_via_mail, get_smtp_config, generate_single_category_mail_body, markdown_to_html, create_collapsible_section
 from report_simplifier import detect_hold_judgment, simplify_hold_report
 from preference_loader import generate_preference_prompt
 
@@ -80,15 +80,11 @@ if __name__ == "__main__":
                 analysis_html = markdown_to_html(analysis)
             
             # メール本文で企業名を見出しとして使用
-            # 詳細レポートを折りたたみ可能にする
+            # 詳細レポートを折りたたみ可能にする（Gmail互換）
+            collapsible_content = create_collapsible_section(analysis_html, title="詳細レポートを表示", collapsed=True)
             report_html = f"""<h1 style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">{company_name}</h1>
 <p style="color: #666; font-size: 14px;">銘柄コード: {symbol}</p>
-<details>
-<summary style="cursor: pointer; font-weight: bold; color: #007bff; padding: 10px 0;">詳細レポートを表示</summary>
-<div style="margin-top: 15px; padding-left: 20px; border-left: 3px solid #007bff;">
-{analysis_html}
-</div>
-</details>"""
+{collapsible_content}"""
             categorized_reports[category].append(report_html)
 
     # 分類別に個別のメールを送信

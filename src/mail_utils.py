@@ -23,6 +23,69 @@ def markdown_to_html(markdown_text):
     """
     return markdown.markdown(markdown_text, extensions=['extra', 'nl2br'])
 
+def create_collapsible_section(content, title="詳細レポートを表示", collapsed=True):
+    """
+    Gmail互換の折りたたみ可能なセクションを生成する。
+    checkboxハック方式を使用してGmailでも動作するようにする。
+    
+    Args:
+        content: 折りたたみ対象のHTMLコンテンツ
+        title: 折りたたみボタンのタイトル
+        collapsed: デフォルトで折りたたむかどうか
+    
+    Returns:
+        Gmail互換の折りたたみ可能なHTMLセクション
+    """
+    # ユニークなIDを生成（タイムスタンプベース）
+    import time
+    unique_id = f"collapsible_{int(time.time() * 1000000)}"
+    
+    checked_attr = "" if collapsed else "checked"
+    
+    html = f"""
+<style>
+    #{unique_id} {{
+        display: none;
+    }}
+    #{unique_id}:checked ~ .collapsible-content {{
+        display: block;
+    }}
+    #{unique_id}:not(:checked) ~ .collapsible-content {{
+        display: none;
+    }}
+    .collapsible-label {{
+        cursor: pointer;
+        font-weight: bold;
+        color: #007bff;
+        padding: 10px 0;
+        display: inline-block;
+        user-select: none;
+    }}
+    .collapsible-label:hover {{
+        text-decoration: underline;
+    }}
+    .collapsible-label::before {{
+        content: "▶ ";
+        display: inline-block;
+        transition: transform 0.3s;
+    }}
+    #{unique_id}:checked ~ .collapsible-label::before {{
+        content: "▼ ";
+    }}
+    .collapsible-content {{
+        margin-top: 15px;
+        padding-left: 20px;
+        border-left: 3px solid #007bff;
+    }}
+</style>
+<input type="checkbox" id="{unique_id}" {checked_attr} />
+<label for="{unique_id}" class="collapsible-label">{title}</label>
+<div class="collapsible-content">
+{content}
+</div>
+"""
+    return html
+
 def generate_mail_body(subject, all_reports):
     today = datetime.date.today().isoformat()
     body = f"""
