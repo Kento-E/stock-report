@@ -185,25 +185,20 @@ class TestGenerateCategorizedMailBody:
         assert '空売り検討中の銘柄' not in body
     
     def test_collapsible_details_in_reports(self):
-        """レポートにGmail互換の折りたたみ機能が含まれることを確認"""
+        """レポートにセクション構造が含まれることを確認"""
         subject = "テスト件名"
         # 実際のmain.pyで生成される形式のレポートをシミュレート
-        # Gmail互換のcheckboxハック方式を使用
-        report_with_collapsible = """<h1 style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">テスト銘柄</h1>
+        report_with_section = """<h1 style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">テスト銘柄</h1>
 <p style="color: #666; font-size: 14px;">銘柄コード: TEST</p>
-<style>
-    #test_collapsible {
-        display: none;
-    }
-</style>
-<input type="checkbox" id="test_collapsible" />
-<label for="test_collapsible" class="collapsible-label">詳細レポートを表示</label>
-<div class="collapsible-content">
+<div style="margin-top: 15px; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #007bff; border-radius: 4px;">
+    <h3 style="margin: 0 0 10px 0; color: #007bff; font-size: 16px;">詳細レポート</h3>
+    <div style="padding-left: 10px;">
 <p>詳細な分析内容</p>
+    </div>
 </div>"""
         
         categorized_reports = {
-            'holding': [report_with_collapsible],
+            'holding': [report_with_section],
             'short_selling': [],
             'considering_buy': [],
             'considering_short_sell': []
@@ -211,76 +206,52 @@ class TestGenerateCategorizedMailBody:
         
         body = generate_categorized_mail_body(subject, categorized_reports)
         
-        # Gmail互換の折りたたみ構造が含まれることを確認
-        assert '<input type="checkbox"' in body
-        assert '<label' in body
-        assert 'collapsible-label' in body
-        assert '詳細レポートを表示' in body
-        assert 'collapsible-content' in body
+        # セクション構造が含まれることを確認
+        assert '詳細レポート' in body
+        assert 'background-color: #f8f9fa' in body
+        assert 'border-left: 4px solid #007bff' in body
 
 
 class TestCreateCollapsibleSection:
     """create_collapsible_section関数のテスト"""
     
     def test_create_collapsible_section_default(self):
-        """デフォルトパラメータで折りたたみセクションを生成"""
+        """デフォルトパラメータでセクションを生成"""
         content = "<p>テスト内容</p>"
         result = create_collapsible_section(content)
         
         # 必要な要素が含まれることを確認
-        assert '<input type="checkbox"' in result
-        assert '<label' in result
-        assert 'collapsible-label' in result
-        assert '詳細レポートを表示' in result
-        assert 'collapsible-content' in result
         assert '<p>テスト内容</p>' in result
-        # デフォルトで折りたたまれている（input要素にchecked属性がない）
-        import re
-        input_match = re.search(r'<input[^>]*type="checkbox"[^>]*>', result)
-        assert input_match is not None
-        input_tag = input_match.group()
-        # checked属性が含まれていないことを確認（空白の後にcheckedがあるかチェック）
-        assert not re.search(r'\s+checked\s*(?:=|>|/>)', input_tag)
+        assert 'background-color: #f8f9fa' in result
+        assert 'border-left: 4px solid #007bff' in result
+        assert '詳細レポート' in result
     
     def test_create_collapsible_section_custom_title(self):
-        """カスタムタイトルで折りたたみセクションを生成"""
+        """カスタムタイトルでセクションを生成"""
         content = "<p>テスト内容</p>"
         title = "カスタムタイトル"
         result = create_collapsible_section(content, title=title)
         
         assert title in result
+        assert '<p>テスト内容</p>' in result
     
     def test_create_collapsible_section_expanded(self):
-        """デフォルトで展開された状態のセクションを生成"""
+        """collapsed引数は無視されることを確認（後方互換性）"""
         content = "<p>テスト内容</p>"
         result = create_collapsible_section(content, collapsed=False)
         
-        # checked属性が含まれることを確認
-        import re
-        input_match = re.search(r'<input[^>]*type="checkbox"[^>]*>', result)
-        assert input_match is not None
-        input_tag = input_match.group()
-        # checked属性が含まれていることを確認
-        assert re.search(r'\s+checked\s*(?:=|>|/>)', input_tag)
+        # collapsed引数に関わらず同じ出力
+        assert '<p>テスト内容</p>' in result
+        assert 'background-color: #f8f9fa' in result
     
-    def test_create_collapsible_section_unique_ids(self):
-        """複数回呼び出した場合にユニークなIDが生成されることを確認"""
+    def test_create_collapsible_section_always_visible(self):
+        """コンテンツが常に表示されることを確認"""
         content1 = "<p>コンテンツ1</p>"
         content2 = "<p>コンテンツ2</p>"
         
         result1 = create_collapsible_section(content1)
         result2 = create_collapsible_section(content2)
         
-        # 異なるIDが生成されることを確認
-        import re
-        id_pattern = r'id="(collapsible_\d+)"'
-        ids1 = re.findall(id_pattern, result1)
-        ids2 = re.findall(id_pattern, result2)
-        
-        assert len(ids1) > 0
-        assert len(ids2) > 0
-        # 同じコンテンツ内では同じIDが使用される
-        assert len(set(ids1)) == 1
-        assert len(set(ids2)) == 1
-        # 異なる呼び出しでは異なるIDが使用される
-        assert ids1[0] != ids2[0]
+        # 両方のコンテンツが含まれる
+        assert '<p>コンテンツ1</p>' in result1
+        assert '<p>コンテンツ2</p>' in result2
