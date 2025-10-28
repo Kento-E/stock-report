@@ -153,16 +153,13 @@ def generate_toc(stock_reports_info):
         escaped_name = html.escape(info['name'])
         escaped_symbol = html.escape(info['symbol'])
         escaped_judgment = html.escape(info['judgment'])
-        escaped_id = html.escape(info['id'])
         
         # 行の背景色を交互に変更
         bg_color = "#f8f9fa" if i % 2 == 0 else "white"
         toc_html += f"""
                 <tr style="background-color: {bg_color};">
-                    <td style="padding: 10px; border: 1px solid #dee2e6;">
-                        <a href="#{escaped_id}" style="color: #007bff; text-decoration: none; font-weight: bold;">
-                            {escaped_name}
-                        </a>
+                    <td style="padding: 10px; border: 1px solid #dee2e6; font-weight: bold; color: #333;">
+                        {escaped_name}
                     </td>
                     <td style="padding: 10px; border: 1px solid #dee2e6; color: #666;">
                         {escaped_symbol}

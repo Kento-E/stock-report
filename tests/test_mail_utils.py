@@ -319,8 +319,8 @@ class TestGenerateToc:
         assert 'AAPL' in toc
         assert '買い' in toc
         assert 'ホールド' in toc
-        assert 'href="#stock-7203-T"' in toc
-        assert 'href="#stock-AAPL"' in toc
+        # リンクは削除されたため、href属性は存在しない
+        assert 'href=' not in toc
         assert '<table' in toc
         assert '銘柄一覧' in toc
     
@@ -335,7 +335,8 @@ class TestGenerateToc:
         assert 'ソニー' in toc
         assert '6758.T' in toc
         assert '売り' in toc
-        assert 'href="#stock-6758-T"' in toc
+        # リンクは削除されたため、href属性は存在しない
+        assert 'href=' not in toc
     
     def test_generate_toc_empty(self):
         """空のリストの目次生成"""
