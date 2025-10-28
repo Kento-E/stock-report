@@ -65,21 +65,44 @@ def extract_judgment_from_analysis(analysis_text):
     # 判断を示すキーワードとパターン
     # [：:\s] は全角コロン（：）、半角コロン（:）、空白文字をマッチ
     judgment_patterns = [
-        r'(?:売買判断|判断|推奨|アクション)[：:\s]*([^\n]+)',
-        r'(?:judgment|recommendation|action)[：:\s]*([^\n]+)',
+        r'(?:売買判断|判断|推奨|アクション)[：:\s]+([^\n]+)',
+        r'(?:judgment|recommendation|action)[：:\s]+([^\n]+)',
         # マークダウンの見出し形式も考慮
-        r'##?\s*(?:売買判断|判断)[：:\s]*([^\n]+)',
+        r'##?\s*(?:売買判断|判断)[：:\s]+([^\n]+)',
+        # マークダウンボールド記号内のキーワードも考慮
+        r'\*\*(?:売買判断|判断|推奨|アクション)\*\*[：:\s]+([^\n]+)',
     ]
     
     for pattern in judgment_patterns:
         match = re.search(pattern, analysis_text, re.IGNORECASE)
         if match:
             judgment = match.group(1).strip()
-            # 最初の文または最初のカンマまでを取得
-            judgment = re.split(r'[。、\.,]', judgment)[0].strip()
             # マークダウン記号を削除
-            judgment = re.sub(r'[*#]', '', judgment)
-            return judgment[:30]  # 最大30文字
+            judgment = re.sub(r'[*#]', '', judgment).strip()
+            
+            # コロンや空白で始まる場合は削除
+            judgment = re.sub(r'^[：:\s]+', '', judgment)
+            
+            # 判断キーワード自体が含まれている場合は削除（誤マッチ対策）
+            judgment = re.sub(r'^(売買判断|判断|推奨|アクション)[：:\s]*', '', judgment)
+            
+            # 最初の句点・読点・カンマで分割
+            judgment = re.split(r'[。、\.,]', judgment)[0].strip()
+            
+            # 判断を示す動詞や助詞の前で切る（「を」「が」「は」などの前で終わらせる）
+            # 「買いを推奨します」→「買い」、「ホールドを提供します」→「ホールド」
+            judgment = re.split(r'[をがはに](推奨|提供|維持|継続)', judgment)[0].strip()
+            
+            # 「が良い」「がおすすめ」などの前で切る
+            judgment = re.split(r'が(良い|おすすめ|望ましい)', judgment)[0].strip()
+            
+            # 判断語の後の括弧や説明を削除
+            # 「買い（短期的には」→「買い」
+            judgment = re.split(r'[（(]', judgment)[0].strip()
+            
+            # 最大30文字に制限
+            if judgment and len(judgment) > 0:
+                return judgment[:30]
     
     # パターンが見つからない場合、キーワードを含む行を探す
     lines = analysis_text.split('\n')
@@ -89,6 +112,10 @@ def extract_judgment_from_analysis(analysis_text):
             # マークダウン記号を削除
             clean_line = re.sub(r'[*#:\-]', '', line).strip()
             if len(clean_line) > 5:
+                # 同様の処理を適用
+                clean_line = re.split(r'[をがはに](推奨|提供|維持|継続)', clean_line)[0].strip()
+                clean_line = re.split(r'が(良い|おすすめ|望ましい)', clean_line)[0].strip()
+                clean_line = re.split(r'[（(]', clean_line)[0].strip()
                 return clean_line[:30]
     
     return "-"

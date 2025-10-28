@@ -279,6 +279,26 @@ The stock is undervalued.
 """
         judgment = extract_judgment_from_analysis(analysis)
         assert len(judgment) <= 30
+    
+    def test_extract_judgment_removes_trailing_verbs(self):
+        """動詞や説明文が含まれる判断からクリーンな判断のみを抽出"""
+        # ユーザーが報告した問題のテストケース
+        test_cases = [
+            ("売買判断: 買いを推奨します", "買い"),
+            ("売買判断：ホールドを提供します", "ホールド"),
+            ("判断: 買い増しが良いでしょう", "買い増し"),
+            ("売買判断：様子見を維持します", "様子見"),
+        ]
+        
+        for analysis, expected in test_cases:
+            judgment = extract_judgment_from_analysis(analysis)
+            # 動詞や助詞が含まれていないことを確認
+            assert 'を推奨' not in judgment
+            assert 'を提供' not in judgment
+            assert 'が良い' not in judgment
+            assert 'を維持' not in judgment
+            # 期待される判断が含まれることを確認
+            assert expected in judgment
 
 
 class TestGenerateToc:
