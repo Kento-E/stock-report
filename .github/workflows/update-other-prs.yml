@@ -1,0 +1,112 @@
+name: Update Other PRs After Merge
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [ main ]
+
+jobs:
+  update-prs:
+    # PRがマージされた場合のみ実行
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Update other PRs targeting the same base branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGED_PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
+        run: |
+          echo "✅ PR #${MERGED_PR_NUMBER} がマージされました"
+          echo "🔍 ベースブランチ '${BASE_BRANCH}' を対象とする他のオープンなPRを検索中..."
+          
+          # 同じベースブランチを持つオープンなPRを取得（マージされたPRを除外）
+          OTHER_PRS=$(gh pr list --base "${BASE_BRANCH}" --state open --json number,headRefName,title --jq --argjson merged_pr "$MERGED_PR_NUMBER" '.[] | select(.number != $merged_pr) | .number')
+          
+          if [ -z "$OTHER_PRS" ]; then
+            echo "ℹ️ 更新対象のPRはありません"
+            exit 0
+          fi
+          
+          echo "📋 更新対象のPR: $(echo $OTHER_PRS | tr '\n' ' ')"
+          
+          # 各PRを更新
+          SUCCESS_COUNT=0
+          SKIP_COUNT=0
+          FAIL_COUNT=0
+          
+          for PR_NUM in $OTHER_PRS; do
+            echo ""
+            echo "🔄 PR #${PR_NUM} を処理中..."
+            
+            # PRの詳細情報を取得
+            PR_INFO=$(gh pr view ${PR_NUM} --json title,headRefName,mergeable,mergeStateStatus)
+            PR_TITLE=$(echo "$PR_INFO" | jq -r '.title')
+            PR_BRANCH=$(echo "$PR_INFO" | jq -r '.headRefName')
+            MERGEABLE=$(echo "$PR_INFO" | jq -r '.mergeable')
+            MERGE_STATE=$(echo "$PR_INFO" | jq -r '.mergeStateStatus')
+            
+            echo "  📝 タイトル: ${PR_TITLE}"
+            echo "  🌿 ブランチ: ${PR_BRANCH}"
+            echo "  📊 マージ可能性: ${MERGEABLE}"
+            echo "  📊 マージ状態: ${MERGE_STATE}"
+            
+            # コンフリクトがある場合はスキップ
+            if [ "$MERGEABLE" = "CONFLICTING" ]; then
+              echo "  ⚠️ コンフリクトがあるためスキップします"
+              SKIP_COUNT=$((SKIP_COUNT + 1))
+              continue
+            fi
+            
+            # ブランチ更新を実行
+            echo "  🔄 ブランチを更新中..."
+            
+            # 現在のhead SHAを取得
+            CURRENT_HEAD_SHA=$(gh api /repos/${{ github.repository }}/pulls/${PR_NUM} --jq .head.sha)
+            
+            # update-branchを実行
+            UPDATE_STATUS=0
+            UPDATE_RESULT=$(gh api \
+              --method PUT \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "/repos/${{ github.repository }}/pulls/${PR_NUM}/update-branch" \
+              -f expected_head_sha="${CURRENT_HEAD_SHA}" 2>&1) || UPDATE_STATUS=$?
+            
+            if [ "${UPDATE_STATUS}" -eq 0 ]; then
+              echo "  ✅ PR #${PR_NUM} を正常に更新しました"
+              SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+            else
+              # エラーメッセージを解析
+              if echo "${UPDATE_RESULT}" | grep -q "merge conflict"; then
+                echo "  ⚠️ マージコンフリクトが発生したためスキップします"
+                SKIP_COUNT=$((SKIP_COUNT + 1))
+              elif echo "${UPDATE_RESULT}" | grep -q "already up to date\|up-to-date"; then
+                echo "  ℹ️ すでに最新の状態です"
+                SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
+              else
+                echo "  ❌ PR #${PR_NUM} の更新に失敗しました: ${UPDATE_RESULT}"
+                FAIL_COUNT=$((FAIL_COUNT + 1))
+              fi
+            fi
+          done
+          
+          echo ""
+          echo "=========================================="
+          echo "📊 更新結果サマリー"
+          echo "=========================================="
+          echo "✅ 成功: ${SUCCESS_COUNT} 件"
+          echo "⚠️ スキップ（コンフリクト）: ${SKIP_COUNT} 件"
+          echo "❌ 失敗: ${FAIL_COUNT} 件"
+          echo "=========================================="
+          
+          # エラーがあっても処理は継続（他のPRの更新を妨げない）
+          exit 0
