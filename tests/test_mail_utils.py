@@ -184,21 +184,18 @@ class TestGenerateCategorizedMailBody:
         assert '購入検討中の銘柄' not in body
         assert '空売り検討中の銘柄' not in body
     
-    def test_collapsible_details_in_reports(self):
-        """レポートに折りたたみ可能な<details>タグが含まれることを確認"""
+    def test_reports_always_visible(self):
+        """レポートが常に表示されることを確認（details/summary タグなし）"""
         subject = "テスト件名"
         # 実際のmain.pyで生成される形式のレポートをシミュレート
-        report_with_details = """<h1 style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">テスト銘柄</h1>
+        report_always_visible = """<h1 style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">テスト銘柄</h1>
 <p style="color: #666; font-size: 14px;">銘柄コード: TEST</p>
-<details>
-<summary style="cursor: pointer; font-weight: bold; color: #007bff; padding: 10px 0;">詳細レポートを表示</summary>
 <div style="margin-top: 15px; padding-left: 20px; border-left: 3px solid #007bff;">
 <p>詳細な分析内容</p>
-</div>
-</details>"""
+</div>"""
         
         categorized_reports = {
-            'holding': [report_with_details],
+            'holding': [report_always_visible],
             'short_selling': [],
             'considering_buy': [],
             'considering_short_sell': []
@@ -206,11 +203,12 @@ class TestGenerateCategorizedMailBody:
         
         body = generate_categorized_mail_body(subject, categorized_reports)
         
-        # detailsタグとsummaryタグが含まれることを確認
-        assert '<details>' in body
-        assert '<summary' in body
-        assert '詳細レポートを表示' in body
-        assert '</details>' in body
+        # コンテンツが含まれ、details/summaryタグがないことを確認
+        assert 'テスト銘柄' in body
+        assert '詳細な分析内容' in body
+        assert '<details>' not in body
+        assert '<summary' not in body
+        assert '詳細レポートを表示' not in body
 
 
 class TestExtractJudgmentFromAnalysis:

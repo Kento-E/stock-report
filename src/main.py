@@ -121,15 +121,11 @@ if __name__ == "__main__":
                 analysis_html = markdown_to_html(analysis)
             
             # メール本文で企業名を見出しとして使用（IDを追加してリンク可能に）
-            # 詳細レポートを折りたたみ可能にする
             report_html = f"""<h1 id="{stock_id}" style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">{company_name}</h1>
 <p style="color: #666; font-size: 14px;">銘柄コード: {symbol}</p>
-<details>
-<summary style="cursor: pointer; font-weight: bold; color: #007bff; padding: 10px 0;">詳細レポートを表示</summary>
 <div style="margin-top: 15px; padding-left: 20px; border-left: 3px solid #007bff;">
 {analysis_html}
-</div>
-</details>"""
+</div>"""
             categorized_reports[category].append(report_html)
 
     # 分類別に個別のメールを送信
