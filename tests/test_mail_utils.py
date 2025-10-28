@@ -9,7 +9,7 @@ import sys
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from mail_utils import markdown_to_html, generate_mail_body, generate_categorized_mail_body, generate_single_category_mail_body, extract_judgment_from_analysis, generate_toc
+from mail_utils import markdown_to_html, generate_mail_body, generate_categorized_mail_body, generate_single_category_mail_body, extract_judgment_from_analysis, generate_toc, create_collapsible_section
 
 
 class TestMarkdownToHtml:
@@ -431,3 +431,48 @@ class TestGenerateCategorizedMailBodyWithToc:
         assert '<html>' in body
         assert '保有銘柄' in body
         assert 'テスト銘柄' in body
+
+
+class TestCreateCollapsibleSection:
+    """create_collapsible_section関数のテスト"""
+    
+    def test_create_collapsible_section_default(self):
+        """デフォルトパラメータでセクションを生成"""
+        content = "<p>テスト内容</p>"
+        result = create_collapsible_section(content)
+        
+        # 必要な要素が含まれることを確認
+        assert '<p>テスト内容</p>' in result
+        assert 'background-color: #f8f9fa' in result
+        assert 'border-left: 4px solid #007bff' in result
+        assert '詳細レポート' in result
+    
+    def test_create_collapsible_section_custom_title(self):
+        """カスタムタイトルでセクションを生成"""
+        content = "<p>テスト内容</p>"
+        title = "カスタムタイトル"
+        result = create_collapsible_section(content, title=title)
+        
+        assert title in result
+        assert '<p>テスト内容</p>' in result
+    
+    def test_create_collapsible_section_expanded(self):
+        """collapsed引数は無視されることを確認（後方互換性）"""
+        content = "<p>テスト内容</p>"
+        result = create_collapsible_section(content, collapsed=False)
+        
+        # collapsed引数に関わらず同じ出力
+        assert '<p>テスト内容</p>' in result
+        assert 'background-color: #f8f9fa' in result
+    
+    def test_create_collapsible_section_always_visible(self):
+        """コンテンツが常に表示されることを確認"""
+        content1 = "<p>コンテンツ1</p>"
+        content2 = "<p>コンテンツ2</p>"
+        
+        result1 = create_collapsible_section(content1)
+        result2 = create_collapsible_section(content2)
+        
+        # 両方のコンテンツが含まれる
+        assert '<p>コンテンツ1</p>' in result1
+        assert '<p>コンテンツ2</p>' in result2
