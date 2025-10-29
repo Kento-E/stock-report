@@ -6,7 +6,7 @@
 
 import datetime
 import os
-from mail_utils import markdown_to_html
+from mail.formatter import markdown_to_html
 from report_simplifier import detect_hold_judgment, simplify_hold_report
 
 
