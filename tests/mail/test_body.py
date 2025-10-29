@@ -1,5 +1,5 @@
 """
-mail_utilsモジュールのテスト
+mail.bodyモジュールのテスト
 """
 
 import pytest
@@ -7,37 +7,9 @@ import os
 import sys
 
 # srcディレクトリをパスに追加
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..', 'src'))
 
-from mail_utils import markdown_to_html, generate_mail_body, generate_categorized_mail_body, generate_single_category_mail_body, create_collapsible_section
-
-
-class TestMarkdownToHtml:
-    """markdown_to_html関数のテスト"""
-    
-    def test_simple_markdown_conversion(self):
-        """シンプルなマークダウンのHTML変換"""
-        markdown_text = "# 見出し\n\nテキスト"
-        html = markdown_to_html(markdown_text)
-        
-        assert '<h1>' in html or 'h1' in html.lower()
-        assert '見出し' in html
-        assert 'テキスト' in html
-    
-    def test_bold_conversion(self):
-        """太字マークダウンの変換"""
-        markdown_text = "**太字**のテキスト"
-        html = markdown_to_html(markdown_text)
-        
-        assert '太字' in html
-    
-    def test_list_conversion(self):
-        """リストマークダウンの変換"""
-        markdown_text = "- 項目1\n- 項目2"
-        html = markdown_to_html(markdown_text)
-        
-        assert '項目1' in html
-        assert '項目2' in html
+from mail.body import generate_mail_body, generate_single_category_mail_body, generate_categorized_mail_body
 
 
 class TestGenerateMailBody:
@@ -117,6 +89,28 @@ class TestGenerateSingleCategoryMailBody:
             body_content = body[body_start:body_end]
             # 最初のh1は銘柄名
             assert '<h1>トヨタ自動車</h1>' in body_content
+    
+    def test_single_category_with_toc(self):
+        """目次付きメール本文の生成"""
+        subject = "テスト件名"
+        reports = ['<h1 id="stock-TEST">テスト銘柄</h1><p>分析内容</p>']
+        toc = '<div>目次HTML</div>'
+        
+        body = generate_single_category_mail_body(subject, reports, toc)
+        
+        assert '<html>' in body
+        assert '目次HTML' in body
+        assert 'テスト銘柄' in body
+    
+    def test_single_category_without_toc(self):
+        """目次なしメール本文の生成（後方互換性）"""
+        subject = "テスト件名"
+        reports = ['<h1>テスト銘柄</h1><p>分析内容</p>']
+        
+        body = generate_single_category_mail_body(subject, reports)
+        
+        assert '<html>' in body
+        assert 'テスト銘柄' in body
 
 
 class TestGenerateCategorizedMailBody:
@@ -184,21 +178,18 @@ class TestGenerateCategorizedMailBody:
         assert '購入検討中の銘柄' not in body
         assert '空売り検討中の銘柄' not in body
     
-    def test_collapsible_details_in_reports(self):
-        """レポートにセクション構造が含まれることを確認"""
+    def test_reports_always_visible(self):
+        """レポートが常に表示されることを確認（details/summary タグなし）"""
         subject = "テスト件名"
         # 実際のmain.pyで生成される形式のレポートをシミュレート
-        report_with_section = """<h1 style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">テスト銘柄</h1>
+        report_always_visible = """<h1 style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">テスト銘柄</h1>
 <p style="color: #666; font-size: 14px;">銘柄コード: TEST</p>
-<div style="margin-top: 15px; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #007bff; border-radius: 4px;">
-    <h3 style="margin: 0 0 10px 0; color: #007bff; font-size: 16px;">詳細レポート</h3>
-    <div style="padding-left: 10px;">
+<div style="margin-top: 15px; padding-left: 20px; border-left: 3px solid #007bff;">
 <p>詳細な分析内容</p>
-    </div>
 </div>"""
         
         categorized_reports = {
-            'holding': [report_with_section],
+            'holding': [report_always_visible],
             'short_selling': [],
             'considering_buy': [],
             'considering_short_sell': []
@@ -206,52 +197,37 @@ class TestGenerateCategorizedMailBody:
         
         body = generate_categorized_mail_body(subject, categorized_reports)
         
-        # セクション構造が含まれることを確認
-        assert '詳細レポート' in body
-        assert 'background-color: #f8f9fa' in body
-        assert 'border-left: 4px solid #007bff' in body
-
-
-class TestCreateCollapsibleSection:
-    """create_collapsible_section関数のテスト"""
+        # コンテンツが含まれ、details/summaryタグがないことを確認
+        assert 'テスト銘柄' in body
+        assert '詳細な分析内容' in body
+        assert '<details>' not in body
+        assert '<summary' not in body
+        assert '詳細レポートを表示' not in body
     
-    def test_create_collapsible_section_default(self):
-        """デフォルトパラメータでセクションを生成"""
-        content = "<p>テスト内容</p>"
-        result = create_collapsible_section(content)
+    def test_categorized_with_toc(self):
+        """目次付き分類別メール本文の生成"""
+        subject = "テスト件名"
+        categorized_reports = {
+            'holding': ['<h1 id="stock-TEST">テスト銘柄</h1><p>分析1</p>']
+        }
+        toc = '<div>目次HTML</div>'
         
-        # 必要な要素が含まれることを確認
-        assert '<p>テスト内容</p>' in result
-        assert 'background-color: #f8f9fa' in result
-        assert 'border-left: 4px solid #007bff' in result
-        assert '詳細レポート' in result
+        body = generate_categorized_mail_body(subject, categorized_reports, toc)
+        
+        assert '<html>' in body
+        assert '目次HTML' in body
+        assert '保有銘柄' in body
+        assert 'テスト銘柄' in body
     
-    def test_create_collapsible_section_custom_title(self):
-        """カスタムタイトルでセクションを生成"""
-        content = "<p>テスト内容</p>"
-        title = "カスタムタイトル"
-        result = create_collapsible_section(content, title=title)
+    def test_categorized_without_toc(self):
+        """目次なし分類別メール本文の生成（後方互換性）"""
+        subject = "テスト件名"
+        categorized_reports = {
+            'holding': ['<h1>テスト銘柄</h1><p>分析1</p>']
+        }
         
-        assert title in result
-        assert '<p>テスト内容</p>' in result
-    
-    def test_create_collapsible_section_expanded(self):
-        """collapsed引数は無視されることを確認（後方互換性）"""
-        content = "<p>テスト内容</p>"
-        result = create_collapsible_section(content, collapsed=False)
+        body = generate_categorized_mail_body(subject, categorized_reports)
         
-        # collapsed引数に関わらず同じ出力
-        assert '<p>テスト内容</p>' in result
-        assert 'background-color: #f8f9fa' in result
-    
-    def test_create_collapsible_section_always_visible(self):
-        """コンテンツが常に表示されることを確認"""
-        content1 = "<p>コンテンツ1</p>"
-        content2 = "<p>コンテンツ2</p>"
-        
-        result1 = create_collapsible_section(content1)
-        result2 = create_collapsible_section(content2)
-        
-        # 両方のコンテンツが含まれる
-        assert '<p>コンテンツ1</p>' in result1
-        assert '<p>コンテンツ2</p>' in result2
+        assert '<html>' in body
+        assert '保有銘柄' in body
+        assert 'テスト銘柄' in body

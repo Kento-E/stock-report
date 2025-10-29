@@ -15,14 +15,35 @@ Github Actions上で定期実行可能。APIキーや設定値はSecrets/環境�
 import sys
 import datetime
 import yaml
+import re
 from config import USE_CLAUDE, MAIL_TO, SIMPLIFY_HOLD_REPORTS
 from stock_loader import load_stock_symbols, categorize_stocks, get_currency_for_symbol
 from data_fetcher import fetch_stock_data
 from ai_analyzer import analyze_with_claude, analyze_with_gemini
 from report_generator import generate_report_html
-from mail_utils import send_report_via_mail, get_smtp_config, generate_single_category_mail_body, markdown_to_html, create_collapsible_section
+from mail import send_report_via_mail, get_smtp_config, generate_single_category_mail_body
+from mail.formatter import markdown_to_html, create_collapsible_section
+from mail.toc import extract_judgment_from_analysis, generate_toc
 from report_simplifier import detect_hold_judgment, simplify_hold_report
 from preference_loader import generate_preference_prompt
+
+def sanitize_id(text):
+    """
+    テキストをHTML IDとして使用可能な形式にサニタイズする
+    
+    Args:
+        text: 元のテキスト
+    
+    Returns:
+        str: サニタイズされたID
+    """
+    # 英数字とハイフン以外を削除し、ハイフンに置換
+    sanitized = re.sub(r'[^\w\-]', '-', text)
+    # 連続するハイフンを1つにまとめる
+    sanitized = re.sub(r'-+', '-', sanitized)
+    # 先頭と末尾のハイフンを削除
+    sanitized = sanitized.strip('-')
+    return sanitized
 
 if __name__ == "__main__":
     try:
@@ -52,6 +73,14 @@ if __name__ == "__main__":
         'considering_short_sell': []
     }
     
+    # 分類別の銘柄情報（目次用）
+    categorized_stock_info = {
+        'holding': [],
+        'short_selling': [],
+        'considering_buy': [],
+        'considering_short_sell': []
+    }
+    
     # 各分類の銘柄を処理
     for category, stock_list in categorized.items():
         for stock_info in stock_list:
@@ -71,6 +100,20 @@ if __name__ == "__main__":
             html, filename = generate_report_html(symbol, company_name, analysis, data)
             print(f"レポート生成: {filename} (分類: {category})")
             
+            # 売買判断を抽出
+            judgment = extract_judgment_from_analysis(analysis)
+            
+            # 銘柄IDを生成（リンク用）
+            stock_id = f"stock-{sanitize_id(symbol)}"
+            
+            # 目次用の銘柄情報を記録
+            categorized_stock_info[category].append({
+                'symbol': symbol,
+                'name': company_name,
+                'judgment': judgment,
+                'id': stock_id
+            })
+            
             # メール本文用のHTML生成（簡略化を適用）
             if SIMPLIFY_HOLD_REPORTS and detect_hold_judgment(analysis):
                 # ホールド判断の場合は簡略化
@@ -79,14 +122,12 @@ if __name__ == "__main__":
             else:
                 analysis_html = markdown_to_html(analysis)
             
-            # 詳細レポートを折りたたみ可能にする
-            report_html = f"""<h1 style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">{company_name} ({symbol})</h1>
-<details>
-<summary style="cursor: pointer; font-weight: bold; color: #007bff; padding: 10px 0;">詳細レポートを表示</summary>
+            # メール本文で企業名を見出しとして使用（IDを追加してリンク可能に）
+            report_html = f"""<h1 id="{stock_id}" style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">{company_name}</h1>
+<p style="color: #666; font-size: 14px;">銘柄コード: {symbol}</p>
 <div style="margin-top: 15px; padding-left: 20px; border-left: 3px solid #007bff;">
 {analysis_html}
-</div>
-</details>"""
+</div>"""
             categorized_reports[category].append(report_html)
 
     # 分類別に個別のメールを送信
@@ -105,10 +146,16 @@ if __name__ == "__main__":
         # 各カテゴリーごとに個別のメールを送信
         for category in ['holding', 'short_selling', 'considering_buy', 'considering_short_sell']:
             reports = categorized_reports.get(category, [])
+            stock_info_list = categorized_stock_info.get(category, [])
             if reports:  # 銘柄が存在する場合のみメール送信
                 category_name = category_names[category]
                 subject = f"株式日次レポート - {category_name} ({today})"
-                body = generate_single_category_mail_body(subject, reports)
+                
+                # 目次を生成
+                toc_html = generate_toc(stock_info_list)
+                
+                # メール本文を生成（目次を含む）
+                body = generate_single_category_mail_body(subject, reports, toc_html)
                 send_report_via_mail(
                     subject, body, MAIL_TO,
                     smtp_conf['MAIL_FROM'], smtp_conf['SMTP_SERVER'], smtp_conf['SMTP_PORT'], smtp_conf['SMTP_USER'], smtp_conf['SMTP_PASS']
