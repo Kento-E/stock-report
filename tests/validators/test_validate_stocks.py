@@ -8,7 +8,7 @@ import os
 import sys
 
 # srcディレクトリをパスに追加
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..', 'src'))
 
 from validators.validate_stocks import validate_stock_entry, validate_stocks_yaml
 

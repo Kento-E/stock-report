@@ -9,7 +9,7 @@ import tempfile
 import yaml
 
 # srcディレクトリをパスに追加
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..', 'src'))
 
 from loaders.preference_loader import (
     load_investment_preferences,

@@ -8,7 +8,7 @@ import os
 import sys
 
 # srcディレクトリをパスに追加
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..', 'src'))
 
 from loaders.stock_loader import load_stock_symbols, get_currency_for_symbol, categorize_stock, categorize_stocks, calculate_tax, normalize_symbol
 
