@@ -53,6 +53,9 @@ def extract_judgment_from_analysis(analysis_text):
     """
     AI分析結果から売買判断を抽出する
     
+    AIプロンプトで構造化された出力を要求しているため、シンプルなパターンマッチで対応。
+    フォールバックとして複雑なパターンも保持。
+    
     Args:
         analysis_text: AI分析結果のテキスト（マークダウン形式）
     
@@ -62,61 +65,59 @@ def extract_judgment_from_analysis(analysis_text):
     if not analysis_text:
         return "-"
     
-    # 判断を示すキーワードとパターン
+    # 基本パターン: AIに要求している「売買判断: 買い」形式を最優先
     # [：:\s] は全角コロン（：）、半角コロン（:）、空白文字をマッチ
-    judgment_patterns = [
-        r'(?:売買判断|判断|推奨|アクション)[：:\s]+([^\n]+)',
-        r'(?:judgment|recommendation|action)[：:\s]+([^\n]+)',
-        # マークダウンの見出し形式も考慮
-        r'##?\s*(?:売買判断|判断)[：:\s]+([^\n]+)',
-        # マークダウンボールド記号内のキーワードも考慮
-        r'\*\*(?:売買判断|判断|推奨|アクション)\*\*[：:\s]+([^\n]+)',
+    simple_patterns = [
+        r'(?:売買判断|判断)[：:\s]+([^\n。、\.,、（(を]+)',  # 「売買判断: 買い」（区切り文字まで）
+        r'(?:judgment|action)[：:\s]+([^\n\s。、\.,]+)',  # 英語版
     ]
     
-    for pattern in judgment_patterns:
+    for pattern in simple_patterns:
         match = re.search(pattern, analysis_text, re.IGNORECASE)
         if match:
             judgment = match.group(1).strip()
             # マークダウン記号を削除
             judgment = re.sub(r'[*#]', '', judgment).strip()
             
-            # コロンや空白で始まる場合は削除
+            if judgment and len(judgment) <= 10:  # 短い判断のみ受け入れ
+                return judgment
+    
+    # フォールバック: 複雑なパターン（AIが指示に従わなかった場合）
+    fallback_patterns = [
+        r'(?:推奨|アクション)[：:\s]+([^\n]+)',
+        r'##?\s*(?:売買判断|判断)[：:\s]+([^\n]+)',
+        r'\*\*(?:売買判断|判断|推奨|アクション)\*\*[：:\s]+([^\n]+)',
+    ]
+    
+    for pattern in fallback_patterns:
+        match = re.search(pattern, analysis_text, re.IGNORECASE)
+        if match:
+            judgment = match.group(1).strip()
+            # クリーンアップ処理
+            judgment = re.sub(r'[*#]', '', judgment).strip()
             judgment = re.sub(r'^[：:\s]+', '', judgment)
-            
-            # 判断キーワード自体が含まれている場合は削除（誤マッチ対策）
             judgment = re.sub(r'^(売買判断|判断|推奨|アクション)[：:\s]*', '', judgment)
-            
-            # 最初の句点・読点・カンマで分割
             judgment = re.split(r'[。、\.,]', judgment)[0].strip()
-            
-            # 判断を示す動詞や助詞の前で切る（「を」「が」「は」などの前で終わらせる）
-            # 「買いを推奨します」→「買い」、「ホールドを提供します」→「ホールド」
+            # 動詞・助詞を除去
             judgment = re.split(r'[をがはに](推奨|提供|維持|継続)', judgment)[0].strip()
-            
-            # 「が良い」「がおすすめ」などの前で切る
             judgment = re.split(r'が(良い|おすすめ|望ましい)', judgment)[0].strip()
-            
-            # 判断語の後の括弧や説明を削除
-            # 「買い（短期的には」→「買い」
             judgment = re.split(r'[（(]', judgment)[0].strip()
             
-            # 最大30文字に制限
             if judgment and len(judgment) > 0:
                 return judgment[:30]
     
-    # パターンが見つからない場合、キーワードを含む行を探す
+    # 最終フォールバック: キーワードを含む行を探す
     lines = analysis_text.split('\n')
     for line in lines:
         line_lower = line.lower()
         if any(kw in line_lower for kw in ['買い', 'buy', '売り', 'sell', 'ホールド', 'hold', '様子見']):
-            # マークダウン記号を削除
             clean_line = re.sub(r'[*#:\-]', '', line).strip()
-            if len(clean_line) > 5:
-                # 同様の処理を適用
+            if 5 < len(clean_line) <= 30:
                 clean_line = re.split(r'[をがはに](推奨|提供|維持|継続)', clean_line)[0].strip()
                 clean_line = re.split(r'が(良い|おすすめ|望ましい)', clean_line)[0].strip()
-                clean_line = re.split(r'[（(]', clean_line)[0].strip()
-                return clean_line[:30]
+                clean_line = re.split(r'[（(。、]', clean_line)[0].strip()
+                if len(clean_line) <= 10:
+                    return clean_line
     
     return "-"
 
