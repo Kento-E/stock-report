@@ -27,4 +27,4 @@ jobs:
     
     - name: Validate investment_preferences.yaml
       run: |
-        python src/validate_preferences.py data/investment_preferences.yaml
+        python src/validators/validate_preferences.py data/investment_preferences.yaml

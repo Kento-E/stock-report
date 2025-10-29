@@ -7,7 +7,7 @@
 import datetime
 import os
 from mail.formatter import markdown_to_html
-from report_simplifier import detect_hold_judgment, simplify_hold_report
+from report.simplifier import detect_hold_judgment, simplify_hold_report
 
 
 def generate_report_html(symbol, company_name, analysis, stock_data=None):

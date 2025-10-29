@@ -11,7 +11,7 @@ import yaml
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from preference_loader import (
+from loaders.preference_loader import (
     load_investment_preferences,
     generate_preference_prompt,
     _validate_preferences,

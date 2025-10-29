@@ -7,8 +7,8 @@ Claude SonnetまたはGemini APIを使用して株価・ニュースデータを
 import anthropic
 import requests
 from config import CLAUDE_API_KEY, GEMINI_API_KEY
-from stock_loader import get_currency_for_symbol, calculate_tax
-from preference_loader import generate_preference_prompt
+from loaders.stock_loader import get_currency_for_symbol, calculate_tax
+from loaders.preference_loader import generate_preference_prompt
 
 
 # AI分析の観点（共通）

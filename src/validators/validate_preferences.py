@@ -9,9 +9,9 @@ import sys
 import os
 
 # srcディレクトリをパスに追加
-sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from preference_loader import load_investment_preferences
+from loaders.preference_loader import load_investment_preferences
 
 
 def validate_investment_preferences_file(filepath='data/investment_preferences.yaml'):
