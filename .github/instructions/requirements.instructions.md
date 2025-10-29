@@ -174,18 +174,44 @@
 
 #### コアモジュール（src/）
 
+システムは機能別にディレクトリ分割されており、保守性と可読性が向上しています。
+
+##### メインモジュール
+
 - **main.py**：メインエントリーポイント。各モジュールを組み合わせたオーケストレーション処理。全体のワークフローを制御し、データ取得・分析・レポート生成・メール配信の一連の処理を統合する。
 - **config.py**：環境変数の読み込みと設定値の一元管理。API キー、メール設定、モデル名などのシステム設定を管理する。
+
+##### データ読み込みモジュール（loaders/）
+
 - **stock_loader.py**：YAML銘柄リストの読み込み、通貨判定、銘柄分類機能。銘柄データの読み込みと保有状況に基づく分類（保有中、空売り中、購入検討中）を担当する。
 - **preference_loader.py**：投資志向性設定の読み込みとプロンプト生成。YAML形式の投資志向性設定ファイルを読み込み、AI分析用のプロンプト文字列を生成する。
+
+##### バリデーションモジュール（validators/）
+
 - **validate_stocks.py**：stocks.yamlファイルのバリデーションスクリプト。YAML構文、必須フィールド、型、値の範囲などを検証し、不正なデータの混入を防止する。
 - **validate_preferences.py**：investment_preferences.yamlファイルのバリデーションスクリプト。投資志向性設定の形式を検証し、不正な設定値の混入を防止する。
+
+##### フォーマットモジュール（formatters/）
+
 - **format_yaml.py**：YAMLファイルの自動フォーマットスクリプト。インデントのズレを修正し、コメントを保持したままフォーマット。`--check` オプションでフォーマットが必要かチェックのみ可能。
-- **data_fetcher.py**：Yahoo Finance APIとdefeatbeta-apiによるデータ取得。株価データとニュースデータの取得を担当し、外部APIとの通信を抽象化する。
+
+##### 分析モジュール（analyzers/）
+
 - **ai_analyzer.py**：Claude API/Gemini APIによる分析処理と保有状況プロンプト生成。取得したデータと投資志向性設定を基にAIで分析を実施し、売買判断と推奨価格を含むレポートを生成する。
-- **report_generator.py**：HTMLレポート生成とファイル保存。分析結果をHTML形式に変換し、ファイルとして保存する。ホールド判断時の簡略化ロジックを含む。
-- **report_simplifier.py**：レポート簡略化モジュール。ホールド判断の検出とレポートの簡略化を担当する。
-- **mail_utils.py**：メール送信・SMTP 設定・分類別メール本文生成のユーティリティ。メール配信機能を提供し、保有状況に応じて分類されたメール本文を生成する。
+- **data_fetcher.py**：Yahoo Finance APIとdefeatbeta-apiによるデータ取得。株価データとニュースデータの取得を担当し、外部APIとの通信を抽象化する。
+
+##### レポート生成モジュール（report/）
+
+- **generator.py**：HTMLレポート生成とファイル保存。分析結果をHTML形式に変換し、ファイルとして保存する。ホールド判断時の簡略化ロジックを含む。
+- **simplifier.py**：レポート簡略化モジュール。ホールド判断の検出とレポートの簡略化を担当する。
+
+##### メール配信モジュール（mail/）
+
+- **sender.py**：メール送信機能。SMTP設定に基づいてレポートをメール配信する。
+- **body.py**：メール本文生成。保有状況に応じて分類されたメール本文を生成する。
+- **formatter.py**：MarkdownからHTMLへの変換、折りたたみセクションの生成。
+- **toc.py**：目次（Table of Contents）の生成。売買判断を抽出してサマリーを作成する。
+- **config.py**：SMTP設定の取得。
 
 #### データ・設定ファイル
 
@@ -217,19 +243,34 @@
 ```
 main.py (オーケストレーション)
   ├── config.py (設定管理)
-  ├── stock_loader.py (銘柄データ読み込み)
-  ├── preference_loader.py (投資志向性設定読み込み)
-  ├── data_fetcher.py (外部API: Yahoo Finance, defeatbeta-api)
-  │     └── config.py
-  ├── ai_analyzer.py (AI分析: Claude, Gemini)
-  │     ├── config.py
-  │     ├── stock_loader.py
-  │     └── preference_loader.py (投資志向性プロンプト生成)
-  ├── report_generator.py (レポート生成)
-  │     ├── mail_utils.py
-  │     └── report_simplifier.py (ホールド判断検出・簡略化)
-  ├── report_simplifier.py (レポート簡略化)
-  └── mail_utils.py (メール配信)
+  ├── loaders/ (データ読み込み)
+  │     ├── stock_loader.py (銘柄データ読み込み)
+  │     └── preference_loader.py (投資志向性設定読み込み)
+  ├── analyzers/ (分析)
+  │     ├── data_fetcher.py (外部API: Yahoo Finance, defeatbeta-api)
+  │     │     └── config.py
+  │     └── ai_analyzer.py (AI分析: Claude, Gemini)
+  │           ├── config.py
+  │           ├── loaders/stock_loader.py
+  │           └── loaders/preference_loader.py (投資志向性プロンプト生成)
+  ├── report/ (レポート生成)
+  │     ├── generator.py (HTMLレポート生成)
+  │     │     ├── mail/formatter.py
+  │     │     └── report/simplifier.py (ホールド判断検出・簡略化)
+  │     └── simplifier.py (レポート簡略化)
+  └── mail/ (メール配信)
+        ├── sender.py (メール送信)
+        ├── body.py (メール本文生成)
+        ├── formatter.py (Markdown→HTML変換)
+        ├── toc.py (目次生成)
+        └── config.py (SMTP設定)
+
+validators/ (バリデーション - 独立実行)
+  ├── validate_stocks.py (stocks.yaml検証)
+  └── validate_preferences.py (投資志向性設定検証)
+
+formatters/ (フォーマット - 独立実行)
+  └── format_yaml.py (YAML自動フォーマット)
 ```
 
 ## 6. 利用技術
