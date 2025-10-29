@@ -200,12 +200,12 @@
 - **data_fetcher.py**：Yahoo Finance APIとdefeatbeta-apiによるデータ取得。株価データとニュースデータの取得を担当し、外部APIとの通信を抽象化する。
 - **ai_analyzer.py**：Claude API/Gemini APIによる分析処理と保有状況プロンプト生成。取得したデータと投資志向性設定を基にAIで分析を実施し、売買判断と推奨価格を含むレポートを生成する。
 
-##### レポート生成モジュール（report/）
+##### レポート生成モジュール（reports/）
 
 - **simplifier.py**：レポート簡略化モジュール。ホールド判断の検出とレポートの簡略化を担当する。
 - **generator.py**：HTMLレポート生成とファイル保存。分析結果をHTML形式に変換し、ファイルとして保存する。ホールド判断時の簡略化ロジックを含む。
 
-##### メール配信モジュール（mail/）
+##### メール配信モジュール（mails/）
 
 - **config.py**：SMTP設定の取得。環境変数からメール送信に必要な設定を読み込む。
 - **formatter.py**：MarkdownからHTMLへの変換、折りたたみセクションの生成。
@@ -253,12 +253,12 @@ main.py (オーケストレーション)
   │           ├── config.py
   │           ├── loaders/stock_loader.py
   │           └── loaders/preference_loader.py (投資志向性プロンプト生成)
-  ├── report/ (レポート生成)
+  ├── reports/ (レポート生成)
   │     ├── generator.py (HTMLレポート生成)
-  │     │     ├── mail/formatter.py
-  │     │     └── report/simplifier.py (ホールド判断検出・簡略化)
+  │     │     ├── mails/formatter.py
+  │     │     └── reports/simplifier.py (ホールド判断検出・簡略化)
   │     └── simplifier.py (レポート簡略化)
-  └── mail/ (メール配信)
+  └── mails/ (メール配信)
         ├── sender.py (メール送信)
         ├── body.py (メール本文生成)
         ├── formatter.py (Markdown→HTML変換)

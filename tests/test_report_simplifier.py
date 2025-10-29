@@ -9,7 +9,7 @@ import sys
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from report.simplifier import detect_hold_judgment, simplify_hold_report, _extract_hold_reason
+from reports.simplifier import detect_hold_judgment, simplify_hold_report, _extract_hold_reason
 
 
 class TestDetectHoldJudgment:

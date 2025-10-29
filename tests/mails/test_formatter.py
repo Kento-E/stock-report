@@ -9,7 +9,7 @@ import sys
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..', 'src'))
 
-from mail.formatter import markdown_to_html, create_collapsible_section
+from mails.formatter import markdown_to_html, create_collapsible_section
 
 
 class TestMarkdownToHtml:

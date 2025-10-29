@@ -9,7 +9,7 @@ import sys
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from report.generator import generate_report_html
+from reports.generator import generate_report_html
 
 
 class TestGenerateReportHtml:
