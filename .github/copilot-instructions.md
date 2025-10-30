@@ -9,28 +9,9 @@
 詳細な情報は以下のドキュメントを参照してください：
 
 - **システム概要・技術スタック**: <a>README.md</a>
-- **要件定義インデックス**: <a>specs/requirements-index.md</a>
-- **機能別仕様書**: `.github/specs/` ディレクトリ内の各仕様書
+- **要件定義と仕様書**: <a>specs/requirements-index.md</a>（エントリーポイント）
 
-## ドキュメント構成
-
-### メインドキュメント
-
-- **README.md**: ユーザー向け使用方法・セットアップ手順
-- **requirements-index.md**: 要件定義インデックス（単一のエントリーポイント）
-
-### 機能別仕様書（.github/specs/）
-
-システムの詳細仕様は機能別に分割されています：
-
-1. **requirements-index.md**: 全仕様書のインデックス
-2. **system-architecture.md**: システムアーキテクチャ・モジュール構成
-3. **data-collection-analysis.md**: データ収集・AI分析機能
-4. **report-email.md**: レポート生成・メール配信機能
-5. **automation-cicd.md**: 自動化・テスト・CI/CD機能
-6. **data-management.md**: 銘柄リスト・投資志向性設定管理
-
-### GitHub Copilot 向け指示ファイル（.github/instructions/）
+## 重要な指示ファイル
 
 ### 1. <a>specs/requirements-index.md</a>
 
@@ -74,21 +55,7 @@ VS Code で GitHub Copilot を使用する際、カスタムチャット参加�
 
 ## 参考リンク
 
-### ユーザー向けドキュメント
-
-- <a>README.md</a>: ユーザー向け使用方法・セットアップ手順・環境変数設定
-- <a>data/README.md</a>: 銘柄リスト・投資志向性設定の詳細編集ガイド
-
-### 開発者向けドキュメント
-
+- <a>README.md</a>: ユーザー向け使用方法・セットアップ手順
+- <a>data/README.md</a>: 銘柄リスト・投資志向性設定の編集ガイド
 - <a>docs/TEST.md</a>: ユニットテストの実行方法
-- <a>specs/requirements-index.md</a>: 要件定義インデックス（単一のエントリーポイント）
-- <a>specs/requirements-index.md</a>: 機能別仕様書インデックス
-
-### 機能別仕様書
-
-- <a>specs/system-architecture.md</a>: システムアーキテクチャ仕様書
-- <a>specs/data-collection-analysis.md</a>: データ収集・分析機能仕様書
-- <a>specs/report-email.md</a>: レポート生成・メール配信機能仕様書
-- <a>specs/automation-cicd.md</a>: 自動化・CI/CD機能仕様書
-- <a>specs/data-management.md</a>: データ管理機能仕様書
+- <a>specs/requirements-index.md</a>: 要件定義と機能別仕様書のインデックス
