@@ -2,88 +2,21 @@
 
 このディレクトリには、システムの詳細仕様を機能別に分割した仕様書が格納されています。
 
-## 仕様書一覧
+## エントリーポイント
 
-### 📋 requirements-index.md
-
-**要件定義インデックス**
-
-全仕様書の概要と構成を示すインデックスページ。まずはこのページから目的の仕様書を探してください。
-
-### 🏗️ system-architecture.md
-
-**システムアーキテクチャ仕様書**
-
-- モジュール構成（src/, validators/, formatters/）
-- モジュール間の関係
-- 利用技術
-- 非機能要件（セキュリティ、パフォーマンス、拡張性、保守性）
-- 運用・保守方針
-
-### 📊 data-collection-analysis.md
-
-**データ収集・分析機能仕様書**
-
-- 株価データ取得（Yahoo Finance API）
-- ニュースデータ取得（defeatbeta-api）
-- AI分析機能（Claude Sonnet / Gemini）
-- 多通貨対応
-- 投資志向性の反映
-- 売買タイミング分析
-- 口座種別による課税計算
-
-### 📧 report-email.md
-
-**レポート生成・メール配信機能仕様書**
-
-- HTML レポート生成
-- レポート表示形式
-- 折りたたみ機能
-- レポート簡略化機能
-- SMTP設定とプライバシー保護
-- 銘柄分類（保有/空売り/検討中）
-- 目次機能
-
-### 🤖 automation-cicd.md
-
-**自動化・CI/CD機能仕様書**
-
-- スケジューラ・自動実行（GitHub Actions）
-- テスト自動化（pytest）
-- 自動マージ機能
-- バリデーション自動実行
-- YAML自動フォーマット
-- ファイアウォール対策
-- カスタムチャットモード（@kansai）
-- GitHub Copilot Premium の効率的な利用
-
-### 💾 data-management.md
-
-**データ管理機能仕様書**
-
-- 銘柄リスト管理（data/stocks.yaml）
-- データ構造（必須/任意フィールド）
-- 編集方法
-- 投資志向性設定（data/investment_preferences.yaml）
-- 設定項目とデフォルト値
-- データバリデーション
-- データフォーマット
+まず **[requirements-index.md](requirements-index.md)** を参照してください。全仕様書の一覧と概要が記載されています。
 
 ## 使い方
 
+### 仕様書の探し方
+
+1. **最初に**: [requirements-index.md](requirements-index.md) で全体像を把握
+2. **該当する機能の仕様書**: 変更したい機能に対応する仕様書を直接参照
+3. **わからない時**: requirements-index.md のクイックリファレンスを確認
+
 ### GitHub Copilot 向け
 
-コードを変更する際は、該当する機能の仕様書を参照してください。例えば：
-
-- システム構成を変更する場合 → `system-architecture.md`
-- AI分析機能を追加する場合 → `data-collection-analysis.md`
-- メール配信方法を変更する場合 → `report-email.md`
-- テストを追加する場合 → `automation-cicd.md`
-- 銘柄リストの項目を追加する場合 → `data-management.md`
-
-### 開発者向け
-
-どの仕様書を参照すべきか分からない場合は、まず `requirements-index.md` を確認してください。
+コード変更時は、該当する機能の仕様書を直接参照してください。requirements-index.md から適切な仕様書へリンクをたどることができます。
 
 ## 設計思想
 
