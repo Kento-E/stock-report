@@ -54,6 +54,5 @@ def generate_report_html(symbol, company_name, analysis, stock_data=None):
     </html>
     """
     filename = f"report_{symbol}_{today}.html"
-    with open(filename, "w", encoding="utf-8") as f:
-        f.write(html)
+    # ファイル書き込みを削除（不要なディスクI/Oを削減）
     return html, filename

@@ -37,8 +37,8 @@ class TestGenerateReportHtml:
         assert symbol in filename
         assert filename.endswith('.html')
         
-        # ファイルが生成されることを確認
-        assert os.path.exists(tmp_path / filename)
+        # ファイルは生成されない（不要なディスクI/Oを削減）
+        assert not os.path.exists(tmp_path / filename)
     
     def test_generate_html_title_format(self, tmp_path, monkeypatch):
         """HTMLタイトルに企業名と銘柄コードが含まれることを確認"""
