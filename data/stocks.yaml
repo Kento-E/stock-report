@@ -1,4 +1,10 @@
 stocks:
+  - name: アイロボット
+    symbol: IRBT
+    acquisition_price: 3.2
+    quantity: 1
+    added: 2025-10-30
+    
   - name: WTI原油ETF
     symbol: 1671
     acquisition_price: 2827
