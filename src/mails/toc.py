@@ -87,7 +87,7 @@ def generate_toc(stock_reports_info):
     
     Args:
         stock_reports_info: 銘柄レポート情報のリスト
-            [{'symbol': '7203.T', 'name': 'トヨタ自動車', 'judgment': '買い', 'id': 'stock-7203-T'}, ...]
+            [{'symbol': '7203.T', 'name': 'トヨタ自動車', 'judgment': '買い'}, ...]
     
     Returns:
         str: HTML形式の目次

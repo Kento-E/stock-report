@@ -119,4 +119,5 @@ class TestGenerateReportHtml:
         
         # h1タグが使用されていることを確認
         assert '<h1>' in html
-        assert f'<h1>{company_name}</h1>' in html
+        # 企業名と銘柄コードが1つの見出しに統合されていることを確認
+        assert f'<h1>{company_name}（{symbol}）</h1>' in html
