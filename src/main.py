@@ -17,15 +17,13 @@ import datetime
 import yaml
 import re
 from config import USE_CLAUDE, MAIL_TO, SIMPLIFY_HOLD_REPORTS
-from stock_loader import load_stock_symbols, categorize_stocks, get_currency_for_symbol
-from data_fetcher import fetch_stock_data
-from ai_analyzer import analyze_with_claude, analyze_with_gemini
-from report_generator import generate_report_html
-from mail import send_report_via_mail, get_smtp_config, generate_single_category_mail_body
-from mail.formatter import markdown_to_html, create_collapsible_section
-from mail.toc import extract_judgment_from_analysis, generate_toc
-from report_simplifier import detect_hold_judgment, simplify_hold_report
-from preference_loader import generate_preference_prompt
+from loaders import load_stock_symbols, categorize_stocks, get_currency_for_symbol
+from analyzers import fetch_stock_data, analyze_with_claude, analyze_with_gemini
+from reports import generate_report_html, detect_hold_judgment, simplify_hold_report
+from mails import send_report_via_mail, get_smtp_config, generate_single_category_mail_body
+from mails.formatter import markdown_to_html, create_collapsible_section
+from mails.toc import extract_judgment_from_analysis, generate_toc
+from loaders import generate_preference_prompt
 
 def sanitize_id(text):
     """

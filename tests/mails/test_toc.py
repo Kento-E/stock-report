@@ -9,7 +9,7 @@ import sys
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..', 'src'))
 
-from mail.toc import extract_judgment_from_analysis, generate_toc
+from mails.toc import extract_judgment_from_analysis, generate_toc
 
 
 class TestExtractJudgmentFromAnalysis:

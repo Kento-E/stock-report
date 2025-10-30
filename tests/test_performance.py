@@ -17,13 +17,13 @@ sys.modules['defeatbeta_api'] = Mock()
 sys.modules['defeatbeta_api.data'] = Mock()
 sys.modules['defeatbeta_api.data.ticker'] = Mock()
 
-from preference_loader import generate_preference_prompt
+from loaders.preference_loader import generate_preference_prompt
 
 
 class TestPreferenceLoadingOptimization:
     """投資志向性設定の読み込み最適化テスト"""
     
-    @patch('preference_loader.load_investment_preferences')
+    @patch('loaders.preference_loader.load_investment_preferences')
     def test_generate_preference_prompt_caching(self, mock_load):
         """generate_preference_promptが事前生成されたプロンプトを再利用できることを確認"""
         # モックの設定
@@ -48,16 +48,16 @@ class TestPreferenceLoadingOptimization:
         assert prompt2 == prompt1
         assert mock_load.call_count == 2  # 後方互換性のため
     
-    @patch('preference_loader.load_investment_preferences')
+    @patch('loaders.preference_loader.load_investment_preferences')
     def test_analyze_with_claude_accepts_pregenerated_prompt(self, mock_load):
         """analyze_with_claudeが事前生成されたプロンプトを受け入れることを確認"""
         # APIキーを環境変数に設定（config.pyがインポートされる前に設定）
         os.environ['CLAUDE_API_KEY'] = 'test-api-key'
         
         # ai_analyzerをここでインポート（defeatbeta-apiのモック後、APIキー設定後）
-        from ai_analyzer import analyze_with_claude
+        from analyzers.ai_analyzer import analyze_with_claude
         
-        with patch('ai_analyzer.anthropic.Anthropic') as mock_anthropic:
+        with patch('analyzers.ai_analyzer.anthropic.Anthropic') as mock_anthropic:
             # モックの設定
             mock_client = MagicMock()
             mock_anthropic.return_value = mock_client
@@ -88,7 +88,7 @@ class TestPreferenceLoadingOptimization:
             assert mock_load.call_count == 1
             
             # 複数回の分析で同じプロンプトを使用
-            with patch('ai_analyzer.CLAUDE_API_KEY', 'test-api-key'):
+            with patch('analyzers.ai_analyzer.CLAUDE_API_KEY', 'test-api-key'):
                 analyze_with_claude(data, preference_prompt)
                 analyze_with_claude(data, preference_prompt)
                 analyze_with_claude(data, preference_prompt)
@@ -99,16 +99,16 @@ class TestPreferenceLoadingOptimization:
             # APIは3回呼ばれている
             assert mock_client.messages.create.call_count == 3
     
-    @patch('preference_loader.load_investment_preferences')
+    @patch('loaders.preference_loader.load_investment_preferences')
     def test_analyze_with_gemini_accepts_pregenerated_prompt(self, mock_load):
         """analyze_with_geminiが事前生成されたプロンプトを受け入れることを確認"""
         # APIキーを環境変数に設定
         os.environ['GEMINI_API_KEY'] = 'test-api-key'
         
         # ai_analyzerをここでインポート（defeatbeta-apiのモック後）
-        from ai_analyzer import analyze_with_gemini
+        from analyzers.ai_analyzer import analyze_with_gemini
         
-        with patch('ai_analyzer.requests.post') as mock_post:
+        with patch('analyzers.ai_analyzer.requests.post') as mock_post:
             # モックの設定
             mock_response = MagicMock()
             mock_response.status_code = 200
@@ -148,7 +148,7 @@ class TestPreferenceLoadingOptimization:
             assert mock_load.call_count == 1
             
             # 複数回の分析で同じプロンプトを使用
-            with patch('ai_analyzer.GEMINI_API_KEY', 'test-api-key'):
+            with patch('analyzers.ai_analyzer.GEMINI_API_KEY', 'test-api-key'):
                 analyze_with_gemini(data, preference_prompt)
                 analyze_with_gemini(data, preference_prompt)
                 analyze_with_gemini(data, preference_prompt)
@@ -159,16 +159,16 @@ class TestPreferenceLoadingOptimization:
             # APIは3回呼ばれている
             assert mock_post.call_count == 3
     
-    @patch('preference_loader.load_investment_preferences')
+    @patch('loaders.preference_loader.load_investment_preferences')
     def test_backward_compatibility_without_prompt_parameter(self, mock_load):
         """プロンプトパラメータなしでも動作することを確認（後方互換性）"""
         # APIキーを環境変数に設定
         os.environ['CLAUDE_API_KEY'] = 'test-api-key'
         
         # ai_analyzerをここでインポート（defeatbeta-apiのモック後）
-        from ai_analyzer import analyze_with_claude
+        from analyzers.ai_analyzer import analyze_with_claude
         
-        with patch('ai_analyzer.anthropic.Anthropic') as mock_anthropic:
+        with patch('analyzers.ai_analyzer.anthropic.Anthropic') as mock_anthropic:
             # モックの設定
             mock_client = MagicMock()
             mock_anthropic.return_value = mock_client
@@ -195,7 +195,7 @@ class TestPreferenceLoadingOptimization:
             }
             
             # プロンプトパラメータなしで呼び出し（古い使い方）
-            with patch('ai_analyzer.CLAUDE_API_KEY', 'test-api-key'):
+            with patch('analyzers.ai_analyzer.CLAUDE_API_KEY', 'test-api-key'):
                 result = analyze_with_claude(data)
             
             # 内部でload_investment_preferencesが呼ばれることを確認
@@ -206,7 +206,7 @@ class TestPreferenceLoadingOptimization:
 class TestFileIOReduction:
     """ファイルI/O削減のテスト"""
     
-    @patch('preference_loader.load_investment_preferences')
+    @patch('loaders.preference_loader.load_investment_preferences')
     def test_preference_file_read_count_with_multiple_stocks(self, mock_load):
         """複数銘柄処理時にファイル読み込みが1回で済むことを確認"""
         mock_load.return_value = {

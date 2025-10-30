@@ -9,7 +9,7 @@ import sys
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..', 'src'))
 
-from mail.sender import send_report_via_mail
+from mails.sender import send_report_via_mail
 
 
 class TestSendReportViaMail:

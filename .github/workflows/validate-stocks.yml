@@ -31,7 +31,7 @@ jobs:
       - name: Validate stocks.yaml
         id: validate
         run: |
-          python src/validate_stocks.py data/stocks.yaml
+          python src/validators/validate_stocks.py data/stocks.yaml
       
       - name: Validation Summary
         if: always()

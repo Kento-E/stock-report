@@ -9,7 +9,7 @@ import sys
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..', 'src'))
 
-from mail.body import generate_mail_body, generate_single_category_mail_body, generate_categorized_mail_body
+from mails.body import generate_mail_body, generate_single_category_mail_body, generate_categorized_mail_body
 
 
 class TestGenerateMailBody:

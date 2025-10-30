@@ -7,11 +7,11 @@ import os
 import sys
 
 # srcディレクトリをパスに追加
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..', 'src'))
 
 # ネットワーク接続不要のモジュールのみテスト
 try:
-    from ai_analyzer import _generate_holding_status
+    from analyzers.ai_analyzer import _generate_holding_status
 except Exception as e:
     pytest.skip(f"ai_analyzerのインポートに失敗: {e}", allow_module_level=True)
 

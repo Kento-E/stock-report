@@ -7,7 +7,7 @@ import os
 import sys
 
 # srcディレクトリをパスに追加
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..', 'src'))
 
 
 class TestFetchStockData:
@@ -16,7 +16,7 @@ class TestFetchStockData:
     def test_import_data_fetcher(self):
         """data_fetcherモジュールのインポート確認"""
         try:
-            from data_fetcher import fetch_stock_data
+            from analyzers.data_fetcher import fetch_stock_data
             assert fetch_stock_data is not None
         except Exception as e:
             pytest.skip(f"data_fetcherのインポートに失敗: {e}")
