@@ -24,10 +24,9 @@ class TestParallelProcessing:
     
     @patch('analyzers.data_fetcher.fetch_stock_data')
     @patch('analyzers.ai_analyzer.analyze_with_gemini')
-    @patch('reports.generator.generate_report_html')
     @patch('loaders.preference_loader.generate_preference_prompt')
     def test_parallel_processing_multiple_stocks(
-        self, mock_prompt, mock_report, mock_analyze, mock_fetch
+        self, mock_prompt, mock_analyze, mock_fetch
     ):
         """複数銘柄の並列処理が正しく動作することを確認"""
         # モックの設定
@@ -41,7 +40,6 @@ class TestParallelProcessing:
             'currency': '円'
         }
         mock_analyze.return_value = "売買判断: ホールド\n\nテスト分析結果"
-        mock_report.return_value = ("<html>テストレポート</html>", "test_report.html")
         
         # テスト用の銘柄リスト
         stocks = [

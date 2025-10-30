@@ -20,9 +20,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from config import USE_CLAUDE, MAIL_TO, SIMPLIFY_HOLD_REPORTS
 from loaders import load_stock_symbols, categorize_stocks, get_currency_for_symbol
 from analyzers import fetch_stock_data, analyze_with_claude, analyze_with_gemini
-from reports import generate_report_html, detect_hold_judgment, simplify_hold_report
+from reports import detect_hold_judgment, simplify_hold_report
 from mails import send_report_via_mail, get_smtp_config, generate_single_category_mail_body
-from mails.formatter import markdown_to_html, create_collapsible_section
+from mails.formatter import markdown_to_html
 from mails.toc import extract_judgment_from_analysis, generate_toc
 from loaders import generate_preference_prompt
 
@@ -77,10 +77,6 @@ if __name__ == "__main__":
             currency = get_currency_for_symbol(symbol, stock_info.get('currency'))
             data['currency'] = currency
             
-            # レポート生成（stock_dataを渡す）
-            html, filename = generate_report_html(symbol, company_name, analysis, data)
-            print(f"レポート生成: {filename} (分類: {category})")
-            
             # 売買判断を抽出
             judgment = extract_judgment_from_analysis(analysis)
             
@@ -98,6 +94,8 @@ if __name__ == "__main__":
                 analysis_html = markdown_to_html(simplified_analysis)
             else:
                 analysis_html = markdown_to_html(analysis)
+            
+            print(f"レポート生成完了: {symbol} (分類: {category})")
             
             # メール本文で企業名と銘柄コードを1つの見出しとして使用
             report_html = f"""<h1 style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">{company_name}（{symbol}）</h1>
