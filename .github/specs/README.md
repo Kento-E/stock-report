@@ -4,19 +4,19 @@
 
 ## エントリーポイント
 
-まず **[requirements-index.md](requirements-index.md)** を参照してください。全仕様書の一覧と概要が記載されています。
+まず <a>requirements-index.md</a> を参照してください。全仕様書の一覧と概要が記載されています。
 
 ## 使い方
 
 ### 仕様書の探し方
 
-1. **最初に**: [requirements-index.md](requirements-index.md) で全体像を把握
+1. **最初に**: <a>requirements-index.md</a> で全体像を把握
 2. **該当する機能の仕様書**: 変更したい機能に対応する仕様書を直接参照
 3. **わからない時**: requirements-index.md のクイックリファレンスを確認
 
 ### GitHub Copilot 向け
 
-コード変更時は、該当する機能の仕様書を直接参照してください。requirements-index.md から適切な仕様書へリンクをたどることができます。
+コード変更時は、該当する機能の仕様書を直接参照してください。<a>requirements-index.md</a> から適切な仕様書へリンクをたどることができます。
 
 ## 設計思想
 
