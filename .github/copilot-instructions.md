@@ -9,7 +9,7 @@
 詳細な情報は以下のドキュメントを参照してください：
 
 - **システム概要・技術スタック**: <a>README.md</a>
-- **要件定義インデックス**: <a>instructions/requirements.instructions.md</a>
+- **要件定義インデックス**: <a>specs/requirements-index.md</a>
 - **機能別仕様書**: `.github/specs/` ディレクトリ内の各仕様書
 
 ## ドキュメント構成
@@ -17,7 +17,7 @@
 ### メインドキュメント
 
 - **README.md**: ユーザー向け使用方法・セットアップ手順
-- **requirements.instructions.md**: 要件定義メインドキュメント（簡潔版）
+- **requirements-index.md**: 要件定義インデックス（単一のエントリーポイント）
 
 ### 機能別仕様書（.github/specs/）
 
@@ -32,11 +32,11 @@
 
 ### GitHub Copilot 向け指示ファイル（.github/instructions/）
 
-### 1. <a>instructions/requirements.instructions.md</a>
+### 1. <a>specs/requirements-index.md</a>
 
-**要件定義メインドキュメント** - 最も重要なドキュメント
+**要件定義インデックス** - 最も重要なドキュメント
 
-システム概要、クイックリファレンス、関連ドキュメントへのリンクを提供。詳細な仕様は機能別仕様書を参照。
+全仕様書のエントリーポイント。システム概要、クイックリファレンス、各機能別仕様書へのリンクを提供。
 
 **いつ参照すべきか**: システム全体の理解が必要な時、機能別仕様書を探す時
 
@@ -82,7 +82,7 @@ VS Code で GitHub Copilot を使用する際、カスタムチャット参加�
 ### 開発者向けドキュメント
 
 - <a>docs/TEST.md</a>: ユニットテストの実行方法
-- <a>instructions/requirements.instructions.md</a>: 要件定義メインドキュメント
+- <a>specs/requirements-index.md</a>: 要件定義インデックス（単一のエントリーポイント）
 - <a>specs/requirements-index.md</a>: 機能別仕様書インデックス
 
 ### 機能別仕様書
