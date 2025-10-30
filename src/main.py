@@ -25,24 +25,6 @@ from mails.formatter import markdown_to_html, create_collapsible_section
 from mails.toc import extract_judgment_from_analysis, generate_toc
 from loaders import generate_preference_prompt
 
-def sanitize_id(text):
-    """
-    テキストをHTML IDとして使用可能な形式にサニタイズする
-    
-    Args:
-        text: 元のテキスト
-    
-    Returns:
-        str: サニタイズされたID
-    """
-    # 英数字とハイフン以外を削除し、ハイフンに置換
-    sanitized = re.sub(r'[^\w\-]', '-', text)
-    # 連続するハイフンを1つにまとめる
-    sanitized = re.sub(r'-+', '-', sanitized)
-    # 先頭と末尾のハイフンを削除
-    sanitized = sanitized.strip('-')
-    return sanitized
-
 if __name__ == "__main__":
     try:
         # 対象銘柄リスト（data/stocks.yamlから読み込み）
@@ -101,15 +83,11 @@ if __name__ == "__main__":
             # 売買判断を抽出
             judgment = extract_judgment_from_analysis(analysis)
             
-            # 銘柄IDを生成（リンク用）
-            stock_id = f"stock-{sanitize_id(symbol)}"
-            
             # 目次用の銘柄情報を記録
             categorized_stock_info[category].append({
                 'symbol': symbol,
                 'name': company_name,
-                'judgment': judgment,
-                'id': stock_id
+                'judgment': judgment
             })
             
             # メール本文用のHTML生成（簡略化を適用）
@@ -121,7 +99,7 @@ if __name__ == "__main__":
                 analysis_html = markdown_to_html(analysis)
             
             # メール本文で企業名と銘柄コードを1つの見出しとして使用
-            report_html = f"""<h1 id="{stock_id}" style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">{company_name}（{symbol}）</h1>
+            report_html = f"""<h1 style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">{company_name}（{symbol}）</h1>
 <div style="margin-top: 15px; padding-left: 20px; border-left: 3px solid #007bff;">
 {analysis_html}
 </div>"""
