@@ -22,6 +22,8 @@ def generate_report_html(symbol, company_name, analysis, stock_data=None):
     
     Returns:
         (html, filename) のタプル
+        - html: 生成されたHTMLコンテンツ
+        - filename: ログ記録用のファイル名（ファイルは作成されない）
     """
     today = datetime.date.today().isoformat()
     
