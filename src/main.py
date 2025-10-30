@@ -120,9 +120,8 @@ if __name__ == "__main__":
             else:
                 analysis_html = markdown_to_html(analysis)
             
-            # メール本文で企業名を見出しとして使用（IDを追加してリンク可能に）
-            report_html = f"""<h1 id="{stock_id}" style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">{company_name}</h1>
-<p style="color: #666; font-size: 14px;">銘柄コード: {symbol}</p>
+            # メール本文で企業名と銘柄コードを1つの見出しとして使用（IDを追加してリンク可能に）
+            report_html = f"""<h1 id="{stock_id}" style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">{company_name}（{symbol}）</h1>
 <div style="margin-top: 15px; padding-left: 20px; border-left: 3px solid #007bff;">
 {analysis_html}
 </div>"""

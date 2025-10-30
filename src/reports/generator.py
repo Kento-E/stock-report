@@ -42,13 +42,13 @@ def generate_report_html(symbol, company_name, analysis, stock_data=None):
         analysis = simplify_hold_report(symbol, company_name, analysis, current_price, currency)
     
     analysis_html = markdown_to_html(analysis)
-    # 見出しに企業名を使用し、銘柄コードを副題として表示
+    # 見出しに企業名と銘柄コードを統合して表示
     html = f"""
     <html>
     <head><meta charset='utf-8'><title>{company_name} ({symbol}) 日次レポート ({today})</title></head>
     <body>
-    <h1>{company_name}</h1>
-    <p style="color: #666; font-size: 14px;">銘柄コード: {symbol} | 日付: {today}</p>
+    <h1>{company_name}（{symbol}）</h1>
+    <p style="color: #666; font-size: 14px;">日付: {today}</p>
     {analysis_html}
     </body>
     </html>
