@@ -9,21 +9,38 @@
 詳細な情報は以下のドキュメントを参照してください：
 
 - **システム概要・技術スタック**: <a>README.md</a>
-- **詳細な技術仕様・モジュール構成**: <a>requirements.instructions.md</a>
+- **要件定義インデックス**: <a>instructions/requirements.instructions.md</a>
+- **機能別仕様書**: `.github/specs/` ディレクトリ内の各仕様書
 
-## 重要な指示ファイル
+## ドキュメント構成
 
-このリポジトリには、以下の詳細な指示ファイルが `.github/instructions/` ディレクトリに配置されています。コードを変更する前に、必ず該当する指示ファイルを確認してください。
+### メインドキュメント
 
-### 1. <a>requirements.instructions.md</a>
+- **README.md**: ユーザー向け使用方法・セットアップ手順
+- **requirements.instructions.md**: 要件定義メインドキュメント（簡潔版）
 
-**システムの要件定義書** - 最も重要なドキュメント
+### 機能別仕様書（.github/specs/）
 
-システム概要、機能要件、非機能要件、モジュール構成など、システム全体の仕様を定義しています。
+システムの詳細仕様は機能別に分割されています：
 
-**いつ参照すべきか**: 機能追加、仕様変更、システム理解が必要な時
+1. **requirements-index.md**: 全仕様書のインデックス
+2. **system-architecture.md**: システムアーキテクチャ・モジュール構成
+3. **data-collection-analysis.md**: データ収集・AI分析機能
+4. **report-email.md**: レポート生成・メール配信機能
+5. **automation-cicd.md**: 自動化・テスト・CI/CD機能
+6. **data-management.md**: 銘柄リスト・投資志向性設定管理
 
-### 2. <a>copilot.instructions.md</a>
+### GitHub Copilot 向け指示ファイル（.github/instructions/）
+
+### 1. <a>instructions/requirements.instructions.md</a>
+
+**要件定義メインドキュメント** - 最も重要なドキュメント
+
+システム概要、クイックリファレンス、関連ドキュメントへのリンクを提供。詳細な仕様は機能別仕様書を参照。
+
+**いつ参照すべきか**: システム全体の理解が必要な時、機能別仕様書を探す時
+
+### 2. <a>instructions/copilot.instructions.md</a>
 
 **GitHub Copilot 使用時の指示事項**
 
@@ -31,7 +48,7 @@
 
 **いつ参照すべきか**: Pull Request作成、ドキュメント作成、コード変更時
 
-### 3. <a>coding.instructions.md</a>
+### 3. <a>instructions/coding.instructions.md</a>
 
 **コーディングガイドライン**
 
@@ -39,7 +56,7 @@ Markdown Lintルール、コードスタイル規約を定義しています。
 
 **いつ参照すべきか**: Markdownファイル編集時
 
-### 4. <a>testing.instructions.md</a>
+### 4. <a>instructions/testing.instructions.md</a>
 
 **テスト・動作確認手順**
 
@@ -57,6 +74,21 @@ VS Code で GitHub Copilot を使用する際、カスタムチャット参加�
 
 ## 参考リンク
 
+### ユーザー向けドキュメント
+
 - <a>README.md</a>: ユーザー向け使用方法・セットアップ手順・環境変数設定
+- <a>data/README.md</a>: 銘柄リスト・投資志向性設定の詳細編集ガイド
+
+### 開発者向けドキュメント
+
 - <a>docs/TEST.md</a>: ユニットテストの実行方法
-- <a>requirements.instructions.md</a>: システム全体の要件定義とモジュール構成
+- <a>instructions/requirements.instructions.md</a>: 要件定義メインドキュメント
+- <a>specs/requirements-index.md</a>: 機能別仕様書インデックス
+
+### 機能別仕様書
+
+- <a>specs/system-architecture.md</a>: システムアーキテクチャ仕様書
+- <a>specs/data-collection-analysis.md</a>: データ収集・分析機能仕様書
+- <a>specs/report-email.md</a>: レポート生成・メール配信機能仕様書
+- <a>specs/automation-cicd.md</a>: 自動化・CI/CD機能仕様書
+- <a>specs/data-management.md</a>: データ管理機能仕様書
