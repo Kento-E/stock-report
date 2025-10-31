@@ -16,12 +16,13 @@ import sys
 import datetime
 import yaml
 import re
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from config import USE_CLAUDE, MAIL_TO, SIMPLIFY_HOLD_REPORTS
 from loaders import load_stock_symbols, categorize_stocks, get_currency_for_symbol
 from analyzers import fetch_stock_data, analyze_with_claude, analyze_with_gemini
-from reports import generate_report_html, detect_hold_judgment, simplify_hold_report
+from reports import detect_hold_judgment, simplify_hold_report
 from mails import send_report_via_mail, get_smtp_config, generate_single_category_mail_body
-from mails.formatter import markdown_to_html, create_collapsible_section
+from mails.formatter import markdown_to_html
 from mails.toc import extract_judgment_from_analysis, generate_toc
 from loaders import generate_preference_prompt
 
@@ -61,11 +62,11 @@ if __name__ == "__main__":
         'considering_short_sell': []
     }
     
-    # 各分類の銘柄を処理
-    for category, stock_list in categorized.items():
-        for stock_info in stock_list:
+    def process_single_stock(category, stock_info):
+        """単一の銘柄を処理する関数（並列処理用）"""
+        try:
             symbol = stock_info['symbol']
-            company_name = stock_info.get('name', symbol)  # 企業名がなければ銘柄コードを使用
+            company_name = stock_info.get('name', symbol)
             data = fetch_stock_data(symbol, stock_info)
             if USE_CLAUDE:
                 analysis = analyze_with_claude(data, preference_prompt)
@@ -76,19 +77,15 @@ if __name__ == "__main__":
             currency = get_currency_for_symbol(symbol, stock_info.get('currency'))
             data['currency'] = currency
             
-            # レポート生成（stock_dataを渡す）
-            html, filename = generate_report_html(symbol, company_name, analysis, data)
-            print(f"レポート生成: {filename} (分類: {category})")
-            
             # 売買判断を抽出
             judgment = extract_judgment_from_analysis(analysis)
             
-            # 目次用の銘柄情報を記録
-            categorized_stock_info[category].append({
+            # 目次用の銘柄情報
+            stock_info_data = {
                 'symbol': symbol,
                 'name': company_name,
                 'judgment': judgment
-            })
+            }
             
             # メール本文用のHTML生成（簡略化を適用）
             if SIMPLIFY_HOLD_REPORTS and detect_hold_judgment(analysis):
@@ -98,12 +95,35 @@ if __name__ == "__main__":
             else:
                 analysis_html = markdown_to_html(analysis)
             
+            print(f"レポート生成完了: {symbol} (分類: {category})")
+            
             # メール本文で企業名と銘柄コードを1つの見出しとして使用
             report_html = f"""<h1 style="margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd;">{company_name}（{symbol}）</h1>
 <div style="margin-top: 15px; padding-left: 20px; border-left: 3px solid #007bff;">
 {analysis_html}
 </div>"""
-            categorized_reports[category].append(report_html)
+            
+            return category, report_html, stock_info_data
+        except Exception as e:
+            print(f"エラー: {stock_info['symbol']}の処理中に問題が発生しました: {e}")
+            return None
+    
+    # 並列処理で各銘柄を処理（最大10スレッド）
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        # 全銘柄の処理タスクを作成
+        futures = []
+        for category, stock_list in categorized.items():
+            for stock_info in stock_list:
+                future = executor.submit(process_single_stock, category, stock_info)
+                futures.append(future)
+        
+        # 処理結果を収集
+        for future in as_completed(futures):
+            result = future.result()
+            if result:
+                category, report_html, stock_info_data = result
+                categorized_reports[category].append(report_html)
+                categorized_stock_info[category].append(stock_info_data)
 
     # 分類別に個別のメールを送信
     smtp_conf = get_smtp_config()
