@@ -61,7 +61,8 @@ def load_stock_symbols(filepath='data/stocks.yaml'):
     stocks = []
     # ファイルパスの解決（main.pyからの相対パス）
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.dirname(script_dir)
+    # script_dirは src/loaders なので、2階層上る: src/loaders -> src -> プロジェクトルート
+    project_root = os.path.dirname(os.path.dirname(script_dir))
     full_path = os.path.join(project_root, filepath)
     
     try:
