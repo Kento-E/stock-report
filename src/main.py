@@ -16,7 +16,9 @@ import sys
 import datetime
 import yaml
 import re
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from threading import Lock
 from config import USE_CLAUDE, MAIL_TO, SIMPLIFY_HOLD_REPORTS
 from loaders import load_stock_symbols, categorize_stocks, get_currency_for_symbol
 from analyzers import fetch_stock_data, analyze_with_claude, analyze_with_gemini
@@ -25,6 +27,11 @@ from mails import send_report_via_mail, get_smtp_config, generate_single_categor
 from mails.formatter import markdown_to_html
 from mails.toc import extract_judgment_from_analysis, generate_toc
 from loaders import generate_preference_prompt
+
+# Gemini API レート制限対策（10 RPM = 6秒/リクエスト）
+API_RATE_LIMIT_DELAY = 6.5  # 余裕を持たせて6.5秒
+rate_limit_lock = Lock()
+last_api_call_time = 0
 
 if __name__ == "__main__":
     try:
@@ -64,10 +71,23 @@ if __name__ == "__main__":
     
     def process_single_stock(category, stock_info):
         """単一の銘柄を処理する関数（並列処理用）"""
+        global last_api_call_time
         try:
             symbol = stock_info['symbol']
             company_name = stock_info.get('name', symbol)
             data = fetch_stock_data(symbol, stock_info)
+            
+            # API呼び出し前にレート制限を適用（Geminiのみ）
+            if not USE_CLAUDE:
+                with rate_limit_lock:
+                    current_time = time.time()
+                    time_since_last_call = current_time - last_api_call_time
+                    if time_since_last_call < API_RATE_LIMIT_DELAY:
+                        sleep_time = API_RATE_LIMIT_DELAY - time_since_last_call
+                        print(f"レート制限: {sleep_time:.1f}秒待機中... ({symbol})")
+                        time.sleep(sleep_time)
+                    last_api_call_time = time.time()
+            
             if USE_CLAUDE:
                 analysis = analyze_with_claude(data, preference_prompt)
             else:
