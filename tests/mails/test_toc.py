@@ -5,6 +5,7 @@ mail.tocモジュールのテスト
 import pytest
 import os
 import sys
+import re
 
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..', 'src'))
@@ -204,7 +205,6 @@ class TestGenerateToc:
         
         # ホールド判断のセルにfont-weight: boldが含まれていないことを確認
         # セル内容を抽出して確認
-        import re
         # 売買判断のセルのスタイルを抽出（3番目のtd要素）
         td_pattern = r'<td style="([^"]*?)">[\s]*ホールド[\s]*</td>'
         match = re.search(td_pattern, toc)
@@ -222,7 +222,6 @@ class TestGenerateToc:
         toc = generate_toc(stock_info)
         
         # 売り判断のセルが赤字（#dc3545）で表示されることを確認
-        import re
         td_pattern = r'<td style="([^"]*?)">[\s]*売り[\s]*</td>'
         match = re.search(td_pattern, toc)
         assert match is not None, "売り判断のセルが見つかりません"
@@ -241,7 +240,6 @@ class TestGenerateToc:
         toc = generate_toc(stock_info)
         
         # 買い判断のセルが太字で表示されることを確認
-        import re
         td_pattern = r'<td style="([^"]*?)">[\s]*買い[\s]*</td>'
         match = re.search(td_pattern, toc)
         assert match is not None, "買い判断のセルが見つかりません"
@@ -269,7 +267,6 @@ class TestGenerateToc:
         assert '様子見' in toc
         
         # 売り判断が赤字であることを確認
-        import re
         sell_td_pattern = r'<td style="([^"]*?)">[\s]*売り[\s]*</td>'
         sell_match = re.search(sell_td_pattern, toc)
         assert sell_match is not None

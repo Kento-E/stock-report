@@ -118,10 +118,12 @@ def generate_toc(stock_reports_info):
         # 売買判断に応じたスタイルを設定
         # 「売り」の場合は赤字、「ホールド」の場合は太字にしない
         judgment_style = "padding: 10px; border: 1px solid #dee2e6;"
-        if '売り' in info['judgment']:
+        judgment_text = info['judgment'].strip()
+        
+        if judgment_text == '売り':
             # 売り判断は赤字で表示
             judgment_style += " font-weight: bold; color: #dc3545;"
-        elif 'ホールド' in info['judgment']:
+        elif judgment_text == 'ホールド':
             # ホールド判断は太字にしない
             judgment_style += " color: #666;"
         else:
