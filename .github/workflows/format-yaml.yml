@@ -51,11 +51,12 @@ jobs:
           
           # 実際に変更があったかをgit diffで確認
           # 処理したファイルのみを対象とする
-          if find data/ -maxdepth 1 -type f \( -name "*.yaml" -o -name "*.yml" \) | xargs -r git diff --quiet --; then
+          yaml_files_list=$(find data/ -maxdepth 1 -type f \( -name "*.yaml" -o -name "*.yml" \))
+          if [ -n "$yaml_files_list" ] && echo "$yaml_files_list" | xargs git diff --quiet --; then
             echo "✓ 変更なし"
           else
             formatted=true
-            changed_files=$(find data/ -maxdepth 1 -type f \( -name "*.yaml" -o -name "*.yml" \) | xargs -r git diff --name-only -- | paste -sd ' ' -)
+            changed_files=$(echo "$yaml_files_list" | xargs git diff --name-only -- | paste -sd ' ' -)
             echo "formatted_files=${changed_files}" >> $GITHUB_OUTPUT
             echo "✅ 変更が検出されました: ${changed_files}"
           fi
