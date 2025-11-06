@@ -50,9 +50,11 @@ jobs:
           done
           
           # 実際に変更があったかをgit diffで確認
-          if ! git diff --quiet -- data/*.yaml data/*.yml; then
+          # 処理したファイルのみを対象とする
+          yaml_files=$(find data/ -maxdepth 1 -type f \( -name "*.yaml" -o -name "*.yml" \))
+          if [ -n "$yaml_files" ] && ! git diff --quiet -- $yaml_files; then
             formatted=true
-            changed_files=$(git diff --name-only -- data/*.yaml data/*.yml | paste -sd ' ' -)
+            changed_files=$(git diff --name-only -- $yaml_files | paste -sd ' ' -)
             echo "formatted_files=${changed_files}" >> $GITHUB_OUTPUT
             echo "✅ 変更が検出されました: ${changed_files}"
           else
