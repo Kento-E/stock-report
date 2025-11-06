@@ -45,15 +45,18 @@ jobs:
           for file in data/*.yaml data/*.yml; do
             if [ -f "$file" ]; then
               echo "Checking $file..."
-              if python src/formatters/format_yaml.py "$file"; then
-                echo "  ✓ Formatted: $file"
-                formatted=true
-                echo "formatted_files=$file " >> $GITHUB_OUTPUT
-              else
-                echo "  - No changes: $file"
-              fi
+              python src/formatters/format_yaml.py "$file"
             fi
           done
+          
+          # 実際に変更があったかをgit diffで確認
+          if ! git diff --quiet data/; then
+            formatted=true
+            echo "formatted_files=$(git diff --name-only data/ | tr '\n' ' ')" >> $GITHUB_OUTPUT
+            echo "✅ 変更が検出されました"
+          else
+            echo "✓ 変更なし"
+          fi
           
           echo "formatted=$formatted" >> $GITHUB_OUTPUT
       
