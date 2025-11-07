@@ -271,3 +271,21 @@ class TestGenerateToc:
         sell_match = re.search(sell_td_pattern, toc)
         assert sell_match is not None
         assert 'color: #dc3545' in sell_match.group(1)
+    
+    def test_generate_toc_wait_judgment_not_bold(self):
+        """様子見判断は太字にしない"""
+        stock_info = [
+            {'symbol': 'TEST', 'name': 'テスト銘柄', 'judgment': '様子見', 'id': 'stock-TEST'}
+        ]
+        
+        toc = generate_toc(stock_info)
+        
+        # 様子見判断のセルにfont-weight: boldが含まれていないことを確認
+        td_pattern = r'<td style="([^"]*?)">[\s]*様子見[\s]*</td>'
+        match = re.search(td_pattern, toc)
+        assert match is not None, "様子見判断のセルが見つかりません"
+        style = match.group(1)
+        # font-weight: boldが含まれていないことを確認
+        assert 'font-weight: bold' not in style
+        # ホールドと同様に灰色で表示されることを確認
+        assert 'color: #666' in style
