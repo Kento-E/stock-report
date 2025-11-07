@@ -246,8 +246,6 @@ class TestGenerateToc:
         style = match.group(1)
         # 太字が含まれていることを確認
         assert 'font-weight: bold' in style
-        # ホールドのような灰色ではないことを確認
-        assert 'color: #666' not in style
     
     def test_generate_toc_mixed_judgments(self):
         """複数の異なる判断が混在する場合の表示"""
@@ -273,7 +271,7 @@ class TestGenerateToc:
         assert 'color: #dc3545' in sell_match.group(1)
     
     def test_generate_toc_wait_judgment_not_bold(self):
-        """様子見判断は太字にしない"""
+        """様子見判断は太字にしない（デフォルトスタイル）"""
         stock_info = [
             {'symbol': 'TEST', 'name': 'テスト銘柄', 'judgment': '様子見', 'id': 'stock-TEST'}
         ]
@@ -287,5 +285,3 @@ class TestGenerateToc:
         style = match.group(1)
         # font-weight: boldが含まれていないことを確認
         assert 'font-weight: bold' not in style
-        # ホールドと同様に灰色で表示されることを確認
-        assert 'color: #666' in style
