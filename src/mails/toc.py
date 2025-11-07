@@ -115,6 +115,19 @@ def generate_toc(stock_reports_info):
         escaped_symbol = html.escape(info['symbol'])
         escaped_judgment = html.escape(info['judgment'])
         
+        # 売買判断に応じたスタイルを設定
+        # デフォルトは装飾なし、特定の判断のみスタイルを追加
+        judgment_style = "padding: 10px; border: 1px solid #dee2e6;"
+        judgment_text = info['judgment'].strip()
+        
+        if judgment_text == '売り':
+            # 売り判断は赤字・太字で強調
+            judgment_style += " font-weight: bold; color: #dc3545;"
+        elif judgment_text in ('買い', '買い増し'):
+            # 買い判断は太字で強調
+            judgment_style += " font-weight: bold;"
+        # その他（ホールド、様子見など）はデフォルトのまま（装飾なし）
+        
         # 行の背景色を交互に変更
         bg_color = "#f8f9fa" if i % 2 == 0 else "white"
         toc_html += f"""
@@ -125,7 +138,7 @@ def generate_toc(stock_reports_info):
                     <td style="padding: 10px; border: 1px solid #dee2e6; color: #666;">
                         {escaped_symbol}
                     </td>
-                    <td style="padding: 10px; border: 1px solid #dee2e6; font-weight: bold;">
+                    <td style="{judgment_style}">
                         {escaped_judgment}
                     </td>
                 </tr>

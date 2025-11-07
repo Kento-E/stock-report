@@ -5,6 +5,7 @@ mail.tocモジュールのテスト
 import pytest
 import os
 import sys
+import re
 
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..', 'src'))
@@ -193,3 +194,94 @@ class TestGenerateToc:
         assert '&lt;script&gt;' in toc
         assert '&lt;img' in toc
         assert '&lt;b&gt;' in toc
+    
+    def test_generate_toc_hold_judgment_not_bold(self):
+        """ホールド判断は太字にしない"""
+        stock_info = [
+            {'symbol': 'TEST', 'name': 'テスト銘柄', 'judgment': 'ホールド', 'id': 'stock-TEST'}
+        ]
+        
+        toc = generate_toc(stock_info)
+        
+        # ホールド判断のセルにfont-weight: boldが含まれていないことを確認
+        # セル内容を抽出して確認
+        # 売買判断のセルのスタイルを抽出（3番目のtd要素）
+        td_pattern = r'<td style="([^"]*?)">[\s]*ホールド[\s]*</td>'
+        match = re.search(td_pattern, toc)
+        assert match is not None, "ホールド判断のセルが見つかりません"
+        style = match.group(1)
+        # font-weight: boldが含まれていないことを確認
+        assert 'font-weight: bold' not in style
+    
+    def test_generate_toc_sell_judgment_red(self):
+        """売り判断は赤字で表示"""
+        stock_info = [
+            {'symbol': 'TEST', 'name': 'テスト銘柄', 'judgment': '売り', 'id': 'stock-TEST'}
+        ]
+        
+        toc = generate_toc(stock_info)
+        
+        # 売り判断のセルが赤字（#dc3545）で表示されることを確認
+        td_pattern = r'<td style="([^"]*?)">[\s]*売り[\s]*</td>'
+        match = re.search(td_pattern, toc)
+        assert match is not None, "売り判断のセルが見つかりません"
+        style = match.group(1)
+        # 赤字のカラーコードが含まれていることを確認
+        assert 'color: #dc3545' in style
+        # 太字も含まれていることを確認（売りは目立たせる）
+        assert 'font-weight: bold' in style
+    
+    def test_generate_toc_buy_judgment_bold(self):
+        """買い判断は太字で表示"""
+        stock_info = [
+            {'symbol': 'TEST', 'name': 'テスト銘柄', 'judgment': '買い', 'id': 'stock-TEST'}
+        ]
+        
+        toc = generate_toc(stock_info)
+        
+        # 買い判断のセルが太字で表示されることを確認
+        td_pattern = r'<td style="([^"]*?)">[\s]*買い[\s]*</td>'
+        match = re.search(td_pattern, toc)
+        assert match is not None, "買い判断のセルが見つかりません"
+        style = match.group(1)
+        # 太字が含まれていることを確認
+        assert 'font-weight: bold' in style
+    
+    def test_generate_toc_mixed_judgments(self):
+        """複数の異なる判断が混在する場合の表示"""
+        stock_info = [
+            {'symbol': 'BUY', 'name': '買い銘柄', 'judgment': '買い', 'id': 'stock-BUY'},
+            {'symbol': 'HOLD', 'name': 'ホールド銘柄', 'judgment': 'ホールド', 'id': 'stock-HOLD'},
+            {'symbol': 'SELL', 'name': '売り銘柄', 'judgment': '売り', 'id': 'stock-SELL'},
+            {'symbol': 'WAIT', 'name': '様子見銘柄', 'judgment': '様子見', 'id': 'stock-WAIT'}
+        ]
+        
+        toc = generate_toc(stock_info)
+        
+        # 各判断が含まれていることを確認
+        assert '買い' in toc
+        assert 'ホールド' in toc
+        assert '売り' in toc
+        assert '様子見' in toc
+        
+        # 売り判断が赤字であることを確認
+        sell_td_pattern = r'<td style="([^"]*?)">[\s]*売り[\s]*</td>'
+        sell_match = re.search(sell_td_pattern, toc)
+        assert sell_match is not None
+        assert 'color: #dc3545' in sell_match.group(1)
+    
+    def test_generate_toc_wait_judgment_not_bold(self):
+        """様子見判断は太字にしない（デフォルトスタイル）"""
+        stock_info = [
+            {'symbol': 'TEST', 'name': 'テスト銘柄', 'judgment': '様子見', 'id': 'stock-TEST'}
+        ]
+        
+        toc = generate_toc(stock_info)
+        
+        # 様子見判断のセルにfont-weight: boldが含まれていないことを確認
+        td_pattern = r'<td style="([^"]*?)">[\s]*様子見[\s]*</td>'
+        match = re.search(td_pattern, toc)
+        assert match is not None, "様子見判断のセルが見つかりません"
+        style = match.group(1)
+        # font-weight: boldが含まれていないことを確認
+        assert 'font-weight: bold' not in style
