@@ -162,14 +162,6 @@ main
 2. **Two-factor authentication** を有効化
 3. 認証アプリ（Google Authenticator、Authy等）またはSMSで設定
 
-### 組織レベルでの2FA必須化（該当する場合）
-
-組織に所属している場合：
-
-1. 組織設定 > **Authentication security** を開く
-2. **Require two-factor authentication** を有効化
-3. 2FAを設定していないメンバーは自動的にアクセスが制限される
-
 ## 5. GitHub Actionsのセキュリティ設定
 
 ### Workflow permissions の設定
