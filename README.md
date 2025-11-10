@@ -248,10 +248,19 @@ Pull Requestを作成すると、GitHub Actionsで自動的にテストが実行
 - 承認後、手動でマージボタンを押す必要はありません。
 - 詳細な動作確認手順は `.github/instructions/testing.instructions.md` を参照してください。
 
+## セキュリティ設定
+
+リポジトリを外部からの不正な改修から保護するための設定方法については、以下のドキュメントを参照してください：
+
+- [リポジトリセキュリティ設定ガイド](.github/docs/SECURITY_SETUP.md)
+
+ブランチ保護ルール、コラボレーター権限、CODEOWNERS設定、2要素認証など、オーナー以外からのソースプッシュを制限する方法を詳しく説明しています。
+
 ## 参考
 
 - [Github公式: Secrets and variables](https://docs.github.com/ja/actions/security-guides/encrypted-secrets)
 - [Github公式: Actionsの設定](https://docs.github.com/ja/actions/using-workflows/workflow-syntax-for-github-actions)
+- [Github公式: ブランチ保護ルール](https://docs.github.com/ja/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)
 
 ---
 
