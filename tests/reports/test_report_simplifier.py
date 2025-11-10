@@ -206,3 +206,85 @@ class TestExtractHoldReason:
         
         assert isinstance(reason, str)
         assert len(reason) > 0
+
+
+class TestShortSellingMaintainJudgment:
+    """空売りポジションの維持判断のテスト"""
+    
+    def test_detect_maintain_judgment(self):
+        """「維持」判断を検出"""
+        analysis = """
+        ## 分析結果
+        
+        株価は下落傾向が続いています。
+        
+        売買判断: 維持
+        
+        現在の空売りポジションを維持することを推奨します。
+        """
+        assert detect_hold_judgment(analysis) is True
+    
+    def test_simplify_maintain_report_label(self):
+        """維持判断の場合に「維持」ラベルを使用"""
+        analysis = """
+        売買判断: 維持
+        
+        株価の下落トレンドが続いているため、現在の空売りポジションを維持することを推奨します。
+        """
+        report = simplify_hold_report('7203.T', 'トヨタ自動車', analysis, 2500, '円')
+        
+        # 「維持」ラベルが使用されていることを確認
+        assert '## 売買判断: 維持' in report
+        assert '## 売買判断: ホールド' not in report
+    
+    def test_simplify_hold_report_label_for_regular_hold(self):
+        """ホールド判断の場合に「ホールド」ラベルを使用"""
+        analysis = """
+        売買判断: ホールド
+        
+        株価が横ばいのため、現状維持を推奨します。
+        """
+        report = simplify_hold_report('7203.T', 'トヨタ自動車', analysis, 2500, '円')
+        
+        # 「ホールド」ラベルが使用されていることを確認
+        assert '## 売買判断: ホールド' in report
+        assert '## 売買判断: 維持' not in report
+    
+    def test_extract_maintain_reason(self):
+        """維持判断の理由を抽出"""
+        analysis = """
+        売買判断: 維持
+        
+        理由: 株価の下落トレンドが続いており、空売りポジションの維持が適切です。
+        """
+        reason = _extract_hold_reason(analysis)
+        
+        assert isinstance(reason, str)
+        assert len(reason) > 0
+        # 理由が抽出されていることを確認
+        assert '下落' in reason or '維持' in reason or '適切' in reason
+    
+    def test_maintain_judgment_with_full_colon(self):
+        """全角コロン付きの維持判断を検出"""
+        analysis = """
+        売買判断：維持
+        
+        空売りポジションを保持します。
+        """
+        assert detect_hold_judgment(analysis) is True
+    
+    def test_mixed_maintain_and_hold_keywords(self):
+        """維持とホールドが混在する場合"""
+        analysis = """
+        ## 分析
+        
+        売買判断: 維持
+        
+        以前はホールドを推奨していましたが、空売りポジションを維持します。
+        """
+        # 売買判断セクションで「維持」が使われているため検出される
+        assert detect_hold_judgment(analysis) is True
+        
+        # 簡略化レポートで「維持」ラベルが使用される
+        report = simplify_hold_report('TEST', 'テスト', analysis, 1000, '円')
+        assert '## 売買判断: 維持' in report

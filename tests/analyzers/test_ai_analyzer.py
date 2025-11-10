@@ -248,3 +248,52 @@ class TestGenerateHoldingStatus:
         assert '25,000' in result or '25000' in result
         assert '税額' in result
         assert '税引後損益' in result
+
+
+class TestAnalysisViewpointsSelection:
+    """分析観点の選択テスト（通常保有 vs 空売りポジション）"""
+    
+    def test_analysis_viewpoints_available(self):
+        """分析観点定数が定義されていることを確認"""
+        from analyzers.ai_analyzer import ANALYSIS_VIEWPOINTS_REGULAR, ANALYSIS_VIEWPOINTS_SHORT
+        
+        # 両方の定数が定義されていることを確認
+        assert ANALYSIS_VIEWPOINTS_REGULAR is not None
+        assert ANALYSIS_VIEWPOINTS_SHORT is not None
+        assert len(ANALYSIS_VIEWPOINTS_REGULAR) > 0
+        assert len(ANALYSIS_VIEWPOINTS_SHORT) > 0
+    
+    def test_regular_viewpoints_content(self):
+        """通常保有用の分析観点に適切な用語が含まれることを確認"""
+        from analyzers.ai_analyzer import ANALYSIS_VIEWPOINTS_REGULAR
+        
+        # 通常の売買判断用語が含まれていることを確認
+        assert '買い' in ANALYSIS_VIEWPOINTS_REGULAR
+        assert '売り' in ANALYSIS_VIEWPOINTS_REGULAR
+        assert 'ホールド' in ANALYSIS_VIEWPOINTS_REGULAR
+    
+    def test_short_viewpoints_content(self):
+        """空売りポジション用の分析観点に適切な用語が含まれることを確認"""
+        from analyzers.ai_analyzer import ANALYSIS_VIEWPOINTS_SHORT
+        
+        # 空売り専用の売買判断用語が含まれていることを確認
+        assert '買戻し' in ANALYSIS_VIEWPOINTS_SHORT
+        assert '維持' in ANALYSIS_VIEWPOINTS_SHORT
+        assert '追加売り' in ANALYSIS_VIEWPOINTS_SHORT
+    
+    def test_short_viewpoints_no_regular_terms(self):
+        """空売りポジション用の観点に通常の「買い」が含まれないことを確認"""
+        from analyzers.ai_analyzer import ANALYSIS_VIEWPOINTS_SHORT
+        
+        # 「買戻し」はあるが単純な「買い」は推奨リストに含まれないはず
+        # ただし説明文に「買戻し」として含まれる可能性があるので、
+        # 推奨判断リストの部分のみチェック
+        lines = ANALYSIS_VIEWPOINTS_SHORT.split('\n')
+        judgment_section = [line for line in lines if '・' in line or '買い' in line or '売り' in line]
+        
+        # 判断リストに「買戻し」はあるが単純な「・買い」はない
+        has_buyback = any('買戻し' in line for line in judgment_section)
+        has_simple_buy = any('・買い' in line and '買戻し' not in line and '買い増し' not in line for line in judgment_section)
+        
+        assert has_buyback is True
+        assert has_simple_buy is False
