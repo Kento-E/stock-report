@@ -56,7 +56,7 @@ HTMLレポート生成とメール配信機能の仕様を定義します。
 
 ### 主要な非機能要件
 
-- **セキュリティ**: API キー・認証情報の安全管理、ブランチ保護、アクセス制御
+- **セキュリティ**: API キー・認証情報の安全管理
 - **パフォーマンス**: 1時間以内の日次処理完了
 - **拡張性**: 銘柄・分析ロジックの容易な拡張
 - **保守性**: モジュール分割・関数化された設計
@@ -93,7 +93,6 @@ HTMLレポート生成とメール配信機能の仕様を定義します。
 - <a>.github/instructions/copilot.instructions.md</a>: GitHub Copilot 利用指示
 - <a>.github/instructions/coding.instructions.md</a>: コーディングガイドライン
 - <a>.github/actions/setup-python-env/README.md</a>: Python環境セットアップアクション
-- <a>.github/docs/SECURITY_SETUP.md</a>: リポジトリセキュリティ設定ガイド
 
 ## 更新履歴の管理
 
