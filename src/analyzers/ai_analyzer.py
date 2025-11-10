@@ -11,8 +11,8 @@ from loaders.stock_loader import get_currency_for_symbol, calculate_tax
 from loaders.preference_loader import generate_preference_prompt
 
 
-# AI分析の観点（共通）
-ANALYSIS_VIEWPOINTS = """以下の観点から分析してください（結論を最初に記載してください）：
+# AI分析の観点（通常保有銘柄用）
+ANALYSIS_VIEWPOINTS_REGULAR = """以下の観点から分析してください（結論を最初に記載してください）：
 1. 売買判断（買い/買い増し/売り/ホールド/様子見）とその理由
    ※重要: 売買判断は以下のいずれか1つの単語のみで明示してください。
    　・買い
@@ -28,6 +28,23 @@ ANALYSIS_VIEWPOINTS = """以下の観点から分析してください（結論�
 
 上記の投資家の志向性を考慮して、具体的な売買アクションを提案してください。
 保有中の銘柄については、売却だけでなく買い増しの検討も含めて判断してください。"""
+
+# AI分析の観点（空売りポジション用）
+ANALYSIS_VIEWPOINTS_SHORT = """以下の観点から分析してください（結論を最初に記載してください）：
+1. 売買判断（買戻し/追加売り/維持/様子見）とその理由
+   ※重要: 空売りポジションに対する判断は以下のいずれか1つの単語のみで明示してください。
+   　・買戻し（ポジションを解消して利益確定または損切り）
+   　・追加売り（空売りポジションを追加）
+   　・維持（現在のポジションを保持）
+   　・様子見（状況を見守る）
+   　例：「売買判断: 買戻し」「売買判断: 維持」
+2. 推奨する指値価格（買戻し注文または追加空売り注文）
+3. 株価とニュースの要約
+4. 現在のトレンドと今後の見通し
+5. リスク要因とチャンス要因
+
+上記の投資家の志向性を考慮して、具体的な売買アクションを提案してください。
+空売りポジションについては、買戻しタイミングや追加空売りの検討を含めて判断してください。"""
 
 
 def analyze_with_claude(data, preference_prompt=None):
@@ -52,6 +69,11 @@ def analyze_with_claude(data, preference_prompt=None):
     if preference_prompt is None:
         preference_prompt = generate_preference_prompt()
     
+    # 空売りポジションかどうかを判定
+    quantity = data.get('quantity')
+    is_short_position = quantity is not None and quantity < 0
+    analysis_viewpoints = ANALYSIS_VIEWPOINTS_SHORT if is_short_position else ANALYSIS_VIEWPOINTS_REGULAR
+    
     prompt = f"""
 {data['symbol']}の分析をお願いします。
 
@@ -63,7 +85,7 @@ def analyze_with_claude(data, preference_prompt=None):
 
 {preference_prompt}
 
-{ANALYSIS_VIEWPOINTS}
+{analysis_viewpoints}
 """
     
     try:
@@ -113,6 +135,11 @@ def analyze_with_gemini(data, preference_prompt=None):
     if preference_prompt is None:
         preference_prompt = generate_preference_prompt()
     
+    # 空売りポジションかどうかを判定
+    quantity = data.get('quantity')
+    is_short_position = quantity is not None and quantity < 0
+    analysis_viewpoints = ANALYSIS_VIEWPOINTS_SHORT if is_short_position else ANALYSIS_VIEWPOINTS_REGULAR
+    
     prompt = (
         "あなたは株式分析の専門家です。データに基づいて客観的な分析と売買判断を提供してください。\n\n"
         f"{data['symbol']}の分析をお願いします。\n\n"
@@ -121,7 +148,7 @@ def analyze_with_gemini(data, preference_prompt=None):
         f"最近のニュース:\n"
         f"{chr(10).join(f'- {news}' for news in data['news'])}\n\n"
         f"{preference_prompt}\n\n"
-        f"{ANALYSIS_VIEWPOINTS}"
+        f"{analysis_viewpoints}"
     )
     headers = {"Content-Type": "application/json"}
     payload = {

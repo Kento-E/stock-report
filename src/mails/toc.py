@@ -69,7 +69,8 @@ def extract_judgment_from_analysis(analysis_text):
     lines = analysis_text.split('\n')
     for line in lines:
         line_lower = line.lower()
-        if any(kw in line_lower for kw in ['買い', 'buy', '売り', 'sell', 'ホールド', 'hold', '様子見']):
+        # 通常の売買判断キーワードと空売り専用キーワードの両方をサポート
+        if any(kw in line_lower for kw in ['買い', 'buy', '売り', 'sell', 'ホールド', 'hold', '様子見', '買戻し', '追加売り', '維持']):
             clean_line = re.sub(r'[*#:\-]', '', line).strip()
             if 5 < len(clean_line) <= 30:
                 clean_line = re.split(r'[をがはに](推奨|提供|維持|継続)', clean_line)[0].strip()
@@ -120,13 +121,13 @@ def generate_toc(stock_reports_info):
         judgment_style = "padding: 10px; border: 1px solid #dee2e6;"
         judgment_text = info['judgment'].strip()
         
-        if judgment_text == '売り':
-            # 売り判断は赤字・太字で強調
+        if judgment_text in ('売り', '追加売り'):
+            # 売り判断・追加売り判断は赤字・太字で強調
             judgment_style += " font-weight: bold; color: #dc3545;"
-        elif judgment_text in ('買い', '買い増し'):
-            # 買い判断は太字で強調
+        elif judgment_text in ('買い', '買い増し', '買戻し'):
+            # 買い判断・買戻し判断は太字で強調
             judgment_style += " font-weight: bold;"
-        # その他（ホールド、様子見など）はデフォルトのまま（装飾なし）
+        # その他（ホールド、維持、様子見など）はデフォルトのまま（装飾なし）
         
         # 行の背景色を交互に変更
         bg_color = "#f8f9fa" if i % 2 == 0 else "white"

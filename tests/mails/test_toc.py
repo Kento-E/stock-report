@@ -285,3 +285,115 @@ class TestGenerateToc:
         style = match.group(1)
         # font-weight: boldが含まれていないことを確認
         assert 'font-weight: bold' not in style
+
+
+class TestShortSellingJudgments:
+    """空売りポジション用の判断用語のテスト"""
+    
+    def test_extract_buyback_judgment(self):
+        """買戻し判断の抽出"""
+        analysis = """
+## 売買判断: 買戻し
+株価が上昇傾向にあるため、ポジションを解消することを推奨します。
+"""
+        judgment = extract_judgment_from_analysis(analysis)
+        assert '買戻し' in judgment
+    
+    def test_extract_maintain_judgment(self):
+        """維持判断の抽出"""
+        analysis = """
+## 売買判断: 維持
+現在のポジションを保持することを推奨します。
+"""
+        judgment = extract_judgment_from_analysis(analysis)
+        assert '維持' in judgment
+    
+    def test_extract_additional_short_judgment(self):
+        """追加売り判断の抽出"""
+        analysis = """
+## 売買判断: 追加売り
+株価の下落が続く見込みのため、追加の空売りを推奨します。
+"""
+        judgment = extract_judgment_from_analysis(analysis)
+        assert '追加売り' in judgment
+    
+    def test_generate_toc_buyback_judgment_bold(self):
+        """買戻し判断は太字で表示"""
+        stock_info = [
+            {'symbol': 'TEST', 'name': 'テスト銘柄', 'judgment': '買戻し', 'id': 'stock-TEST'}
+        ]
+        
+        toc = generate_toc(stock_info)
+        
+        # 買戻し判断のセルが太字で表示されることを確認
+        td_pattern = r'<td style="([^"]*?)">[\s]*買戻し[\s]*</td>'
+        match = re.search(td_pattern, toc)
+        assert match is not None, "買戻し判断のセルが見つかりません"
+        style = match.group(1)
+        # 太字が含まれていることを確認
+        assert 'font-weight: bold' in style
+    
+    def test_generate_toc_maintain_judgment_not_bold(self):
+        """維持判断は太字にしない（デフォルトスタイル）"""
+        stock_info = [
+            {'symbol': 'TEST', 'name': 'テスト銘柄', 'judgment': '維持', 'id': 'stock-TEST'}
+        ]
+        
+        toc = generate_toc(stock_info)
+        
+        # 維持判断のセルにfont-weight: boldが含まれていないことを確認
+        td_pattern = r'<td style="([^"]*?)">[\s]*維持[\s]*</td>'
+        match = re.search(td_pattern, toc)
+        assert match is not None, "維持判断のセルが見つかりません"
+        style = match.group(1)
+        # font-weight: boldが含まれていないことを確認
+        assert 'font-weight: bold' not in style
+    
+    def test_generate_toc_additional_short_judgment_red(self):
+        """追加売り判断は赤字で表示"""
+        stock_info = [
+            {'symbol': 'TEST', 'name': 'テスト銘柄', 'judgment': '追加売り', 'id': 'stock-TEST'}
+        ]
+        
+        toc = generate_toc(stock_info)
+        
+        # 追加売り判断のセルが赤字（#dc3545）で表示されることを確認
+        td_pattern = r'<td style="([^"]*?)">[\s]*追加売り[\s]*</td>'
+        match = re.search(td_pattern, toc)
+        assert match is not None, "追加売り判断のセルが見つかりません"
+        style = match.group(1)
+        # 赤字のカラーコードが含まれていることを確認
+        assert 'color: #dc3545' in style
+        # 太字も含まれていることを確認
+        assert 'font-weight: bold' in style
+    
+    def test_generate_toc_mixed_short_and_regular_judgments(self):
+        """通常保有と空売りの判断が混在する場合"""
+        stock_info = [
+            {'symbol': 'BUY', 'name': '買い銘柄', 'judgment': '買い', 'id': 'stock-BUY'},
+            {'symbol': 'BUYBACK', 'name': '買戻し銘柄', 'judgment': '買戻し', 'id': 'stock-BUYBACK'},
+            {'symbol': 'SELL', 'name': '売り銘柄', 'judgment': '売り', 'id': 'stock-SELL'},
+            {'symbol': 'ADDSHORT', 'name': '追加売り銘柄', 'judgment': '追加売り', 'id': 'stock-ADDSHORT'},
+            {'symbol': 'MAINTAIN', 'name': '維持銘柄', 'judgment': '維持', 'id': 'stock-MAINTAIN'}
+        ]
+        
+        toc = generate_toc(stock_info)
+        
+        # 各判断が含まれていることを確認
+        assert '買い' in toc
+        assert '買戻し' in toc
+        assert '売り' in toc
+        assert '追加売り' in toc
+        assert '維持' in toc
+        
+        # 買戻しと買いが両方とも太字であることを確認
+        buyback_td_pattern = r'<td style="([^"]*?)">[\s]*買戻し[\s]*</td>'
+        buyback_match = re.search(buyback_td_pattern, toc)
+        assert buyback_match is not None
+        assert 'font-weight: bold' in buyback_match.group(1)
+        
+        # 追加売りと売りが両方とも赤字であることを確認
+        addshort_td_pattern = r'<td style="([^"]*?)">[\s]*追加売り[\s]*</td>'
+        addshort_match = re.search(addshort_td_pattern, toc)
+        assert addshort_match is not None
+        assert 'color: #dc3545' in addshort_match.group(1)

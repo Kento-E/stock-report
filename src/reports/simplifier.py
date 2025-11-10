@@ -26,7 +26,8 @@ def detect_hold_judgment(analysis_text):
         'hold',
         '保有継続',
         '様子見',
-        '現状維持'
+        '現状維持',
+        '維持'  # 空売りポジションの維持判断
     ]
     
     # テキストを小文字に変換して検索（英語対応）
@@ -50,7 +51,7 @@ def detect_hold_judgment(analysis_text):
 
 def simplify_hold_report(symbol, name, analysis_text, current_price, currency):
     """
-    ホールド判断の場合に簡略化されたレポートを生成する。
+    ホールド判断または維持判断の場合に簡略化されたレポートを生成する。
     
     Args:
         symbol: 銘柄コード
@@ -65,7 +66,17 @@ def simplify_hold_report(symbol, name, analysis_text, current_price, currency):
     # 理由の抽出（売買判断セクションから）
     reason = _extract_hold_reason(analysis_text)
     
-    simplified = f"""## 売買判断: ホールド
+    # 「維持」判断（空売りポジション）かどうかを判定
+    text_lower = analysis_text.lower()
+    is_maintain_judgment = False
+    maintain_pattern = r'(?:売買判断|判断)[：:\s]*維持'
+    if re.search(maintain_pattern, analysis_text, re.IGNORECASE):
+        is_maintain_judgment = True
+    
+    # 判断のラベルを決定
+    judgment_label = "維持" if is_maintain_judgment else "ホールド"
+    
+    simplified = f"""## 売買判断: {judgment_label}
 
 **現在の株価**: {current_price}{currency}
 
@@ -96,7 +107,7 @@ def _extract_hold_reason(analysis_text):
         # 理由セクションを探す（日本語）
         r'理由[：:\s]*([^\n]+)',
         # 売買判断の後の説明を探す
-        r'(?:売買判断|判断|推奨)[：:\s]*(?:ホールド|hold|保有継続|様子見|現状維持)[^\n]*[\n\s]*([^\n]+)',
+        r'(?:売買判断|判断|推奨)[：:\s]*(?:ホールド|hold|保有継続|様子見|現状維持|維持)[^\n]*[\n\s]*([^\n]+)',
         # 英語の理由セクション
         r'reason[：:\s]*([^\n]+)',
         # 英語の判断セクション
@@ -119,7 +130,7 @@ def _extract_hold_reason(analysis_text):
     lines = analysis_text.split('\n')
     for i, line in enumerate(lines):
         line_lower = line.lower()
-        if any(kw in line_lower for kw in ['ホールド', 'hold', '保有継続', '様子見', '現状維持']):
+        if any(kw in line_lower for kw in ['ホールド', 'hold', '保有継続', '様子見', '現状維持', '維持']):
             # その行またはその次の行から理由を抽出
             for offset in range(0, min(3, len(lines) - i)):
                 candidate_line = lines[i + offset].strip()
