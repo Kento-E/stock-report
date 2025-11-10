@@ -184,17 +184,7 @@ main
 
 ### Secretsの管理
 
-本リポジトリでは、以下のSecretsが設定されています（READMEより）：
-
-- `CLAUDE_API_KEY`
-- `GEMINI_API_KEY`
-- `MAIL_TO`
-- `MAIL_FROM`
-- `SMTP_SERVER`
-- `SMTP_PORT`
-- `SMTP_USER`
-- `SMTP_PASS`
-- `YAHOO_API_KEY`
+本リポジトリで使用するSecretsの詳細は、READMEの「必須Secrets」セクションを参照してください。
 
 ### Secretsの保護方法
 
