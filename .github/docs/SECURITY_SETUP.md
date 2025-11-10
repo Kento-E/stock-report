@@ -67,6 +67,38 @@ main
 - **✅ Require deployments to succeed before merging**（該当する場合）
   - デプロイメント環境がある場合、デプロイ成功を必須化
 
+### 自動マージワークフローとの互換性
+
+本リポジトリには `.github/workflows/auto-merge.yml` による自動マージ機能が実装されています。上記のブランチ保護ルールを設定しても、以下の条件を満たせば自動マージは正常に動作します：
+
+#### 互換性を保つための設定
+
+1. **GitHub Actions の権限設定**
+   - **Settings** > **Actions** > **General** > **Workflow permissions** で以下を設定：
+     - ✅ 「Read and write permissions」を選択
+     - ✅ 「Allow GitHub Actions to create and approve pull requests」にチェック
+   - これにより、`GITHUB_TOKEN` がマージ権限を持つ
+
+2. **ブランチ保護ルールの設定時の注意点**
+   - ✅ **「Require a pull request before merging」を有効化**: 自動マージは問題なく動作（PRを介してマージするため）
+   - ✅ **「Require approvals」を設定**: 自動マージワークフローは承認後にトリガーされるため問題なし
+   - ✅ **「Require review from Code Owners」を有効化**: オーナーが承認すれば自動マージ可能
+   - ✅ **「Require status checks to pass」を有効化**: テストが成功していれば自動マージ可能
+   - ⚠️ **「Do not allow bypassing the above settings」を有効化**: 管理者もルールをバイパスできなくなるが、自動マージワークフローは `GITHUB_TOKEN` を使用するため、正しく権限設定されていれば動作する
+   - ❌ **「Restrict who can push to matching branches」でGitHub Actionsを除外しない**: この設定を有効にする場合、GitHub Actionsを許可リストに含める必要がある（通常は設定不要）
+
+3. **動作フロー**
+   - PRが作成される → テストが実行される → オーナーがレビュー・承認する → 自動マージワークフローがトリガーされる → ブランチ保護ルールのチェックを通過してマージされる
+
+#### トラブルシューティング
+
+自動マージが失敗する場合、以下を確認してください：
+
+- GitHub Actions の権限設定が正しいか（Read and write permissions）
+- ブランチ保護ルールで必要なステータスチェック（`test`）が成功しているか
+- CODEOWNERSで指定されたオーナーの承認が得られているか
+- PRがDraft状態でないか
+
 ## 2. リポジトリ権限の設定
 
 ### コラボレーターの管理
