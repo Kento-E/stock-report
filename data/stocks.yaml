@@ -3,7 +3,7 @@ stocks:
     symbol: 4680
     unit: NISA
     acquisition_price: 1000
-    quantity: 1
+    quantity: 100
     added: 2025-11-10
 
   - name: ワーナーミュージックグループ
