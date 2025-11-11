@@ -1,4 +1,11 @@
 stocks:
+  - name: ラウンドワン
+    symbol: 4680
+    unit: NISA
+    acquisition_price: 1000
+    quantity: 1
+    added: 2025-11-10
+
   - name: ワーナーミュージックグループ
     symbol: WMG
     unit: NISA
