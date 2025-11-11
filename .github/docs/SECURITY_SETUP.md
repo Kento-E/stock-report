@@ -85,35 +85,14 @@ main
    - ✅ **「Require review from Code Owners」を有効化**: オーナーが承認すれば自動マージ可能
    - ✅ **「Require status checks to pass」を有効化**: テストが成功していれば自動マージ可能
    - ⚠️ **「Do not allow bypassing the above settings」を有効化**: 管理者もルールをバイパスできなくなるが、自動マージワークフローは `GITHUB_TOKEN` を使用するため、正しく権限設定されていれば動作する
-   - ⚠️ **「Restrict who can push to matching branches」は設定しない**: この設定を有効にすると、GitHub Actionsによる自動マージが「Cannot update this protected ref」エラーで失敗します
-   - ⚠️ **「Allow force pushes」は無効のまま**: 有効にすると履歴が破壊される可能性があります
+   - ❌ **「Restrict who can push to matching branches」でGitHub Actionsを除外しない**: この設定を有効にする場合、GitHub Actionsを許可リストに含める必要がある（通常は設定不要）
 
 3. **動作フロー**
    - PRが作成される → テストが実行される → オーナーがレビュー・承認する → 自動マージワークフローがトリガーされる → ブランチ保護ルールのチェックを通過してマージされる
 
 #### トラブルシューティング
 
-##### 「Merging is blocked - Cannot update this protected ref」エラーが発生する場合
-
-このエラーが発生する場合、以下を確認してください：
-
-1. **「Restrict who can push to matching branches」が有効になっていないか確認**
-   - **Settings** > **Branches** > 該当のブランチ保護ルール を開く
-   - 「Restrict who can push to matching branches」セクションを確認
-   - ✅ **このオプションは無効にする**（チェックを外す）
-   - このオプションを有効にすると、GitHub Actionsを含むすべてのプッシュが制限され、自動マージが失敗します
-
-2. **GitHub Actions の権限設定が正しいか確認**
-   - **Settings** > **Actions** > **General** > **Workflow permissions** を開く
-   - ✅ 「Read and write permissions」が選択されているか確認
-   - ✅ 「Allow GitHub Actions to create and approve pull requests」にチェックが入っているか確認
-
-3. **その他の確認項目**
-   - ブランチ保護ルールで必要なステータスチェック（`test`）が成功しているか
-   - CODEOWNERSで指定されたオーナーの承認が得られているか
-   - PRがDraft状態でないか
-
-##### その他の自動マージ失敗時の確認事項
+自動マージが失敗する場合、以下を確認してください：
 
 - GitHub Actions の権限設定が正しいか（Read and write permissions）
 - ブランチ保護ルールで必要なステータスチェック（`test`）が成功しているか
