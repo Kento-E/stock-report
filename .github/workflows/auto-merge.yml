@@ -42,16 +42,8 @@ jobs:
             exit 0
           fi
           
-          # PRがマージ可能な状態かチェック
-          MERGEABLE=$(gh pr view ${PR_NUMBER} --json mergeable --jq '.mergeable')
+          # 自動マージを有効化（必須チェック完了後に自動的にマージ）
+          gh pr merge ${PR_NUMBER} --squash --auto --delete-branch
           
-          if [ "$MERGEABLE" != "MERGEABLE" ]; then
-            echo "⚠️ このPRはマージ可能な状態ではありません。"
-            echo "マージ可能状態: $MERGEABLE"
-            exit 0
-          fi
-          
-          # スカッシュマージを実行
-          gh pr merge ${PR_NUMBER} --squash --delete-branch
-          
-          echo "✅ PR #${PR_NUMBER} を自動マージしました（スカッシュコミット）"
+          echo "✅ PR #${PR_NUMBER} の自動マージを有効化しました"
+          echo "必須チェックが完了次第、自動的にマージされます"
