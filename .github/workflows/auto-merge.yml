@@ -25,6 +25,14 @@ jobs:
         run: |
           echo "PR #${PR_NUMBER} が承認されました。自動マージを開始します..."
           
+          # PRが既にマージ済みかどうかをチェック
+          PR_STATE=$(gh pr view ${PR_NUMBER} --json state --jq '.state')
+          
+          if [ "$PR_STATE" = "MERGED" ]; then
+            echo "✅ このPRは既にマージ済みです。自動マージ処理をスキップします。"
+            exit 0
+          fi
+          
           # PRがDraftかどうかをチェック
           IS_DRAFT=$(gh pr view ${PR_NUMBER} --json isDraft --jq '.isDraft')
           
@@ -34,10 +42,8 @@ jobs:
             exit 0
           fi
           
-          # PRがマージ可能な状態かチェック
-          gh pr view ${PR_NUMBER} --json mergeable,mergeStateStatus --jq '.mergeable,.mergeStateStatus'
-          
-          # スカッシュマージを実行
+          # 自動マージを有効化（必須チェック完了後に自動的にマージ）
           gh pr merge ${PR_NUMBER} --squash --auto --delete-branch
           
-          echo "PR #${PR_NUMBER} を自動マージしました（スカッシュコミット）"
+          echo "✅ PR #${PR_NUMBER} の自動マージを有効化しました"
+          echo "必須チェックが完了次第、自動的にマージされます"
