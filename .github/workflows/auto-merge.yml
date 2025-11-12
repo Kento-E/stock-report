@@ -22,8 +22,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          REVIEWER: ${{ github.event.review.user.login }}
         run: |
           echo "PR #${PR_NUMBER} が承認されました。自動マージを開始します..."
+          echo "PR作成者: ${PR_AUTHOR}"
+          echo "承認者: ${REVIEWER}"
           
           # PRが既にマージ済みかどうかをチェック
           PR_STATE=$(gh pr view ${PR_NUMBER} --json state --jq '.state')
@@ -39,6 +43,18 @@ jobs:
           if [ "$IS_DRAFT" = "true" ]; then
             echo "⚠️ このPRはDraft状態です。Draft状態のPRは自動マージされません。"
             echo "Ready for reviewに変更してから再度Approveしてください。"
+            exit 0
+          fi
+          
+          # PR作成者による自己承認の場合の特別処理
+          if [ "$PR_AUTHOR" = "$REVIEWER" ]; then
+            echo "⚠️ PR作成者による自己承認が検出されました"
+            echo "GitHubのポリシーにより、自己承認では必須レビュー要件を満たせません"
+            echo "コードオーナーが作成したPRの場合は、手動でマージする必要があります"
+            echo ""
+            echo "対応方法："
+            echo "1. 他のコードオーナー（@copilot等）にレビューを依頼する"
+            echo "2. または、管理者権限で手動マージを実行してください"
             exit 0
           fi
           
