@@ -2,6 +2,32 @@
 
 > **Note**: このファイルは自動化、CI/CD、テスト機能の仕様を定義します。
 
+## 依存関係の自動更新
+
+### Dependabot による自動更新
+
+- Dependabot が依存関係を自動的に監視し、更新が利用可能になると Pull Request を自動作成。
+- Python パッケージ（requirements.txt）と GitHub Actions ワークフローの両方を監視。
+
+#### 更新スケジュール
+
+- **実行タイミング**: 毎週月曜日午前9時（JST）
+- **Python依存関係**: 最大10件のPRを同時にオープン
+- **GitHub Actions**: 最大5件のPRを同時にオープン
+
+#### ラベルとレビュアー
+
+- 自動的に `dependencies` ラベルが付与される
+- Python更新には `python` ラベル、GitHub Actions更新には `github-actions` ラベルが追加
+- PRレビュアーとしてリポジトリオーナーが自動割り当て
+
+#### セキュリティアップデート
+
+- セキュリティ脆弱性が検出された場合、優先的に更新PRが作成される
+- 手動でのバージョン管理作業を削減し、常に最新の安全な依存関係を維持
+
+**設定ファイル**: `.github/dependabot.yml`
+
 ## スケジューラ・自動実行
 
 ### GitHub Actions による日次実行
