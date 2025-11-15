@@ -6,4 +6,4 @@ pyyaml~=6.0.3
 defeatbeta-api~=0.0.19
 pytest~=9.0.1
 pytest-cov~=7.0.0
-ruamel.yaml~=0.18.15
+ruamel.yaml~=0.18.16
