@@ -21,6 +21,9 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
       
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      
       - name: Auto approve and merge Dependabot PRs
         run: |
           echo "DependabotによるPR #${{ github.event.pull_request.number }} を自動承認します"
