@@ -26,7 +26,16 @@
 - セキュリティ脆弱性が検出された場合、優先的に更新PRが作成される
 - 手動でのバージョン管理作業を削減し、常に最新の安全な依存関係を維持
 
-**設定ファイル**: `.github/dependabot.yml`
+#### 自動承認とマージ
+
+- **自動承認**: Dependabotが作成したPRは GitHub Actions により自動的に承認される
+- **自動マージ**: 承認後、既存の自動マージワークフローにより必須チェック完了後に自動マージ
+- **ワークフロー**: `.github/workflows/dependabot-auto-approve.yml`が自動承認を実行
+- **安全性**: `pull_request_target`イベントを使用し、Dependabotのメタデータを検証
+
+**設定ファイル**: 
+- `.github/dependabot.yml` - Dependabot設定
+- `.github/workflows/dependabot-auto-approve.yml` - 自動承認ワークフロー
 
 ## スケジューラ・自動実行
 
