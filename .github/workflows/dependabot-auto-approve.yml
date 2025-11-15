@@ -20,10 +20,11 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
       
-      - name: Auto approve Dependabot PRs
+      - name: Auto approve and merge Dependabot PRs
         run: |
           echo "DependabotによるPR #${{ github.event.pull_request.number }} を自動承認します"
           echo "更新タイプ: ${{ steps.metadata.outputs.update-type }}"
           gh pr review --approve "${{ github.event.pull_request.number }}"
+          gh pr merge "${{ github.event.pull_request.number }}" --squash --auto --delete-branch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
