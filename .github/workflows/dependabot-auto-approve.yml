@@ -1,0 +1,31 @@
+name: Dependabot Auto Approve
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-approve:
+    runs-on: ubuntu-latest
+    # Dependabotが作成したPRのみを対象とする
+    if: github.actor == 'dependabot[bot]'
+    
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+      
+      - name: Auto approve and merge Dependabot PRs
+        run: |
+          echo "DependabotによるPR #${{ github.event.pull_request.number }} を自動承認します"
+          echo "更新タイプ: ${{ steps.metadata.outputs.update-type }}"
+          gh pr review --approve "${{ github.event.pull_request.number }}"
+          gh pr merge "${{ github.event.pull_request.number }}" --squash --auto --delete-branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
