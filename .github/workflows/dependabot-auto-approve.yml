@@ -12,9 +12,12 @@ jobs:
   auto-approve:
     runs-on: ubuntu-latest
     # Dependabotが作成したPRのみを対象とする
-    if: github.actor == 'dependabot[bot]'
+    # github.actorではなくPRの作成者をチェックすることで、synchronizeイベントでも正しく動作する
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
     
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
       - name: Dependabot metadata
         id: metadata
         uses: dependabot/fetch-metadata@v2
