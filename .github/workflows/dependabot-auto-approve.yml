@@ -12,18 +12,19 @@ jobs:
   auto-approve:
     runs-on: ubuntu-latest
     # Dependabotが作成したPRのみを対象とする
-    # github.actorではなくPRの作成者をチェックすることで、synchronizeイベントでも正しく動作する
-    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    if: github.actor == 'dependabot[bot]'
     
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Dependabot metadata
         id: metadata
         uses: dependabot/fetch-metadata@v2
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
-      
-      - name: Checkout repository
-        uses: actions/checkout@v5
       
       - name: Auto approve and merge Dependabot PRs
         run: |
