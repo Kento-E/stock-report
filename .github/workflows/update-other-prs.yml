@@ -26,8 +26,8 @@ jobs:
       - name: Update other PRs targeting the same base branch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MERGED_PR_NUMBER: ${{ github.event.pull_request.number }}
-          BASE_BRANCH: ${{ github.event_name == 'push' && github.ref_name || github.event.pull_request.base.ref }}
+          MERGED_PR_NUMBER: ${{ github.event_name == 'pull_request' && github.event.pull_request.number || '0' }}
+          BASE_BRANCH: ${{ github.event_name == 'push' && github.ref_name || github.event.pull_request.base.ref || 'main' }}
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
             echo "✅ mainブランチが更新されました"
