@@ -33,11 +33,19 @@
 
 **コーディングガイドライン**
 
-Markdown Lintルール、コードスタイル規約を定義しています。
+Markdown Lintルール、Pythonコードのエラーハンドリング、コード品質のルールを定義しています。
 
-**いつ参照すべきか**: Markdownファイル編集時
+**いつ参照すべきか**: Markdownファイル編集時、Pythonコード変更時
 
-### 4. <a>instructions/testing.instructions.md</a>
+### 4. <a>instructions/documentation.instructions.md</a>
+
+**ドキュメント作成ガイドライン**
+
+ドキュメントの責任分掌、DRY原則、適切な配置ルールを定義しています。
+
+**いつ参照すべきか**: ドキュメント作成・更新時
+
+### 5. <a>instructions/testing.instructions.md</a>
 
 **テスト・動作確認手順**
 
