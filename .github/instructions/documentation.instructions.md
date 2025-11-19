@@ -102,25 +102,25 @@
 ### 良い例
 
 ```markdown
-# README.md
+<!-- README.md -->
 株価データはAIで分析され、レポートが生成されます。
 詳細は [specs/requirements-index.md](.github/specs/requirements-index.md) を参照してください。
 
-# .github/specs/requirements-index.md
+<!-- .github/specs/requirements-index.md -->
 （ここに詳細なシステム要件を記載）
 
-# docs/TEST.md
+<!-- docs/TEST.md -->
 （ここに詳細なテスト手順を記載）
 ```
 
 ### 悪い例
 
 ```markdown
-# README.md
+<!-- README.md -->
 株価データはAIで分析され、レポートが生成されます。
 システムは以下の5つのモジュールで構成されています...
 （詳細すぎる）
 
-# .github/specs/requirements-index.md
+<!-- .github/specs/requirements-index.md -->
 （同じ内容が重複して記載されている）
 ```
