@@ -107,20 +107,30 @@ jobs:
               echo "  ✅ PR #${PR_NUM} を正常に更新しました"
               
               # 更新後のブランチをチェックアウトしてpre-commitチェックを実行
-              echo "  🔍 リントチェックを実行中..."
+              echo "  🔍 リントチェックを実行中（変更ファイルのみ）..."
               git fetch origin ${PR_BRANCH}
               git checkout ${PR_BRANCH}
               
-              # pre-commitチェックを実行
-              PRECOMMIT_STATUS=0
-              pre-commit run --all-files 2>&1 || PRECOMMIT_STATUS=$?
+              # mainブランチとの差分ファイル一覧を取得
+              git fetch origin main
+              CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
               
-              if [ "${PRECOMMIT_STATUS}" -eq 0 ]; then
-                echo "  ✅ リントチェック成功"
+              if [ -n "$CHANGED_FILES" ]; then
+                echo "  📝 チェック対象: $(echo $CHANGED_FILES | wc -w) ファイル"
+                
+                # 変更ファイルのみpre-commitチェックを実行
+                PRECOMMIT_STATUS=0
+                pre-commit run --files $CHANGED_FILES 2>&1 || PRECOMMIT_STATUS=$?
+                
+                if [ "${PRECOMMIT_STATUS}" -eq 0 ]; then
+                  echo "  ✅ リントチェック成功"
+                else
+                  echo "  ⚠️ リントエラーが検出されました。PR #${PR_NUM} を確認してください。"
+                  # コメントを追加
+                  gh pr comment ${PR_NUM} --body "⚠️ ブランチ更新後のリントチェックでエラーが検出されました。\`pre-commit run --all-files\`を実行して修正してください。"
+                fi
               else
-                echo "  ⚠️ リントエラーが検出されました。PR #${PR_NUM} を確認してください。"
-                # コメントを追加
-                gh pr comment ${PR_NUM} --body "⚠️ ブランチ更新後のリントチェックでエラーが検出されました。\`pre-commit run --all-files\`を実行して修正してください。"
+                echo "  ℹ️ 変更ファイルがないためリントチェックをスキップ"
               fi
               
               # mainブランチに戻る
