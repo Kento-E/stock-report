@@ -13,26 +13,26 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-      
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.10"
-      
+
       - name: Install dependencies
         run: |
           pip install --upgrade pip
           pip install pyyaml
-      
+
       - name: Validate stocks.yaml
         id: validate
         run: |
           python src/validators/validate_stocks.py data/stocks.yaml
-      
+
       - name: Validation Summary
         if: always()
         run: |

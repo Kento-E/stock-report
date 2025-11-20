@@ -15,16 +15,16 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-      
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.10"
-      
+
       - name: Cache apt packages
         uses: actions/cache@v4
         with:
@@ -32,19 +32,19 @@ jobs:
           key: ${{ runner.os }}-apt-fonts-${{ hashFiles('.github/workflows/copilot-setup-steps.yml') }}
           restore-keys: |
             ${{ runner.os }}-apt-fonts-
-      
+
       - name: Install Japanese fonts
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends fonts-noto-cjk
         timeout-minutes: 3
-      
+
       - name: Install dependencies
         run: |
           pip install --upgrade pip
           pip install --timeout=100 -r requirements.txt
         timeout-minutes: 10
-      
+
       - name: Setup Python environment with data downloads
         uses: ./.github/actions/setup-python-env
         timeout-minutes: 10

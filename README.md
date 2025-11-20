@@ -210,6 +210,19 @@ Pull Requestを作成すると、GitHub Actionsで自動的にテストが実行
 - テストが失敗した場合、マージ前に修正が必要です
 - カバレッジレポートはアーティファクトとしてダウンロード可能です
 
+## コード品質管理
+
+本プロジェクトでは、pre-commitフックとリンターツールを導入してコード品質を自動化しています。
+
+### 初回セットアップ
+
+```bash
+pip install -r requirements.txt
+pre-commit install
+```
+
+コミット時に自動的にコードフォーマット・リントチェックが実行されます。詳細な技術仕様は [automation-cicd.md](.github/specs/automation-cicd.md#コード品質自動チェック) を参照してください。
+
 ## GitHub Copilotの活用
 
 本リポジトリではGitHub Copilotを活用できます：
