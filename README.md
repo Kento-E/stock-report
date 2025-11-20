@@ -212,38 +212,16 @@ Pull Requestを作成すると、GitHub Actionsで自動的にテストが実行
 
 ## コード品質管理
 
-本プロジェクトでは、コード品質を自動的に維持するため、pre-commitフックとリンターツールを導入しています。
+本プロジェクトでは、pre-commitフックとリンターツールを導入してコード品質を自動化しています。
 
-### pre-commitフックのセットアップ
-
-ローカル開発環境でpre-commitフックを有効にするには、以下のコマンドを実行してください：
+### 初回セットアップ
 
 ```bash
-# 依存パッケージのインストール（初回のみ）
 pip install -r requirements.txt
-
-# pre-commitフックのインストール
 pre-commit install
 ```
 
-これにより、コミット時に自動的に以下のチェックが実行されます：
-
-- **コードフォーマット**: Black（Python）、isort（import整理）
-- **リンター**: Flake8（Python）、markdownlint（Markdown）
-- **基本チェック**: 行末の空白削除、改行コード統一、YAML/JSON構文チェック
-- **セキュリティ**: 秘密鍵・AWS認証情報の検出
-
-### 手動でのリントチェック
-
-全ファイルに対してチェックを実行する場合：
-
-```bash
-pre-commit run --all-files
-```
-
-### CI/CDでの自動チェック
-
-Pull Request作成時、GitHub Actionsで自動的にリントチェックが実行されます。チェック結果はPRの「Checks」タブで確認できます。
+コミット時に自動的にコードフォーマット・リントチェックが実行されます。詳細な技術仕様は [automation-cicd.md](.github/specs/automation-cicd.md#コード品質自動チェック) を参照してください。
 
 ## GitHub Copilotの活用
 
