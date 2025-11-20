@@ -35,7 +35,7 @@
 - **安全性**: `pull_request_target`イベントを使用し、Dependabotのメタデータを検証
 - **実装理由**: `GITHUB_TOKEN`を使った承認では`pull_request_review`イベントがトリガーされないため、承認とマージ設定を同一ワークフローで実行
 
-**設定ファイル**: 
+**設定ファイル**:
 - `.github/dependabot.yml` - Dependabot設定
 - `.github/workflows/dependabot-auto-approve.yml` - 自動承認ワークフロー
 

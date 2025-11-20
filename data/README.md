@@ -65,17 +65,17 @@ stocks:
     acquisition_price: 2500
     currency: 円
     account_type: NISA
-  
+
   - symbol: 6758.T
     name: ソニーグループ
     quantity: -50
     acquisition_price: 12000
     note: 空売りポジション
-  
+
   - symbol: AAPL
     name: Apple Inc.
     currency: ドル
-  
+
   - symbol: BMW.DE
     name: BMW
     currency: ユーロ

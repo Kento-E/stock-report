@@ -14,7 +14,7 @@ jobs:
     # Dependabotが作成したPRのみを対象とする
     # github.actorではなくPRの作成者をチェックすることで、synchronizeイベントでも正しく動作する
     if: github.event.pull_request.user.login == 'dependabot[bot]'
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -23,7 +23,7 @@ jobs:
         uses: dependabot/fetch-metadata@v2
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
-      
+
       - name: Auto approve and merge Dependabot PRs
         run: |
           echo "DependabotによるPR #${{ github.event.pull_request.number }} を自動承認します"

@@ -1,0 +1,67 @@
+# pre-commit設定ファイル
+# 参考: https://pre-commit.com/
+
+repos:
+  # 標準的なpre-commitフック
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        name: 行末の空白を削除
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+        name: ファイル末尾を修正
+      - id: check-yaml
+        name: YAML構文チェック
+      - id: check-added-large-files
+        name: 大きなファイルのチェック
+        args: [--maxkb=1000]
+      - id: check-json
+        name: JSON構文チェック
+      - id: check-merge-conflict
+        name: マージコンフリクトの検出
+      - id: check-toml
+        name: TOML構文チェック
+      - id: mixed-line-ending
+        name: 改行コードの統一
+        args: [--fix=lf]
+
+  # Python: Black (コードフォーマッター)
+  - repo: https://github.com/psf/black
+    rev: 25.11.0
+    hooks:
+      - id: black
+        name: Blackでコードフォーマット
+        language_version: python3.10
+
+  # Python: isort (importの並び替え)
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        name: isortでimportを整理
+
+  # Python: Flake8 (リンター)
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.3.0
+    hooks:
+      - id: flake8
+        name: Flake8でコード品質チェック
+
+  # Markdown: markdownlint
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.43.0
+    hooks:
+      - id: markdownlint
+        name: Markdownリントチェック
+        args: [--config=.markdownlint.json]
+
+  # セキュリティ: 機密情報の検出
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: detect-private-key
+        name: 秘密鍵の検出
+      - id: detect-aws-credentials
+        name: AWS認証情報の検出
+        args: [--allow-missing-credentials]

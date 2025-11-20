@@ -88,14 +88,14 @@ stocks:
     name: トヨタ自動車
     quantity: 100
     acquisition_price: 2500
-  
+
   # 空売り中の銘柄
   - symbol: 6758.T
     name: ソニーグループ
     quantity: -50
     acquisition_price: 12000
     note: 空売りポジション
-  
+
   # 購入検討中の銘柄
   - symbol: AAPL
     name: Apple Inc.

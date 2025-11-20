@@ -29,17 +29,17 @@ defeatbeta-apiパッケージがhuggingface.coから取得する株式データ�
 steps:
   - name: Checkout repository
     uses: actions/checkout@v3
-  
+
   - name: Set up Python
     uses: actions/setup-python@v4
     with:
       python-version: "3.10"
-  
+
   - name: Install dependencies
     run: |
       pip install --upgrade pip
       pip install -r requirements.txt
-  
+
   - name: Setup Python environment with data downloads
     uses: ./.github/actions/setup-python-env
 ```

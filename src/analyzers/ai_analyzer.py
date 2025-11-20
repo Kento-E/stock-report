@@ -6,10 +6,10 @@ Claude SonnetまたはGemini APIを使用して株価・ニュースデータを
 
 import anthropic
 import requests
-from config import CLAUDE_API_KEY, GEMINI_API_KEY
-from loaders.stock_loader import get_currency_for_symbol, calculate_tax
-from loaders.preference_loader import generate_preference_prompt
 
+from config import CLAUDE_API_KEY, GEMINI_API_KEY
+from loaders.preference_loader import generate_preference_prompt
+from loaders.stock_loader import calculate_tax, get_currency_for_symbol
 
 # AI分析の観点（通常保有銘柄用）
 ANALYSIS_VIEWPOINTS_REGULAR = """以下の観点から分析してください（結論を最初に記載してください）：
@@ -50,30 +50,34 @@ ANALYSIS_VIEWPOINTS_SHORT = """以下の観点から分析してください（�
 def analyze_with_claude(data, preference_prompt=None):
     """
     Claude Sonnet APIを用いて株価・ニュースデータを分析し、要約・トレンド抽出・リスク/チャンスの指摘と売買判断を返す。
-    
+
     Args:
         data: 株価データと保有情報を含む辞書
         preference_prompt: 投資志向性プロンプト（省略時は毎回生成）
     """
     if not CLAUDE_API_KEY or CLAUDE_API_KEY.strip() == "":
-        error_msg = "Claude APIエラー: APIキーが未設定です。環境変数CLAUDE_API_KEYを確認してください。"
+        error_msg = (
+            "Claude APIエラー: APIキーが未設定です。環境変数CLAUDE_API_KEYを確認してください。"
+        )
         print(error_msg)
         return f"## 分析失敗\n\n**エラー内容:** {error_msg}"
     client = anthropic.Anthropic(api_key=CLAUDE_API_KEY)
-    currency = get_currency_for_symbol(data['symbol'], data.get('currency'))
-    
+    currency = get_currency_for_symbol(data["symbol"], data.get("currency"))
+
     # 保有状況に基づいたプロンプトの生成
     holding_status = _generate_holding_status(data, currency)
-    
+
     # 投資志向性プロンプトの生成（渡されていない場合のみ）
     if preference_prompt is None:
         preference_prompt = generate_preference_prompt()
-    
+
     # 空売りポジションかどうかを判定
-    quantity = data.get('quantity')
+    quantity = data.get("quantity")
     is_short_position = quantity is not None and quantity < 0
-    analysis_viewpoints = ANALYSIS_VIEWPOINTS_SHORT if is_short_position else ANALYSIS_VIEWPOINTS_REGULAR
-    
+    analysis_viewpoints = (
+        ANALYSIS_VIEWPOINTS_SHORT if is_short_position else ANALYSIS_VIEWPOINTS_REGULAR
+    )
+
     prompt = f"""
 {data['symbol']}の分析をお願いします。
 
@@ -87,24 +91,14 @@ def analyze_with_claude(data, preference_prompt=None):
 
 {analysis_viewpoints}
 """
-    
+
     try:
         message = client.messages.create(
             model="claude-3-sonnet-latest",
             max_tokens=1500,
             temperature=0.5,
             system="あなたは株式分析の専門家です。データに基づいて客観的な分析と売買判断を提供してください。",
-            messages=[
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": prompt
-                        }
-                    ]
-                }
-            ]
+            messages=[{"role": "user", "content": [{"type": "text", "text": prompt}]}],
         )
         return message.content[0].text
     except Exception as e:
@@ -116,30 +110,34 @@ def analyze_with_claude(data, preference_prompt=None):
 def analyze_with_gemini(data, preference_prompt=None):
     """
     Gemini APIを用いて株価・ニュースデータを分析し、要約・トレンド抽出・リスク/チャンスの指摘と売買判断を返す。
-    
+
     Args:
         data: 株価データと保有情報を含む辞書
         preference_prompt: 投資志向性プロンプト（省略時は毎回生成）
     """
     if not GEMINI_API_KEY or GEMINI_API_KEY.strip() == "":
-        error_msg = "Gemini APIエラー: APIキーが未設定です。環境変数GEMINI_API_KEYを確認してください。"
+        error_msg = (
+            "Gemini APIエラー: APIキーが未設定です。環境変数GEMINI_API_KEYを確認してください。"
+        )
         print(error_msg)
         return f"## 分析失敗\n\n**エラー内容:** {error_msg}"
     url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
-    currency = get_currency_for_symbol(data['symbol'], data.get('currency'))
-    
+    currency = get_currency_for_symbol(data["symbol"], data.get("currency"))
+
     # 保有状況に基づいたプロンプトの生成
     holding_status = _generate_holding_status(data, currency)
-    
+
     # 投資志向性プロンプトの生成（渡されていない場合のみ）
     if preference_prompt is None:
         preference_prompt = generate_preference_prompt()
-    
+
     # 空売りポジションかどうかを判定
-    quantity = data.get('quantity')
+    quantity = data.get("quantity")
     is_short_position = quantity is not None and quantity < 0
-    analysis_viewpoints = ANALYSIS_VIEWPOINTS_SHORT if is_short_position else ANALYSIS_VIEWPOINTS_REGULAR
-    
+    analysis_viewpoints = (
+        ANALYSIS_VIEWPOINTS_SHORT if is_short_position else ANALYSIS_VIEWPOINTS_REGULAR
+    )
+
     prompt = (
         "あなたは株式分析の専門家です。データに基づいて客観的な分析と売買判断を提供してください。\n\n"
         f"{data['symbol']}の分析をお願いします。\n\n"
@@ -151,15 +149,7 @@ def analyze_with_gemini(data, preference_prompt=None):
         f"{analysis_viewpoints}"
     )
     headers = {"Content-Type": "application/json"}
-    payload = {
-        "contents": [
-            {
-                "parts": [
-                    {"text": prompt}
-                ]
-            }
-        ]
-    }
+    payload = {"contents": [{"parts": [{"text": prompt}]}]}
     try:
         resp = requests.post(url, headers=headers, json=payload, timeout=60)
         if resp.status_code == 200:
@@ -179,64 +169,74 @@ def analyze_with_gemini(data, preference_prompt=None):
 def _generate_holding_status(data, currency):
     """
     保有状況に基づいたプロンプトの文字列を生成する。
-    
+
     Args:
         data: 株価データと保有情報を含む辞書
         currency: 通貨単位（「円」または「ドル」）
-    
+
     Returns:
         保有状況を示す文字列
     """
     holding_status = ""
-    account_type = data.get('account_type', '特定')
-    
-    if data.get('quantity') is not None:
-        quantity = data['quantity']
-        acquisition_price = data.get('acquisition_price')
-        
+    account_type = data.get("account_type", "特定")
+
+    if data.get("quantity") is not None:
+        quantity = data["quantity"]
+        acquisition_price = data.get("acquisition_price")
+
         if quantity > 0:
             holding_status = f"現在の保有状況: {quantity}株を保有中（口座種別: {account_type}）"
             if acquisition_price:
                 holding_status += f"（取得単価: {acquisition_price}{currency}）"
-                if data['price']:
-                    profit_loss = (data['price'] - acquisition_price) * quantity
-                    profit_rate = ((data['price'] - acquisition_price) / acquisition_price) * 100
-                    
+                if data["price"]:
+                    profit_loss = (data["price"] - acquisition_price) * quantity
+                    profit_rate = ((data["price"] - acquisition_price) / acquisition_price) * 100
+
                     # 税額計算
                     tax_amount = calculate_tax(profit_loss, account_type)
                     after_tax_profit = profit_loss - tax_amount
-                    
-                    holding_status += f"\n現在の損益: {profit_loss:,.0f}{currency}（{profit_rate:+.2f}%）"
-                    
+
+                    holding_status += (
+                        f"\n現在の損益: {profit_loss:,.0f}{currency}（{profit_rate:+.2f}%）"
+                    )
+
                     # 課税がある場合は税引後損益も表示
                     if tax_amount > 0:
                         holding_status += f"\n税額（約20.315%）: {tax_amount:,.0f}{currency}"
                         holding_status += f"\n税引後損益: {after_tax_profit:,.0f}{currency}"
-                    elif account_type in ['NISA', '旧NISA']:
-                        holding_status += f"\n税引後損益: {after_tax_profit:,.0f}{currency}（非課税）"
+                    elif account_type in ["NISA", "旧NISA"]:
+                        holding_status += (
+                            f"\n税引後損益: {after_tax_profit:,.0f}{currency}（非課税）"
+                        )
         elif quantity < 0:
-            holding_status = f"現在の保有状況: {abs(quantity)}株を空売り中（信用売り、口座種別: {account_type}）"
+            holding_status = (
+                f"現在の保有状況: {abs(quantity)}株を空売り中（信用売り、口座種別: {account_type}）"
+            )
             if acquisition_price:
                 holding_status += f"（空売り価格: {acquisition_price}{currency}）"
-                if data['price']:
-                    profit_loss = (acquisition_price - data['price']) * abs(quantity)
-                    profit_rate = ((acquisition_price - data['price']) / acquisition_price) * 100
-                    
+                if data["price"]:
+                    profit_loss = (acquisition_price - data["price"]) * abs(quantity)
+                    profit_rate = ((acquisition_price - data["price"]) / acquisition_price) * 100
+
                     # 税額計算
                     tax_amount = calculate_tax(profit_loss, account_type)
                     after_tax_profit = profit_loss - tax_amount
-                    
-                    holding_status += f"\n現在の損益: {profit_loss:,.0f}{currency}（{profit_rate:+.2f}%）"
-                    
+
+                    holding_status += (
+                        f"\n現在の損益: {profit_loss:,.0f}{currency}（{profit_rate:+.2f}%）"
+                    )
+
                     # 課税がある場合は税引後損益も表示
                     if tax_amount > 0:
                         holding_status += f"\n税額（約20.315%）: {tax_amount:,.0f}{currency}"
                         holding_status += f"\n税引後損益: {after_tax_profit:,.0f}{currency}"
-                    elif account_type in ['NISA', '旧NISA']:
-                        holding_status += f"\n税引後損益: {after_tax_profit:,.0f}{currency}（非課税）"
+                    elif account_type in ["NISA", "旧NISA"]:
+                        holding_status += (
+                            f"\n税引後損益: {after_tax_profit:,.0f}{currency}（非課税）"
+                        )
         else:
             holding_status = "現在の保有状況: 保有なし（購入または空売りを検討中）"
     else:
         holding_status = "現在の保有状況: 保有なし（購入または空売りを検討中）"
-    
+
     return holding_status

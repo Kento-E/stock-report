@@ -9,41 +9,41 @@ jobs:
     runs-on: ubuntu-latest
     # PRが承認され、かつ承認者がリポジトリのメンバーである場合のみ実行
     if: github.event.review.state == 'approved'
-    
+
     permissions:
       contents: write
       pull-requests: write
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-      
+
       - name: Auto merge PR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           echo "PR #${PR_NUMBER} が承認されました。自動マージを開始します..."
-          
+
           # PRが既にマージ済みかどうかをチェック
           PR_STATE=$(gh pr view ${PR_NUMBER} --json state --jq '.state')
-          
+
           if [ "$PR_STATE" = "MERGED" ]; then
             echo "✅ このPRは既にマージ済みです。自動マージ処理をスキップします。"
             exit 0
           fi
-          
+
           # PRがDraftかどうかをチェック
           IS_DRAFT=$(gh pr view ${PR_NUMBER} --json isDraft --jq '.isDraft')
-          
+
           if [ "$IS_DRAFT" = "true" ]; then
             echo "⚠️ このPRはDraft状態です。Draft状態のPRは自動マージされません。"
             echo "Ready for reviewに変更してから再度Approveしてください。"
             exit 0
           fi
-          
+
           # 自動マージを有効化（必須チェック完了後に自動的にマージ）
           gh pr merge ${PR_NUMBER} --squash --auto --delete-branch
-          
+
           echo "✅ PR #${PR_NUMBER} の自動マージを有効化しました"
           echo "必須チェックが完了次第、自動的にマージされます"

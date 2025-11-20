@@ -7,6 +7,6 @@
 from .simplifier import detect_hold_judgment, simplify_hold_report
 
 __all__ = [
-    'detect_hold_judgment',
-    'simplify_hold_report',
+    "detect_hold_judgment",
+    "simplify_hold_report",
 ]

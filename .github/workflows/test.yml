@@ -14,19 +14,19 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.10"
-      
+
       - name: Cache apt packages
         uses: actions/cache@v4
         with:
@@ -34,28 +34,28 @@ jobs:
           key: ${{ runner.os }}-apt-fonts-${{ hashFiles('.github/workflows/test.yml') }}
           restore-keys: |
             ${{ runner.os }}-apt-fonts-
-      
+
       - name: Install Japanese fonts
         run: |
           sudo apt-get update -qq
           sudo DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout="60" install -y --no-install-recommends fonts-noto-cjk
         timeout-minutes: 10
-      
+
       - name: Install dependencies
         run: |
           pip install --upgrade pip
           pip install --timeout=100 -r requirements.txt
         timeout-minutes: 10
-      
+
       - name: Setup Python environment with data downloads
         uses: ./.github/actions/setup-python-env
         timeout-minutes: 10
-      
+
       - name: Run tests with pytest
         run: |
           python -m pytest tests/ -v --cov=src --cov-report=term --cov-report=html
         continue-on-error: false
-      
+
       - name: Upload coverage report
         uses: actions/upload-artifact@v5
         if: always()
@@ -63,7 +63,7 @@ jobs:
           name: coverage-report
           path: htmlcov/
           retention-days: 7
-      
+
       - name: Test Summary
         if: always()
         run: |

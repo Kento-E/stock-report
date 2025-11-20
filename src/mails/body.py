@@ -10,12 +10,12 @@ import datetime
 def generate_single_category_mail_body(subject, reports, toc_html=""):
     """
     単一カテゴリーのレポートからHTMLメール本文を生成する。
-    
+
     Args:
         subject: メール件名
         reports: レポートのリスト
         toc_html: 目次のHTML（省略可能）
-    
+
     Returns:
         str: HTML形式のメール本文
     """

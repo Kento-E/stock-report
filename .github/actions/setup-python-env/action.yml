@@ -11,12 +11,12 @@ runs:
         key: ${{ runner.os }}-nltk-data-${{ hashFiles('requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-nltk-data-
-    
+
     - name: Download NLTK data
       shell: bash
       run: |
         python -c "import nltk; nltk.download('punkt', quiet=True); nltk.download('stopwords', quiet=True); nltk.download('wordnet', quiet=True); nltk.download('averaged_perceptron_tagger', quiet=True)"
-    
+
     - name: Pre-download defeatbeta-api data
       shell: bash
       run: |

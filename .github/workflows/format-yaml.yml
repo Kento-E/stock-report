@@ -14,41 +14,41 @@ on:
 jobs:
   format:
     runs-on: ubuntu-latest
-    
+
     permissions:
       contents: write
       pull-requests: write
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.10"
-      
+
       - name: Install dependencies
         run: |
           pip install --upgrade pip
           pip install ruamel.yaml
-      
+
       - name: Format YAML files
         id: format
         run: |
           echo "formatted_files=" >> $GITHUB_OUTPUT
           formatted=false
-          
+
           for file in data/*.yaml data/*.yml; do
             if [ -f "$file" ]; then
               echo "Checking $file..."
               python src/formatters/format_yaml.py "$file"
             fi
           done
-          
+
           # 実際に変更があったかをgit diffで確認
           # 処理したファイルのみを対象とする
           yaml_files_list=$(find data/ -maxdepth 1 -type f \( -name "*.yaml" -o -name "*.yml" \))
@@ -60,9 +60,9 @@ jobs:
             echo "formatted_files=${changed_files}" >> $GITHUB_OUTPUT
             echo "✅ 変更が検出されました: ${changed_files}"
           fi
-          
+
           echo "formatted=$formatted" >> $GITHUB_OUTPUT
-      
+
       - name: Commit formatted files
         if: steps.format.outputs.formatted == 'true'
         run: |
@@ -71,7 +71,7 @@ jobs:
           git add data/
           git commit -m "🔧 自動フォーマット: YAMLファイルのインデント修正"
           git push
-      
+
       - name: Format Summary
         if: always()
         run: |
