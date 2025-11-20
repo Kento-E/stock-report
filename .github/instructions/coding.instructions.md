@@ -21,7 +21,7 @@
 
 - **`random.choice()`などの関数は空リストでエラーになるため事前チェック必須**
   - 空リストで`random.choice()`を呼ぶとIndexErrorが発生
-  - 例: `if endings: ending = random.choice(endings) else: ending = "。"`
+  - 例: `ending = random.choice(endings) if endings else "。"`
 
 - **`dict.get()`でデフォルト値を指定し、Noneチェックを追加**
   - `dict.get(key, default_value)`を使用してNone回避
