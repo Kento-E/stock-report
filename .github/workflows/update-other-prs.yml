@@ -23,6 +23,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install pre-commit
+        run: |
+          pip install pre-commit
+
       - name: Update other PRs targeting the same base branch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -95,6 +105,27 @@ jobs:
 
             if [ "${UPDATE_STATUS}" -eq 0 ]; then
               echo "  ✅ PR #${PR_NUM} を正常に更新しました"
+              
+              # 更新後のブランチをチェックアウトしてpre-commitチェックを実行
+              echo "  🔍 リントチェックを実行中..."
+              git fetch origin ${PR_BRANCH}
+              git checkout ${PR_BRANCH}
+              
+              # pre-commitチェックを実行
+              PRECOMMIT_STATUS=0
+              pre-commit run --all-files 2>&1 || PRECOMMIT_STATUS=$?
+              
+              if [ "${PRECOMMIT_STATUS}" -eq 0 ]; then
+                echo "  ✅ リントチェック成功"
+              else
+                echo "  ⚠️ リントエラーが検出されました。PR #${PR_NUM} を確認してください。"
+                # コメントを追加
+                gh pr comment ${PR_NUM} --body "⚠️ ブランチ更新後のリントチェックでエラーが検出されました。\`pre-commit run --all-files\`を実行して修正してください。"
+              fi
+              
+              # mainブランチに戻る
+              git checkout main
+              
               SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
             else
               # エラーメッセージを解析
