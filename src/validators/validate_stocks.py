@@ -8,7 +8,7 @@ stocks.yamlファイルのバリデーションスクリプト
 import os
 import sys
 from datetime import date
-from typing import Any, Dict, List
+from typing import Any, List
 
 import yaml
 

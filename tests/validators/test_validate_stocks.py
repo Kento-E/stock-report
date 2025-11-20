@@ -5,7 +5,6 @@ validate_stocksモジュールのテスト
 import os
 import sys
 
-import pytest
 import yaml
 
 # srcディレクトリをパスに追加

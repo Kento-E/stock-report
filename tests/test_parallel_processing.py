@@ -7,9 +7,7 @@ main.pyの並列処理実装が正しく動作することを確認します。
 import os
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from unittest.mock import MagicMock, Mock, patch
-
-import pytest
+from unittest.mock import Mock, patch
 
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
