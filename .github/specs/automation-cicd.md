@@ -88,6 +88,54 @@
 
 **詳細なテスト実行方法は <a>docs/TEST.md</a> を参照してください。**
 
+## コード品質自動チェック
+
+### pre-commitフックによる自動チェック
+
+- コミット時に自動的にコード品質チェックが実行される仕組みを導入。
+- 開発者は `pre-commit install` を実行することで、ローカル環境でコード品質を保証。
+
+#### チェック項目
+
+**Python**:
+
+- **Black**: Pythonコードフォーマッター（行長100文字）
+- **isort**: importの自動整理（Blackプロファイル準拠）
+- **Flake8**: コード品質リンター（PEP 8準拠、一部ルール除外）
+
+**Markdown**:
+
+- **markdownlint**: Markdown形式のリントチェック
+- プロジェクト規約に準拠したMarkdownファイルの品質保証
+
+**基本チェック**:
+
+- 行末の空白削除
+- ファイル末尾の改行修正
+- YAML/JSON構文チェック
+- 改行コードの統一（LF）
+- マージコンフリクトの検出
+
+**セキュリティ**:
+
+- 秘密鍵の検出
+- AWS認証情報の検出
+
+#### 設定ファイル
+
+- `.pre-commit-config.yaml`: pre-commitフックの設定
+- `.flake8`: Flake8の設定（行長、除外ルール）
+- `.markdownlint.json`: Markdownリントルール
+- `pyproject.toml`: BlackとisortのPEP 518準拠設定
+
+#### CI/CDでの自動実行
+
+- Pull Request作成時にGitHub Actionsで自動的にリントチェックを実行。
+- ワークフロー: `.github/workflows/lint.yml`
+- チェック失敗時はマージをブロックし、コード品質を保証。
+
+**詳細なセットアップ手順は <a>README.md</a> の「コード品質管理」セクションを参照してください。**
+
 ## 自動マージ機能
 
 ### PR自動承認・マージ
