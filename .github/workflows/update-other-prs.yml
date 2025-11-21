@@ -105,23 +105,23 @@ jobs:
 
             if [ "${UPDATE_STATUS}" -eq 0 ]; then
               echo "  ✅ PR #${PR_NUM} を正常に更新しました"
-              
+
               # 更新後のブランチをチェックアウトしてpre-commitチェックを実行
               echo "  🔍 リントチェックを実行中（変更ファイルのみ）..."
               git fetch origin ${PR_BRANCH}
               git checkout ${PR_BRANCH}
-              
+
               # mainブランチとの差分ファイル一覧を取得
               git fetch origin main
               CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
-              
+
               if [ -n "$CHANGED_FILES" ]; then
                 echo "  📝 チェック対象: $(echo $CHANGED_FILES | wc -w) ファイル"
-                
+
                 # 変更ファイルのみpre-commitチェックを実行
                 PRECOMMIT_STATUS=0
                 pre-commit run --files $CHANGED_FILES 2>&1 || PRECOMMIT_STATUS=$?
-                
+
                 if [ "${PRECOMMIT_STATUS}" -eq 0 ]; then
                   echo "  ✅ リントチェック成功"
                 else
@@ -132,10 +132,10 @@ jobs:
               else
                 echo "  ℹ️ 変更ファイルがないためリントチェックをスキップ"
               fi
-              
+
               # mainブランチに戻る
               git checkout main
-              
+
               SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
             else
               # エラーメッセージを解析
