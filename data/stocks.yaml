@@ -1,4 +1,11 @@
 stocks:
+  - name: モービルアイ グローバル
+    symbol: MBLY
+    unit: NISA
+    acquisition_price: 11.22
+    quantity: 1
+    added: 2025-11-25
+
   - name: ラウンドワン
     symbol: 4680
     unit: NISA
