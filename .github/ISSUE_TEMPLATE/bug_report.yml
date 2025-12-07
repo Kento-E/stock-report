@@ -42,19 +42,19 @@ body:
     validations:
       required: false
   - type: textarea
-    id: fix-suggestion
-    attributes:
-      label: 修正案
-      description: このバグに対する修正案やアイデアがあれば記載してください。
-      placeholder: 修正案があれば記載してください（例：どのコードを変更すべきか、どのような対応が必要かなど）
-    validations:
-      required: false
-  - type: textarea
     id: logs
     attributes:
       label: 関連ログ
       description: 関連するログやエラーメッセージがあれば貼り付けてください。
       render: shell
+    validations:
+      required: false
+  - type: textarea
+    id: fix-proposal
+    attributes:
+      label: 修正案
+      description: この問題に対する修正案がある場合は記載してください。
+      placeholder: 提案する修正内容をここに記載してください（例：どのコードを変更すべきか、どのような対応が必要かなど）
     validations:
       required: false
   - type: textarea
