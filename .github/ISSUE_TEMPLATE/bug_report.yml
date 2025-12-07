@@ -42,6 +42,14 @@ body:
     validations:
       required: false
   - type: textarea
+    id: fix-suggestion
+    attributes:
+      label: 修正案
+      description: このバグに対する修正案やアイデアがあれば記載してください。
+      placeholder: 修正案があれば記載してください（例：どのコードを変更すべきか、どのような対応が必要かなど）
+    validations:
+      required: false
+  - type: textarea
     id: logs
     attributes:
       label: 関連ログ
