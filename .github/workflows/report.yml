@@ -1,4 +1,4 @@
-name: Stock Report (Tue/Thu)
+name: Stock Report
 
 on:
   schedule:
