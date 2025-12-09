@@ -50,7 +50,7 @@ steps:
 
 - `.github/workflows/test.yml` - テスト実行ワークフロー
 - `.github/workflows/copilot-setup-steps.yml` - Copilotセットアップワークフロー
-- `.github/workflows/report.yml` - 日次レポート生成ワークフロー
+- `.github/workflows/report.yml` - レポート生成ワークフロー
 
 ## メンテナンス
 

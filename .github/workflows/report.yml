@@ -1,8 +1,8 @@
-name: Daily Stock Report
+name: Stock Report
 
 on:
   schedule:
-    - cron: "0 0 * * 1-5"
+    - cron: "0 0 * * 2,4"  # 火曜日と木曜日の00:00 UTC（JST 09:00）に実行
   workflow_dispatch:
 
 jobs:
