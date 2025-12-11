@@ -23,8 +23,9 @@ MAIL_TO = os.getenv("MAIL_TO")
 # 実行オプション判定（デフォルトGemini、--claude指定時のみClaude）
 USE_CLAUDE = "--claude" in sys.argv
 
-# Geminiモデル選択（デフォルト: gemini-1.5-flash）
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+# Geminiモデル選択（デフォルト: gemini-2.0-flash-exp）
+# 注: gemini-1.5-flashは2025年9月に廃止済み
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash-exp")
 
 # Gemini API 日次処理制限（デフォルト: 18）
 # 無料枠は20 RPDだが、余裕を持たせて18に設定

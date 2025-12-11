@@ -44,7 +44,7 @@
 | Variable名               | 用途                           | 設定値             | デフォルト値 |
 | ------------------------ | ------------------------------ | ------------------ | ------------ |
 | `SIMPLIFY_HOLD_REPORTS`  | ホールド判断時のレポート簡略化 | `true` または `false` | `true` |
-| `GEMINI_MODEL`           | 使用するGeminiモデル           | `gemini-1.5-flash` など | `gemini-1.5-flash` |
+| `GEMINI_MODEL`           | 使用するGeminiモデル           | `gemini-2.0-flash-exp` など | `gemini-2.0-flash-exp` |
 | `GEMINI_DAILY_LIMIT`     | Gemini API日次処理上限         | `1`～`20`の整数    | `18` |
 
 > これらは「Repository variables」として登録してください。未設定の場合はデフォルト値が使用されます。
@@ -66,9 +66,10 @@
 
 使用するGeminiモデルを指定できます。
 
-- **`gemini-1.5-flash` (デフォルト)**: 安定性と性能のバランスが良い推奨モデル
-- **`gemini-2.0-flash-exp`**: 実験的な最新モデル
+- **`gemini-2.0-flash-exp` (デフォルト)**: 推奨の最新モデル（実験版）
 - **`gemini-2.5-flash`**: より高度な分析が可能（実験段階）
+
+> **注意**: `gemini-1.5-flash`は2025年9月24日にサービス終了しました。`gemini-2.0-flash-exp`または`gemini-2.5-flash`の使用を推奨します。
 
 ##### 日次処理上限（GEMINI_DAILY_LIMIT）
 
