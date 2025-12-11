@@ -28,7 +28,14 @@ GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
 
 # Gemini API 日次処理制限（デフォルト: 18）
 # 無料枠は20 RPDだが、余裕を持たせて18に設定
-GEMINI_DAILY_LIMIT = int(os.getenv("GEMINI_DAILY_LIMIT", "18"))
+try:
+    GEMINI_DAILY_LIMIT = int(os.getenv("GEMINI_DAILY_LIMIT", "18"))
+    if GEMINI_DAILY_LIMIT < 1 or GEMINI_DAILY_LIMIT > 20:
+        print(f"警告: GEMINI_DAILY_LIMITの値が範囲外です（{GEMINI_DAILY_LIMIT}）。デフォルト値18を使用します。")
+        GEMINI_DAILY_LIMIT = 18
+except ValueError:
+    print(f"警告: GEMINI_DAILY_LIMITの値が不正です。デフォルト値18を使用します。")
+    GEMINI_DAILY_LIMIT = 18
 
 # レポート簡略化オプション（デフォルト: true）
 SIMPLIFY_HOLD_REPORTS = os.getenv("SIMPLIFY_HOLD_REPORTS", "true").lower() in ("true", "1", "yes")
