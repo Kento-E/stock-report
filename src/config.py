@@ -23,6 +23,13 @@ MAIL_TO = os.getenv("MAIL_TO")
 # 実行オプション判定（デフォルトGemini、--claude指定時のみClaude）
 USE_CLAUDE = "--claude" in sys.argv
 
+# Geminiモデル選択（デフォルト: gemini-1.5-flash）
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+
+# Gemini API 日次処理制限（デフォルト: 18）
+# 無料枠は20 RPDだが、余裕を持たせて18に設定
+GEMINI_DAILY_LIMIT = int(os.getenv("GEMINI_DAILY_LIMIT", "18"))
+
 # レポート簡略化オプション（デフォルト: true）
 SIMPLIFY_HOLD_REPORTS = os.getenv("SIMPLIFY_HOLD_REPORTS", "true").lower() in ("true", "1", "yes")
 
