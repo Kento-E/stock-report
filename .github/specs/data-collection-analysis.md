@@ -30,13 +30,14 @@
 
 ### 分析エンジン
 
-- **Claude Sonnet API**（claude-3-sonnet-latest）または**Gemini API**（gemini-2.0-flash-exp）を用いて、収集データの動向・トレンド・リスク/チャンスを日本語で要約・分析する。
+- **Claude Sonnet API**（claude-3-sonnet-latest）または**Gemini API**を用いて、収集データの動向・トレンド・リスク/チャンスを日本語で要約・分析する。
 - APIキー・モデル名は環境変数で管理。
+- 使用するGeminiモデルは`src/config.py`の`GEMINI_MODEL`で定義され、環境変数で上書き可能。
 
 ### モデル選択
 
-- **デフォルト**: `gemini-2.0-flash-exp`（最新の推奨モデル）
-- **環境変数 `GEMINI_MODEL`** で変更可能（例: `gemini-2.5-flash`）
+- **デフォルトモデル**: `src/config.py`の`GEMINI_MODEL`で定義（環境変数で上書き可能）
+- **環境変数 `GEMINI_MODEL`** で任意のGeminiモデルに変更可能（例: `gemini-2.5-flash`）
 - **注意**: `gemini-1.5-flash`は2025年9月24日にサービス終了しました
 - Claude使用時は `--claude` オプションまたは環境変数で切り替え
 

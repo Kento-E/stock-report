@@ -44,7 +44,7 @@
 | Variable名               | 用途                           | 設定値             | デフォルト値 |
 | ------------------------ | ------------------------------ | ------------------ | ------------ |
 | `SIMPLIFY_HOLD_REPORTS`  | ホールド判断時のレポート簡略化 | `true` または `false` | `true` |
-| `GEMINI_MODEL`           | 使用するGeminiモデル           | `gemini-2.0-flash-exp` など | `gemini-2.0-flash-exp` |
+| `GEMINI_MODEL`           | 使用するGeminiモデル           | Geminiモデル名（例: `gemini-2.5-flash`） | `src/config.py`参照 |
 | `GEMINI_DAILY_LIMIT`     | Gemini API日次処理上限         | `1`～`20`の整数    | `18` |
 
 > これらは「Repository variables」として登録してください。未設定の場合はデフォルト値が使用されます。
@@ -66,10 +66,11 @@
 
 使用するGeminiモデルを指定できます。
 
-- **`gemini-2.0-flash-exp` (デフォルト)**: 推奨の最新モデル（実験版）
-- **`gemini-2.5-flash`**: より高度な分析が可能（実験段階）
+- **デフォルトモデル**: `src/config.py`の`GEMINI_MODEL`で定義されています
+- **変更方法**: 環境変数`GEMINI_MODEL`に任意のGeminiモデル名を設定
+- **利用可能なモデル例**: `gemini-2.0-flash-exp`、`gemini-2.5-flash`など
 
-> **注意**: `gemini-1.5-flash`は2025年9月24日にサービス終了しました。`gemini-2.0-flash-exp`または`gemini-2.5-flash`の使用を推奨します。
+> **注意**: `gemini-1.5-flash`は2025年9月24日にサービス終了しました。最新のGeminiモデルの使用を推奨します。
 
 ##### 日次処理上限（GEMINI_DAILY_LIMIT）
 
