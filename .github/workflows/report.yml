@@ -31,6 +31,8 @@ jobs:
         env:
           CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          GEMINI_DAILY_LIMIT: ${{ vars.GEMINI_DAILY_LIMIT }}
           MAIL_TO: ${{ secrets.MAIL_TO }}
           MAIL_FROM: ${{ secrets.MAIL_FROM }}
           SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
@@ -38,3 +40,4 @@ jobs:
           SMTP_USER: ${{ secrets.SMTP_USER }}
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
           YAHOO_API_KEY: ${{ secrets.YAHOO_API_KEY }}
+          SIMPLIFY_HOLD_REPORTS: ${{ vars.SIMPLIFY_HOLD_REPORTS }}

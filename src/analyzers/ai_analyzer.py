@@ -7,7 +7,7 @@ Claude SonnetまたはGemini APIを使用して株価・ニュースデータを
 import anthropic
 import requests
 
-from config import CLAUDE_API_KEY, GEMINI_API_KEY
+from config import CLAUDE_API_KEY, GEMINI_API_KEY, GEMINI_MODEL
 from loaders.preference_loader import generate_preference_prompt
 from loaders.stock_loader import calculate_tax, get_currency_for_symbol
 
@@ -121,7 +121,7 @@ def analyze_with_gemini(data, preference_prompt=None):
         )
         print(error_msg)
         return f"## 分析失敗\n\n**エラー内容:** {error_msg}"
-    url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1/models/{GEMINI_MODEL}:generateContent?key={GEMINI_API_KEY}"
     currency = get_currency_for_symbol(data["symbol"], data.get("currency"))
 
     # 保有状況に基づいたプロンプトの生成
