@@ -4,14 +4,18 @@ on:
   pull_request:
     types: [closed]
     branches: [ main ]
+  pull_request_target:
+    types: [opened]
+    branches: [ main ]
   push:
     branches: [ main ]
 
 jobs:
   update-prs:
-    # PRがマージされた場合、またはmainブランチへのpushの場合に実行
+    # PRがマージされた場合、Dependabot PRが作成された場合、またはmainブランチへのpushの場合に実行
     if: |
       (github.event_name == 'pull_request' && github.event.pull_request.merged == true) ||
+      (github.event_name == 'pull_request_target' && github.event.pull_request.user.login == 'dependabot[bot]') ||
       github.event_name == 'push'
     runs-on: ubuntu-latest
 
@@ -38,10 +42,18 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # PRイベントの場合はPR番号を設定、pushイベントの場合は '0' を設定
           MERGED_PR_NUMBER: ${{ github.event_name == 'pull_request' && github.event.pull_request.number || '0' }}
+          # pull_request_targetイベントの場合はPR番号を設定
+          CURRENT_PR_NUMBER: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.number || '0' }}
           # pushイベントの場合はpushされたブランチ名、PRイベントの場合はPRのベースブランチ名を設定（フォールバック: 'main'）
           BASE_BRANCH: ${{ github.event_name == 'push' && github.ref_name || github.event.pull_request.base.ref || 'main' }}
         run: |
-          if [ "${{ github.event_name }}" = "push" ]; then
+          if [ "${{ github.event_name }}" = "pull_request_target" ]; then
+            echo "✅ Dependabot PR #${CURRENT_PR_NUMBER} が作成されました"
+            echo "🔍 他のオープンなPRを更新中..."
+            # 新規作成されたPR以外のオープンなPRを取得
+            OTHER_PRS=$(gh pr list --base "${BASE_BRANCH}" --state open --json number \
+              | jq -r --argjson current_pr "$CURRENT_PR_NUMBER" '.[] | select(.number != $current_pr) | .number')
+          elif [ "${{ github.event_name }}" = "push" ]; then
             echo "✅ mainブランチが更新されました"
             echo "🔍 ベースブランチ '${BASE_BRANCH}' を対象とする全てのオープンなPRを検索中..."
             # 全てのオープンなPRを取得
