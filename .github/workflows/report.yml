@@ -1,6 +1,8 @@
 name: Stock Report
 
 on:
+  # 定期実行は一時停止中（APIの無料枠減少に伴うモデル変更検討のため）
+  # 再開方法はREADME.mdの「レポート定期実行の設定」セクションを参照
   # schedule:
   #   - cron: "0 0 * * 2,4"  # 火曜日と木曜日の00:00 UTC（JST 09:00）に実行
   workflow_dispatch:
