@@ -13,6 +13,41 @@
 - ⏰ **自動実行**: GitHub Actionsによる自動実行（スケジュールは [.github/workflows/report.yml](.github/workflows/report.yml) を参照）
 - 🔧 **モジュール設計**: 保守性・拡張性の高い構造
 
+## レポート定期実行の設定
+
+### 現在の状態
+
+レポートの定期実行は**現在停止中**です。手動実行のみ可能な状態になっています。
+
+### 手動実行方法
+
+GitHub リポジトリの「Actions」タブから、以下の手順で手動実行できます：
+
+1. 「Actions」タブを開く
+2. 左側のワークフロー一覧から「Stock Report」を選択
+3. 「Run workflow」ボタンをクリック
+4. ブランチを選択（通常は`main`）して「Run workflow」を実行
+
+### 定期実行を再開する方法
+
+定期実行を再開するには、`.github/workflows/report.yml` ファイルを編集します：
+
+1. `.github/workflows/report.yml` を開く
+2. 以下の行のコメントを解除：
+
+```yaml
+on:
+  schedule:
+    - cron: "0 0 * * 2,4"  # 火曜日と木曜日の00:00 UTC（JST 09:00）に実行
+  workflow_dispatch:
+```
+
+3. 変更をコミット・プッシュ
+
+これにより、毎週火曜日と木曜日の午前9時（JST）に自動実行されるようになります。
+
+> **Note**: スケジュール設定の詳細については、[GitHub Actions のドキュメント](https://docs.github.com/ja/actions/using-workflows/events-that-trigger-workflows#schedule)を参照してください。
+
 ## システム構成
 
 本プロジェクトは機能別にモジュール化されており、各モジュールが単一の責任を持つ設計になっています。
