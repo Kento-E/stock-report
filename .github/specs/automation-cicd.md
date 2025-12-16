@@ -43,7 +43,29 @@
 
 ## スケジューラ・自動実行
 
-### GitHub Actions による週2回実行
+### 定期実行の状態
+
+現在、レポートの定期実行は**停止中**です。
+
+### 手動実行
+
+GitHub Actions の「workflow_dispatch」トリガーにより、手動での実行が可能です：
+
+- GitHub リポジトリの「Actions」タブから「Stock Report」ワークフローを選択
+- 「Run workflow」ボタンをクリックして実行
+
+### 定期実行の再開方法
+
+`.github/workflows/report.yml` の `schedule` セクションのコメントを解除することで、定期実行を再開できます：
+
+```yaml
+on:
+  schedule:
+    - cron: "0 0 * * 2,4"  # 火曜日と木曜日の00:00 UTC（JST 09:00）に実行
+  workflow_dispatch:
+```
+
+### 定期実行の仕様
 
 - GitHub Actions 等の CI/CD で週2回（火曜日・木曜日）の自動実行を実施。
 - 実行時刻は JST（日本標準時）で午前 9 時（UTC 0:00）。
