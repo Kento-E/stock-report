@@ -31,9 +31,11 @@
 
 - **自動承認とマージ**: Dependabotが作成したPRは GitHub Actions により自動的に承認され、マージも自動設定される
 - **ワークフロー**: `.github/workflows/dependabot-auto-approve.yml`が承認とマージ設定を同時に実行
+- **トリガーイベント**: PRの作成時（`opened`）と再オープン時（`reopened`）のみ
 - **マージ方式**: 必須チェック完了後にスカッシュマージを自動実行し、ブランチを自動削除
 - **安全性**: `pull_request_target`イベントを使用し、Dependabotのメタデータを検証
 - **実装理由**: `GITHUB_TOKEN`を使った承認では`pull_request_review`イベントがトリガーされないため、承認とマージ設定を同一ワークフローで実行
+- **注意**: `synchronize`イベントでは実行しない（ブランチ更新時のマージエラーを回避するため）
 
 **設定ファイル**:
 - `.github/dependabot.yml` - Dependabot設定
