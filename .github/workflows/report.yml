@@ -2,7 +2,7 @@ name: Stock Report
 
 on:
   # 定期実行は一時停止中
-  # 詳細は .github/specs/automation-cicd.md の「スケジューラ・自動実行」セクションを参照
+  # 詳細は /.github/specs/automation-cicd.md の「スケジューラ・自動実行」セクションを参照
   # schedule:
   #   - cron: "0 0 * * 2,4"  # 火曜日と木曜日の00:00 UTC（JST 09:00）に実行
   workflow_dispatch:
