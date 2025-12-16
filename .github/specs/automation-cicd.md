@@ -175,7 +175,14 @@ pre-commit run --all-files
 ### 他のPRの自動更新
 
 - mainブランチにマージされた際、他のオープンなPRを自動的に更新する。
-- GitHub Actions の `pull_request` (closed) と `push` (main) イベントをトリガーとして実行。
+- **Dependabot PRが作成された際にも、既存のオープンなPRを自動的に更新する。**
+- GitHub Actions の `pull_request` (closed)、`pull_request_target` (opened)、`push` (main) イベントをトリガーとして実行。
+
+### トリガー条件
+
+1. **PRマージ時**: mainブランチにPRがマージされた時、他のオープンなPRを更新
+2. **Dependabot PR作成時**: Dependabotが新しいPRを作成した時、既存のオープンなPR（新規PR自身を除く）を更新
+3. **mainブランチpush時**: mainブランチに直接pushされた時、すべてのオープンなPRを更新
 
 ### 更新プロセス
 
@@ -198,6 +205,12 @@ pre-commit run --all-files
 - コンフリクトがある場合: 更新をスキップし、手動解決を促す
 - 既に最新の場合: 成功として扱う
 - リントエラー: PRにコメントで通知するが、更新自体は成功として扱う
+
+### セキュリティ考慮事項
+
+- `pull_request_target`イベント使用時は、Dependabotのみに限定（`github.event.pull_request.user.login == 'dependabot[bot]'`）
+- 悪意のあるPRからのワークフロートリガーを防止
+- GitHub APIの`expected_head_sha`パラメータにより、競合状態（race condition）を防止
 
 **ワークフローファイル**: `.github/workflows/update-other-prs.yml`
 
