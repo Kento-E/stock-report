@@ -2,7 +2,7 @@ name: Dependabot Auto Approve
 
 on:
   pull_request_target:
-    types: [opened, reopened, synchronize]
+    types: [opened, reopened]
 
 permissions:
   contents: write
@@ -12,7 +12,7 @@ jobs:
   auto-approve:
     runs-on: ubuntu-latest
     # Dependabotが作成したPRのみを対象とする
-    # github.actorではなくPRの作成者をチェックすることで、synchronizeイベントでも正しく動作する
+    # github.actorではなくPRの作成者をチェックすることで、確実にDependabotのPRのみを処理
     if: github.event.pull_request.user.login == 'dependabot[bot]'
 
     steps:
