@@ -30,8 +30,25 @@
 
 ### 分析エンジン
 
-- Claude Sonnet API（最新モデル: claude-3-sonnet-latest など）または Gemini API を用いて、収集データの動向・トレンド・リスク/チャンスを日本語で要約・分析する。
-- API キー・モデル名は環境変数で管理。
+- **Claude Sonnet API**（claude-3-sonnet-latest）または**Gemini API**を用いて、収集データの動向・トレンド・リスク/チャンスを日本語で要約・分析する。
+- APIキー・モデル名は環境変数で管理。
+- 使用するGeminiモデルは`src/config.py`の`GEMINI_MODEL`で定義され、環境変数で上書き可能。
+
+### モデル選択
+
+- **デフォルトモデル**: `src/config.py`の`GEMINI_MODEL`で定義（環境変数で上書き可能）
+- **環境変数 `GEMINI_MODEL`** で任意のGeminiモデルに変更可能（例: `gemini-2.5-flash`）
+- Claude使用時は `--claude` オプションまたは環境変数で切り替え
+
+### API日次制限（Geminiのみ）
+
+- **無料枠制限**: Gemini APIの無料枠は20リクエスト/日
+- **デフォルト処理数**: 18銘柄/日
+- **環境変数 `GEMINI_DAILY_LIMIT`** で変更可能
+- 銘柄数が制限を超える場合、日付ベースのローテーションで分散処理
+  - 各実行日に異なる銘柄セットを分析し、全銘柄を順次カバー
+  - 例: 74銘柄の場合、約4日で全銘柄を1巡
+- **Claude APIは制限なし**（全銘柄を一度に処理）
 
 ### 多通貨対応
 
