@@ -192,7 +192,7 @@ pre-commit run --all-files
 - マージ方式はスカッシュマージ（Squash Merge）を採用し、コミット履歴を整理。
 - マージ後、自動的にブランチを削除してリポジトリを整理。
 
-**詳細な動作確認手順は <a>.github/instructions/testing.instructions.md</a> を参照してください。**
+**詳細な動作確認手順は <a>docs/TEST.md</a> を参照してください。**
 
 ## PR自動更新機能
 
