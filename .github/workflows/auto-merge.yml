@@ -42,6 +42,30 @@ jobs:
             exit 0
           fi
 
+          # 未解決の会話スレッドがあるかチェック
+          REVIEW_THREADS=$(gh api "repos/${{ github.repository }}/pulls/${PR_NUMBER}/comments" --jq '[.[] | select(.in_reply_to_id == null)] | length')
+          RESOLVED_THREADS=$(gh api "repos/${{ github.repository }}/pulls/${PR_NUMBER}/comments" --jq '[.[] | select(.in_reply_to_id == null and (.body | contains("```") | not) and (.body | contains("resolved") or .body | contains("Resolved") or .body | contains("RESOLVED")))] | length')
+          
+          # レビュースレッドの解決状態をチェック（GitHub APIのreviewThreadsエンドポイント使用）
+          UNRESOLVED_COUNT=$(gh api graphql -f query='
+            query($owner: String!, $repo: String!, $number: Int!) {
+              repository(owner: $owner, name: $repo) {
+                pullRequest(number: $number) {
+                  reviewThreads(first: 100) {
+                    nodes {
+                      isResolved
+                    }
+                  }
+                }
+              }
+            }' -f owner="${{ github.repository_owner }}" -f repo="${{ github.event.repository.name }}" -F number=${PR_NUMBER} --jq '[.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false)] | length')
+
+          if [ "$UNRESOLVED_COUNT" -gt 0 ]; then
+            echo "⚠️ 未解決の会話スレッドが ${UNRESOLVED_COUNT} 件あります。"
+            echo "すべての会話スレッドを解決してから再度Approveしてください。"
+            exit 0
+          fi
+
           # 自動マージを有効化（必須チェック完了後に自動的にマージ）
           gh pr merge ${PR_NUMBER} --squash --auto --delete-branch
 
