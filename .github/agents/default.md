@@ -113,6 +113,28 @@ Markdown ファイルを生成・編集する際は、以下のルールを厳�
 - **isort**: import文の自動整形
 - **black**: コードの自動フォーマット
 
+### コミット前のlint実行（重要）
+
+**ファイルを変更した場合、コミット前に必ず該当ファイルに対してlintを実行してください**。これにより、CI失敗を事前に防ぐことができます。
+
+`.pre-commit-config.yaml`に定義されているlintツールを、変更したファイルに対して実行してください：
+
+- **Markdownファイル**: `markdownlint --config=.markdownlint.json <変更したファイル>`
+- **Pythonファイル**: `black <変更したファイル>` → `isort <変更したファイル>` → `flake8 <変更したファイル>`
+
+例：
+```bash
+# Markdownファイルを編集した場合
+markdownlint --config=.markdownlint.json README.md docs/TEST.md
+
+# Pythonファイルを編集した場合
+black src/main.py
+isort src/main.py
+flake8 src/main.py
+```
+
+**注意**: リポジトリ全体ではなく、変更したファイルのみを対象にlintを実行してください。
+
 ## ドキュメント・要件定義書の反映
 
 ### 基本原則
