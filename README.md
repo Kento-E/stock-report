@@ -41,9 +41,9 @@
 
 ### Variables（リポジトリ設定 > Settings > Secrets and variables > Actions > Variables）
 
-| Variable名               | 用途                           | 設定値             |
-| ------------------------ | ------------------------------ | ------------------ |
-| `SIMPLIFY_HOLD_REPORTS`  | ホールド判断時のレポート簡略化 | `true` または `false` |
+| Variable名              | 用途                           | 設定値                |
+| ----------------------- | ------------------------------ | --------------------- |
+| `SIMPLIFY_HOLD_REPORTS` | ホールド判断時のレポート簡略化 | `true` または `false` |
 
 > これらは「Repository variables」として登録してください。デフォルト値は`true`です。
 
