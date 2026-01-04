@@ -87,10 +87,8 @@ HTMLレポート生成とメール配信機能の仕様を定義します。
 
 ### 開発者向けドキュメント
 
-- <a>docs/TEST.md</a>: テスト実行方法
-- <a>.github/instructions/testing.instructions.md</a>: 動作確認手順
-- <a>.github/instructions/copilot.instructions.md</a>: GitHub Copilot 利用指示
-- <a>.github/instructions/coding.instructions.md</a>: コーディングガイドライン
+- <a>docs/TEST.md</a>: テスト実行方法・動作確認手順
+- <a>.github/agents/README.md</a>: GitHub Copilot エージェント設定
 - <a>.github/actions/setup-python-env/README.md</a>: Python環境セットアップアクション
 
 ## 更新履歴の管理
