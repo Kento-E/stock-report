@@ -8,8 +8,8 @@
 
 詳細な情報は以下のドキュメントを参照してください：
 
-- **システム概要・技術スタック**: /README.md
-- **要件定義と仕様書**: /.github/specs/requirements-index.md（エントリーポイント）
+- **システム概要・技術スタック**: ../../README.md
+- **要件定義と仕様書**: ../specs/requirements-index.md（エントリーポイント）
 
 ## 言語設定
 
@@ -147,11 +147,11 @@ flake8 src/main.py
 
 変更内容に応じて、適切な仕様書を更新してください：
 
-- **システム構成・モジュール変更**: /.github/specs/system-architecture.md
-- **データ収集・AI分析機能**: /.github/specs/data-collection-analysis.md
-- **レポート生成・メール配信**: /.github/specs/report-email.md
-- **自動化・テスト・CI/CD**: /.github/specs/automation-cicd.md
-- **銘柄リスト・投資志向性設定**: /.github/specs/data-management.md
+- **システム構成・モジュール変更**: ../specs/system-architecture.md
+- **データ収集・AI分析機能**: ../specs/data-collection-analysis.md
+- **レポート生成・メール配信**: ../specs/report-email.md
+- **自動化・テスト・CI/CD**: ../specs/automation-cicd.md
+- **銘柄リスト・投資志向性設定**: ../specs/data-management.md
 
 ### ドキュメントの責任分掌
 
@@ -211,7 +211,7 @@ GitHub Copilot Premium の消費を節約しつつ、コード品質を維持す
 
 ### テスト戦略
 
-テスト自動化の詳細については `/docs/TEST.md` を参照してください。
+テスト自動化の詳細については `../../docs/TEST.md` を参照してください。
 
 重要なポイント：
 
@@ -238,11 +238,11 @@ VS Code で GitHub Copilot を使用する際、カスタムチャット参加�
 
 - **@kansai**: 関西弁で応答するフレンドリーなプログラミングアシスタント
 
-詳細は `/.github/copilot-chat-participants.md` を参照してください。
+詳細は `../copilot-chat-participants.md` を参照してください。
 
 ## 参考リンク
 
-- /README.md: ユーザー向け使用方法・セットアップ手順
-- /data/README.md: 銘柄リスト・投資志向性設定の編集ガイド
-- /docs/TEST.md: ユニットテストの実行方法
-- /.github/specs/requirements-index.md: 要件定義と機能別仕様書のインデックス
+- ../../README.md: ユーザー向け使用方法・セットアップ手順
+- ../../data/README.md: 銘柄リスト・投資志向性設定の編集ガイド
+- ../../docs/TEST.md: ユニットテストの実行方法
+- ../specs/requirements-index.md: 要件定義と機能別仕様書のインデックス
