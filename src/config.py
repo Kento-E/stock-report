@@ -31,7 +31,9 @@ GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash-exp")
 try:
     GEMINI_DAILY_LIMIT = int(os.getenv("GEMINI_DAILY_LIMIT", "18"))
     if GEMINI_DAILY_LIMIT < 1 or GEMINI_DAILY_LIMIT > 20:
-        print(f"警告: GEMINI_DAILY_LIMITの値が範囲外です（{GEMINI_DAILY_LIMIT}）。デフォルト値18を使用します。")
+        print(
+            f"警告: GEMINI_DAILY_LIMITの値が範囲外です（{GEMINI_DAILY_LIMIT}）。デフォルト値18を使用します。"
+        )
         GEMINI_DAILY_LIMIT = 18
 except ValueError:
     print(f"警告: GEMINI_DAILY_LIMITの値が不正です。デフォルト値18を使用します。")

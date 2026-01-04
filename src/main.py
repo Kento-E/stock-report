@@ -61,7 +61,7 @@ if __name__ == "__main__":
         # 日付ベースのローテーション（曜日で分散）
         day_of_year = datetime.date.today().timetuple().tm_yday
         offset = day_of_year % len(stocks)
-        
+
         # オフセットから開始して必要な数だけ取得（循環）
         # 実際の上限を計算（銘柄数より多い場合は銘柄数が上限）
         actual_limit = min(GEMINI_DAILY_LIMIT, len(stocks))
@@ -69,11 +69,11 @@ if __name__ == "__main__":
         for i in range(actual_limit):
             idx = (offset + i) % len(stocks)
             selected_stocks.append(stocks[idx])
-        
+
         print(f"\n⚠️  Gemini API日次制限: {len(stocks)}銘柄中{actual_limit}銘柄を分析")
         print(f"   本日の分析対象: {[s['symbol'] for s in selected_stocks]}")
         print(f"   (残り{len(stocks) - actual_limit}銘柄は次回以降に分析されます)\n")
-        
+
         # 選択された銘柄のみで再分類
         categorized = categorize_stocks(selected_stocks)
 
