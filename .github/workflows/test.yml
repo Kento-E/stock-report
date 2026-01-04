@@ -28,7 +28,7 @@ jobs:
           python-version: "3.10"
 
       - name: Cache apt packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: /var/cache/apt/archives
           key: ${{ runner.os }}-apt-fonts-${{ hashFiles('.github/workflows/test.yml') }}
@@ -57,7 +57,7 @@ jobs:
         continue-on-error: false
 
       - name: Upload coverage report
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: coverage-report

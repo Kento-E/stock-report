@@ -31,9 +31,11 @@
 
 - **自動承認とマージ**: Dependabotが作成したPRは GitHub Actions により自動的に承認され、マージも自動設定される
 - **ワークフロー**: `.github/workflows/dependabot-auto-approve.yml`が承認とマージ設定を同時に実行
+- **トリガーイベント**: PRの作成時（`opened`）と再オープン時（`reopened`）のみ
 - **マージ方式**: 必須チェック完了後にスカッシュマージを自動実行し、ブランチを自動削除
 - **安全性**: `pull_request_target`イベントを使用し、Dependabotのメタデータを検証
 - **実装理由**: `GITHUB_TOKEN`を使った承認では`pull_request_review`イベントがトリガーされないため、承認とマージ設定を同一ワークフローで実行
+- **注意**: `synchronize`イベントでは実行しない（ブランチ更新時のマージエラーを回避するため）
 
 **設定ファイル**:
 - `.github/dependabot.yml` - Dependabot設定
@@ -41,7 +43,29 @@
 
 ## スケジューラ・自動実行
 
-### GitHub Actions による週2回実行
+### 定期実行の状態
+
+現在、レポートの定期実行は**停止中**です。
+
+### 手動実行
+
+GitHub Actions の「workflow_dispatch」トリガーにより、手動での実行が可能です：
+
+- GitHub リポジトリの「Actions」タブから「Stock Report」ワークフローを選択
+- 「Run workflow」ボタンをクリックして実行
+
+### 定期実行の再開方法
+
+`.github/workflows/report.yml` の `schedule` セクションのコメントを解除することで、定期実行を再開できます：
+
+```yaml
+on:
+  schedule:
+    - cron: "0 0 * * 2,4"  # 火曜日と木曜日の00:00 UTC（JST 09:00）に実行
+  workflow_dispatch:
+```
+
+### 定期実行の仕様
 
 - GitHub Actions 等の CI/CD で週2回（火曜日・木曜日）の自動実行を実施。
 - 実行時刻は JST（日本標準時）で午前 9 時（UTC 0:00）。
@@ -146,12 +170,12 @@ pre-commit run --all-files
 
 ### 設定ファイル
 
-| ファイル | 用途 |
-|---------|------|
-| `.pre-commit-config.yaml` | pre-commitフックの設定（使用するツールとバージョン） |
-| `.flake8` | Flake8の設定（行長100、除外ルール：E203,W503,E402,F401,F841,F541,E501） |
-| `.markdownlint.json` | Markdownリントルール（MD001,MD025,MD047など） |
-| `pyproject.toml` | BlackとisortのPEP 518準拠設定 |
+| ファイル                  | 用途                                                                         |
+| ------------------------- | ---------------------------------------------------------------------------- |
+| `.pre-commit-config.yaml` | pre-commitフックの設定（使用するツールとバージョン）                        |
+| `.flake8`                 | Flake8の設定（行長100、除外ルール：E203,W503,E402,F401,F841,F541,E501）     |
+| `.markdownlint.json`      | Markdownリントルール（MD001,MD025,MD047など）                                |
+| `pyproject.toml`          | BlackとisortのPEP 518準拠設定                                                |
 
 ### CI/CDでの自動実行
 
@@ -178,14 +202,21 @@ pre-commit run --all-files
 - マージ方式はスカッシュマージ（Squash Merge）を採用し、コミット履歴を整理。
 - マージ後、自動的にブランチを削除してリポジトリを整理。
 
-**詳細な動作確認手順は <a>.github/instructions/testing.instructions.md</a> を参照してください。**
+**詳細な動作確認手順は <a>docs/TEST.md</a> を参照してください。**
 
 ## PR自動更新機能
 
 ### 他のPRの自動更新
 
 - mainブランチにマージされた際、他のオープンなPRを自動的に更新する。
-- GitHub Actions の `pull_request` (closed) と `push` (main) イベントをトリガーとして実行。
+- **Dependabot PRが作成された際にも、既存のオープンなPRを自動的に更新する。**
+- GitHub Actions の `pull_request` (closed)、`pull_request_target` (opened)、`push` (main) イベントをトリガーとして実行。
+
+### トリガー条件
+
+1. **PRマージ時**: mainブランチにPRがマージされた時、他のオープンなPRを更新
+2. **Dependabot PR作成時**: Dependabotが新しいPRを作成した時、既存のオープンなPR（新規PR自身を除く）を更新
+3. **mainブランチpush時**: mainブランチに直接pushされた時、すべてのオープンなPRを更新
 
 ### 更新プロセス
 
@@ -208,6 +239,12 @@ pre-commit run --all-files
 - コンフリクトがある場合: 更新をスキップし、手動解決を促す
 - 既に最新の場合: 成功として扱う
 - リントエラー: PRにコメントで通知するが、更新自体は成功として扱う
+
+### セキュリティ考慮事項
+
+- `pull_request_target`イベント使用時は、Dependabotのみに限定（`github.event.pull_request.user.login == 'dependabot[bot]'`）
+- 悪意のあるPRからのワークフロートリガーを防止
+- GitHub APIの`expected_head_sha`パラメータにより、競合状態（race condition）を防止
 
 **ワークフローファイル**: `.github/workflows/update-other-prs.yml`
 
