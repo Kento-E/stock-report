@@ -160,12 +160,12 @@ pre-commit run --all-files
 
 ### 設定ファイル
 
-| ファイル                  | 用途                                                                         |
-| ------------------------- | ---------------------------------------------------------------------------- |
-| `.pre-commit-config.yaml` | pre-commitフックの設定（使用するツールとバージョン）                        |
-| `.flake8`                 | Flake8の設定（行長100、除外ルール：E203,W503,E402,F401,F841,F541,E501）     |
-| `.markdownlint.json`      | Markdownリントルール（MD001,MD025,MD047など）                                |
-| `pyproject.toml`          | BlackとisortのPEP 518準拠設定                                                |
+| ファイル | 用途 |
+|---------|------|
+| `.pre-commit-config.yaml` | pre-commitフックの設定（使用するツールとバージョン） |
+| `.flake8` | Flake8の設定（行長100、除外ルール：E203,W503,E402,F401,F841,F541,E501） |
+| `.markdownlint.json` | Markdownリントルール（MD001,MD025,MD047など） |
+| `pyproject.toml` | BlackとisortのPEP 518準拠設定 |
 
 ### CI/CDでの自動実行
 
@@ -192,7 +192,7 @@ pre-commit run --all-files
 - マージ方式はスカッシュマージ（Squash Merge）を採用し、コミット履歴を整理。
 - マージ後、自動的にブランチを削除してリポジトリを整理。
 
-**詳細な動作確認手順は <a>docs/TEST.md</a> を参照してください。**
+**詳細な動作確認手順は <a>.github/instructions/testing.instructions.md</a> を参照してください。**
 
 ## PR自動更新機能
 
