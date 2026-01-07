@@ -140,17 +140,11 @@ formatters/ (フォーマット - 独立実行)
 VS Code で MCP を利用することで、GitHub Copilot がリポジトリの情報により深くアクセスし、以下のような高度な支援が可能になります：
 
 - **リポジトリ情報の直接取得**：Issue、Pull Request、コミット履歴などへのアクセス
-- **より正確なコード提案**：リポジトリの構造を理解した上での提案
-- **自動化されたワークフロー**：GitHub APIを通じた自動化タスクの実行
+- **ファイルシステム操作**：YAMLファイルの編集支援、データディレクトリの安全な操作
+- **コード品質分析**：Ruffによる品質チェック、pytest統合、未使用コード検出
+- **CI/CD管理**：GitHub Actionsワークフローの管理と自動化
 
-#### 設定ファイル
-
-- **.vscode/mcp.json**：GitHub MCP Serverの設定ファイル
-  - Dockerを使用してMCPサーバーを起動
-  - Personal Access Tokenは安全にプロンプト入力方式で取得
-  - リポジトリにトークンをコミットしない安全な設計
-
-詳細な設定方法は [README.md](../../README.md#mcp-model-context-protocol-サポート) の「MCP (Model Context Protocol) サポート」セクションを参照してください。
+設定の詳細は [.vscode/README.md](../../.vscode/README.md) を参照してください。
 
 ## 非機能要件
 
