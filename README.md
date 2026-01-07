@@ -241,8 +241,8 @@ VS Codeで**MCP (Model Context Protocol)** を利用できます。MCPを使用�
 #### 設定方法
 
 1. **前提条件**
-   - VS Code 1.99以降（MCPはネイティブサポート、追加の拡張機能不要）
-   - GitHub Copilot拡張機能（MCPを通じてリポジトリ情報を活用するため）
+   - VS Code（最新版推奨）
+   - GitHub Copilot拡張機能
    - Docker
 
 2. **GitHub Personal Access Token (PAT)の取得**
