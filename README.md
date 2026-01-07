@@ -238,38 +238,25 @@ pre-commit install
 
 VS Codeで**MCP (Model Context Protocol)** を利用できます。MCPを使用することで、GitHub Copilotがリポジトリの情報により深くアクセスし、より高度な支援を提供できるようになります。
 
-#### 設定方法
+本プロジェクトでは以下の4つのMCPサーバーを設定しています：
 
-1. **前提条件**
-   - VS Code（最新版推奨）
-   - GitHub Copilot拡張機能
-   - Docker
+- **GitHub MCP Server**: Issue、PR、コミット履歴へのアクセス
+- **Filesystem MCP Server**: YAMLファイルの編集支援、データディレクトリの安全な操作
+- **Python Analyzer MCP Server**: Ruffによるコード品質チェック、pytest統合
+- **GitHub Actions MCP Server**: ワークフロー管理、CI/CDパイプライン自動化
 
-2. **GitHub Personal Access Token (PAT)の取得**
-   - [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens)にアクセス
-   - "Generate new token (classic)"を選択
-   - 必要なスコープを選択（推奨: `repo`, `read:org`, `read:user`）
-   - トークンを生成し、安全に保管
+#### セットアップ
 
-3. **VS Codeでの設定**
-   - リポジトリに `.vscode/mcp.json` ファイルが含まれています
-   - VS Codeでプロジェクトを開くと、GitHub Personal Access Tokenの入力を求められます
-   - 取得したトークンを入力してください
+詳細な設定方法、前提条件、トラブルシューティングについては [.vscode/README.md](.vscode/README.md) を参照してください。
 
-4. **MCPサーバーの起動**
-   - VS Codeが自動的にDockerコンテナでGitHub MCP Serverを起動します
-   - GitHub Copilotがリポジトリ情報にアクセス可能になります
+#### クイックスタート
 
-#### セキュリティ上の注意
+1. VS Code（最新版推奨）とGitHub Copilot拡張機能をインストール
+2. Docker、Node.js/npx、uvx（`pip install uv`）をインストール
+3. リポジトリを開くと、GitHub Personal Access Tokenの入力を求められます
+4. [GitHub Settings](https://github.com/settings/tokens)でトークンを生成（スコープ: `repo`, `read:org`, `read:user`, `workflow`）し、入力
 
-- Personal Access Tokenは絶対にコミットしないでください
-- `.vscode/mcp.json`はトークンをプロンプトで入力する設定になっており、安全です
-- 使用しなくなったトークンは必ず削除してください
-
-#### 参考リンク
-
-- [GitHub公式: Setting up the GitHub MCP Server](https://docs.github.com/en/copilot/how-tos/provide-context/use-mcp/set-up-the-github-mcp-server)
-- [VS Code: Use MCP servers](https://code.visualstudio.com/docs/copilot/customization/mcp-servers)
+**セキュリティ**: Personal Access Tokenはプロンプト入力方式で、リポジトリにコミットされません。
 
 ### Pull Request 自動マージ機能
 
