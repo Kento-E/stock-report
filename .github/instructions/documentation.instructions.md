@@ -54,6 +54,18 @@
   - 編集方法
   - 注意事項
 
+### .vscode/README.md（VS Code設定ドキュメント）
+
+- **目的**: VS Code固有の設定ファイルの詳細説明
+- **内容**:
+  - `.vscode/`内の設定ファイル（mcp.json、extensions.json等）の詳細な説明
+  - セットアップ手順、前提条件、トラブルシューティング
+  - 開発環境固有の技術的詳細
+- **README.mdとの違い**: 
+  - README.mdは「何ができるか」の概要とクイックスタート
+  - .vscode/README.mdは「どう設定するか」の詳細手順
+- **避けるべき内容**: システムアーキテクチャや機能要件（それらは.github/specs/へ）
+
 ## DRY原則（Don't Repeat Yourself）
 
 情報の重複を避け、単一情報源（Single Source of Truth）を維持してください：
@@ -112,6 +124,41 @@
 
 <!-- docs/TEST.md -->
 （ここに詳細なテスト手順を記載）
+```
+
+### MCP設定の適切な配置例
+
+```markdown
+<!-- README.md（ユーザー向けクイックスタート） -->
+### MCP サポート
+本プロジェクトでは4つのMCPサーバーを設定しています：
+- GitHub MCP Server
+- Filesystem MCP Server
+...
+
+詳細な設定方法は [.vscode/README.md](.vscode/README.md) を参照してください。
+
+<!-- .vscode/README.md（実装の詳細） -->
+## mcp.json
+### 機能
+#### 1. GitHub MCP Server
+- DockerコンテナでGitHub MCP Serverを起動
+...
+### 使用方法
+1. 前提条件
+   - Docker
+   - Node.js/npx
+...
+### トラブルシューティング
+...
+
+<!-- .github/specs/system-architecture.md（アーキテクチャ概念） -->
+### MCP (Model Context Protocol)
+MCPを利用することで、以下が可能になります：
+- リポジトリ情報の直接取得
+...
+
+設定の詳細は [.vscode/README.md](../../.vscode/README.md) を参照してください。
 ```
 
 ### 悪い例
