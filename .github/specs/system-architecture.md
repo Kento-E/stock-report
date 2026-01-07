@@ -150,7 +150,7 @@ VS Code で MCP を利用することで、GitHub Copilot がリポジトリの�
   - Personal Access Tokenは安全にプロンプト入力方式で取得
   - リポジトリにトークンをコミットしない安全な設計
 
-詳細な設定方法は <a>README.md</a> の「MCP (Model Context Protocol) サポート」セクションを参照してください。
+詳細な設定方法は [README.md](../../README.md#mcp-model-context-protocol-サポート) の「MCP (Model Context Protocol) サポート」セクションを参照してください。
 
 ## 非機能要件
 
