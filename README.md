@@ -243,7 +243,7 @@ VS Codeで**MCP (Model Context Protocol)** を利用できます。MCPを使用�
 1. **前提条件**
    - VS Code（最新版推奨）
    - GitHub Copilot拡張機能
-   - Docker（MCP serverをローカルで実行する場合）
+   - Docker
 
 2. **GitHub Personal Access Token (PAT)の取得**
    - [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens)にアクセス
