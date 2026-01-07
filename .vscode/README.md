@@ -10,23 +10,51 @@
 
 ### 機能
 
-- **GitHub MCP Server**: DockerコンテナでGitHub MCP Serverを起動し、GitHub Copilotにリポジトリの詳細情報を提供
-- **セキュアな認証**: Personal Access Tokenをプロンプト入力方式で取得し、リポジトリにコミットしない安全な設計
+このファイルでは、以下のMCPサーバーを設定しています：
+
+#### 1. GitHub MCP Server
+- DockerコンテナでGitHub MCP Serverを起動
+- GitHub Copilotにリポジトリの詳細情報を提供（Issue、Pull Request、コミット履歴など）
+- Personal Access Tokenをプロンプト入力方式で取得し、リポジトリにコミットしない安全な設計
+
+#### 2. Filesystem MCP Server
+- ワークスペース内のファイルシステムへの安全なアクセスを提供
+- YAMLファイル（stocks.yaml、investment_preferences.yaml）の編集支援
+- ファイル検索・一括編集機能
+
+#### 3. Python Analyzer MCP Server
+- Ruffによるコード品質チェック
+- 未使用コードの検出（Vulture統合）
+- pytest統合によるテストサポート
+- Pythonプロジェクトのコード品質維持に最適
+
+#### 4. GitHub Actions MCP Server
+- GitHub Actionsワークフローのトリガー・管理
+- ジョブログの確認とCI/CDパイプラインの自動化支援
+- report.yml、test.yml等のワークフロー管理に有用
 
 ### 使用方法
 
 1. **前提条件**
    - VS Code（最新版推奨）
    - GitHub Copilot拡張機能がインストールされていること
-   - Dockerがインストールされていること
+   - Dockerがインストールされていること（GitHub/GitHub Actions MCP Server用）
+   - Node.js/npxがインストールされていること（Filesystem MCP Server用）
+   - uvx（Python用パッケージランナー）がインストールされていること（Python Analyzer用）
+     ```bash
+     pip install uv
+     ```
 
 2. **初回起動時の設定**
    - VS Codeでこのリポジトリを開くと、GitHub Personal Access Tokenの入力を求められます
    - トークンの取得方法は、READMEの「MCP (Model Context Protocol) サポート」セクションを参照してください
 
 3. **MCPサーバーの起動**
-   - VS Codeが自動的にDockerコンテナでGitHub MCP Serverを起動します
-   - GitHub Copilotがリポジトリ情報（Issue、Pull Request、コミット履歴など）にアクセス可能になります
+   - VS Codeが自動的に各MCPサーバーを起動します：
+     - **GitHub/GitHub Actions**: Dockerコンテナで起動
+     - **Filesystem**: npx経由で起動（Node.jsパッケージ）
+     - **Python Analyzer**: uvx経由で起動（Pythonパッケージ）
+   - GitHub Copilotがリポジトリ情報、ファイルシステム、コード分析ツールにアクセス可能になります
 
 ### セキュリティ
 
@@ -41,6 +69,19 @@
 - Dockerがインストールされているか確認してください
 - Dockerデーモンが起動しているか確認してください
 
+#### Node.js/npxがインストールされていない
+
+- Filesystem MCP Serverを使用するにはNode.jsが必要です
+- [Node.js公式サイト](https://nodejs.org/)からインストールしてください
+
+#### uvxがインストールされていない
+
+- Python Analyzer MCP Serverを使用するにはuvxが必要です
+- 以下のコマンドでインストールできます：
+  ```bash
+  pip install uv
+  ```
+
 #### トークン入力のプロンプトが表示されない
 
 - VS Codeを再起動してください
@@ -48,8 +89,9 @@
 
 #### MCP Serverに接続できない
 
-- GitHub Personal Access Tokenの権限スコープを確認してください（推奨: `repo`, `read:org`, `read:user`）
+- GitHub Personal Access Tokenの権限スコープを確認してください（推奨: `repo`, `read:org`, `read:user`, `workflow`）
 - トークンの有効期限が切れていないか確認してください
+- 各MCPサーバーの前提条件（Docker、Node.js、uvx）が満たされているか確認してください
 
 ### 参考リンク
 
