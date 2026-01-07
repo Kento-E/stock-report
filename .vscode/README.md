@@ -55,4 +55,4 @@
 
 - [GitHub公式: Setting up the GitHub MCP Server](https://docs.github.com/en/copilot/how-tos/provide-context/use-mcp/set-up-the-github-mcp-server)
 - [VS Code: Use MCP servers](https://code.visualstudio.com/docs/copilot/customization/mcp-servers)
-- [リポジトリのREADME - MCP サポートセクション](../README.md)
+- [リポジトリのREADME - MCP サポートセクション](../README.md#mcp-model-context-protocol-サポート)
