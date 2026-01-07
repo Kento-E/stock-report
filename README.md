@@ -234,6 +234,43 @@ pre-commit install
 - **Copilot Instructions**: GitHub Copilot コーディングエージェント向けの詳細な指示は `.github/copilot-instructions.md` にまとめられています。要件定義、コーディング規約、テスト手順などの詳細な指示ファイルへのリンクが含まれています。
 - **効率的な利用**: GitHub Copilot Premium の消費を節約するため、テスト自動化の活用や実用性重視のドキュメント方針など、効率的な作業方針を定めています。詳細は `.github/instructions/copilot.instructions.md` を参照してください。
 
+### MCP (Model Context Protocol) サポート
+
+VS Codeで**MCP (Model Context Protocol)** を利用できます。MCPを使用することで、GitHub Copilotがリポジトリの情報により深くアクセスし、より高度な支援を提供できるようになります。
+
+#### 設定方法
+
+1. **前提条件**
+   - VS Code（最新版推奨）
+   - GitHub Copilot拡張機能
+   - Docker（MCP serverをローカルで実行する場合）
+
+2. **GitHub Personal Access Token (PAT)の取得**
+   - [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens)にアクセス
+   - "Generate new token (classic)"を選択
+   - 必要なスコープを選択（推奨: `repo`, `read:org`, `read:user`）
+   - トークンを生成し、安全に保管
+
+3. **VS Codeでの設定**
+   - リポジトリに `.vscode/mcp.json` ファイルが含まれています
+   - VS Codeでプロジェクトを開くと、GitHub Personal Access Tokenの入力を求められます
+   - 取得したトークンを入力してください
+
+4. **MCPサーバーの起動**
+   - VS Codeが自動的にDockerコンテナでGitHub MCP Serverを起動します
+   - GitHub Copilotがリポジトリ情報にアクセス可能になります
+
+#### セキュリティ上の注意
+
+- Personal Access Tokenは絶対にコミットしないでください
+- `.vscode/mcp.json`はトークンをプロンプトで入力する設定になっており、安全です
+- 使用しなくなったトークンは必ず削除してください
+
+#### 参考リンク
+
+- [GitHub公式: Setting up the GitHub MCP Server](https://docs.github.com/en/copilot/how-tos/provide-context/use-mcp/set-up-the-github-mcp-server)
+- [VS Code: Use MCP servers](https://code.visualstudio.com/docs/copilot/customization/mcp-servers)
+
 ### Pull Request 自動マージ機能
 
 本リポジトリには、Pull Request を承認（Approve）すると自動的にマージする機能が実装されています。

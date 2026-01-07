@@ -74,6 +74,7 @@
 - **.github/workflows/format-yaml.yml**：YAML自動フォーマットワークフロー
 - **.github/actions/setup-python-env**：Python環境セットアップ用の再利用可能アクション（NLTKデータ・defeatbeta-apiデータの事前ダウンロード処理を集約）
 - **.github/copilot-instructions.md**：VS Code 用カスタムチャットモード定義
+- **.vscode/mcp.json**：MCP (Model Context Protocol) サーバー設定（GitHub MCP Server）
 
 **Note**: report.yml、test.yml、copilot-setup-steps.ymlは、setup-python-envアクションを使用してファイアウォール対策を実施しています（詳細は自動化仕様書を参照）。
 
@@ -126,6 +127,30 @@ formatters/ (フォーマット - 独立実行)
 - requests, python-dotenv, smtplib, email, markdown
 - pytest, pytest-cov（テストフレームワーク・カバレッジ測定）
 - GitHub Actions（スケジューラ・自動化・CI/CD）
+- MCP (Model Context Protocol)（GitHub MCP Server経由でGitHub Copilotのコンテキスト拡張）
+
+## 開発環境・ツール
+
+### GitHub Copilot と MCP サポート
+
+本プロジェクトは、GitHub Copilot の活用を推奨しており、MCP (Model Context Protocol) をサポートしています。
+
+#### MCP (Model Context Protocol)
+
+VS Code で MCP を利用することで、GitHub Copilot がリポジトリの情報により深くアクセスし、以下のような高度な支援が可能になります：
+
+- **リポジトリ情報の直接取得**：Issue、Pull Request、コミット履歴などへのアクセス
+- **より正確なコード提案**：リポジトリの構造を理解した上での提案
+- **自動化されたワークフロー**：GitHub APIを通じた自動化タスクの実行
+
+#### 設定ファイル
+
+- **.vscode/mcp.json**：GitHub MCP Serverの設定ファイル
+  - Dockerを使用してMCPサーバーを起動
+  - Personal Access Tokenは安全にプロンプト入力方式で取得
+  - リポジトリにトークンをコミットしない安全な設計
+
+詳細な設定方法は <a>README.md</a> の「MCP (Model Context Protocol) サポート」セクションを参照してください。
 
 ## 非機能要件
 
