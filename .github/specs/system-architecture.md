@@ -74,7 +74,7 @@
 - **.github/workflows/format-yaml.yml**：YAML自動フォーマットワークフロー
 - **.github/actions/setup-python-env**：Python環境セットアップ用の再利用可能アクション（NLTKデータ・defeatbeta-apiデータの事前ダウンロード処理を集約）
 - **.github/copilot-instructions.md**：VS Code 用カスタムチャットモード定義
-- **.vscode/mcp.json**：MCP (Model Context Protocol) サーバー設定（GitHub、Filesystem、Python Analyzer、GitHub Actions）
+- **.vscode/mcp.json**：MCP (Model Context Protocol) サーバー設定
 
 **Note**: report.yml、test.yml、copilot-setup-steps.ymlは、setup-python-envアクションを使用してファイアウォール対策を実施しています（詳細は自動化仕様書を参照）。
 
