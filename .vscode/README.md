@@ -51,17 +51,12 @@
 - pytest統合によるテストサポート
 - Pythonプロジェクトのコード品質維持に最適
 
-#### 4. GitHub Actions MCP Server
-- GitHub Actionsワークフローのトリガー・管理
-- ジョブログの確認とCI/CDパイプラインの自動化支援
-- report.yml、test.yml等のワークフロー管理に有用
-
 ### 使用方法
 
 1. **前提条件**
    - VS Code（最新版推奨）
    - GitHub Copilot拡張機能がインストールされていること
-   - Dockerがインストールされていること（GitHub/GitHub Actions MCP Server用）
+   - Dockerがインストールされていること（GitHub MCP Server用）
    - Node.js/npxがインストールされていること（Filesystem MCP Server用）
    - uvx（Python用パッケージランナー）がインストールされていること（Python Analyzer用）
      ```bash
@@ -74,7 +69,7 @@
 
 3. **MCPサーバーの起動**
    - VS Codeが自動的に各MCPサーバーを起動します：
-     - **GitHub/GitHub Actions**: Dockerコンテナで起動
+     - **GitHub**: Dockerコンテナで起動
      - **Filesystem**: npx経由で起動（Node.jsパッケージ）
      - **Python Analyzer**: uvx経由で起動（Pythonパッケージ）
    - GitHub Copilotがリポジトリ情報、ファイルシステム、コード分析ツールにアクセス可能になります
