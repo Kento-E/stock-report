@@ -247,7 +247,7 @@ VS Codeで**MCP (Model Context Protocol)** を利用できます。MCPを使用�
 1. VS Code（最新版推奨）とGitHub Copilot拡張機能をインストール
 2. Docker、Node.js/npx、uvx（`pip install uv`）をインストール
 3. リポジトリを開くと、GitHub Personal Access Tokenの入力を求められます
-4. [GitHub Settings](https://github.com/settings/tokens)でトークンを生成（スコープ: `repo`, `read:org`, `read:user`, `workflow`）し、入力
+4. トークンの生成方法と必要な権限スコープは [.vscode/README.md](.vscode/README.md#セキュリティ) を参照してください
 
 **セキュリティ**: Personal Access Tokenはプロンプト入力方式で、リポジトリにコミットされません。
 

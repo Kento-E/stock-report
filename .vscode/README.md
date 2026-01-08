@@ -81,6 +81,13 @@
 
 ### セキュリティ
 
+#### Personal Access Tokenの生成
+
+1. [GitHub Settings](https://github.com/settings/tokens) でトークンを生成
+2. 必要な権限スコープ: `repo`, `read:org`, `read:user`, `workflow`
+
+#### 注意事項
+
 - **Personal Access Tokenは絶対にコミットしないでください**
 - このファイル（mcp.json）は安全にリポジトリ管理できます（トークンは含まれていません）
 - 使用しなくなったトークンは、GitHubの設定画面から必ず削除してください
@@ -112,7 +119,7 @@
 
 #### MCP Serverに接続できない
 
-- GitHub Personal Access Tokenの権限スコープを確認してください（推奨スコープは [README.md](../README.md#mcp-model-context-protocol-サポート) を参照）
+- GitHub Personal Access Tokenの権限スコープを確認してください（詳細は [セキュリティ](#セキュリティ) セクションを参照）
 - トークンの有効期限が切れていないか確認してください
 - 各MCPサーバーの前提条件（Docker、Node.js、uvx）が満たされているか確認してください
 
