@@ -236,18 +236,11 @@ pre-commit install
 
 ### MCP (Model Context Protocol) サポート
 
-VS Codeで**MCP (Model Context Protocol)** を利用できます。MCPを使用することで、GitHub Copilotがリポジトリの情報により深くアクセスし、より高度な支援を提供できるようになります。
-
-本プロジェクトでは以下の4つのMCPサーバーを設定しています：
-
-- **GitHub MCP Server**: Issue、PR、コミット履歴へのアクセス
-- **Filesystem MCP Server**: YAMLファイルの編集支援、データディレクトリの安全な操作
-- **Python Analyzer MCP Server**: Ruffによるコード品質チェック、pytest統合
-- **GitHub Actions MCP Server**: ワークフロー管理、CI/CDパイプライン自動化
+VS Codeで**MCP (Model Context Protocol)** を利用できます。MCPを使用することで、GitHub Copilotがリポジトリ情報、ファイルシステム、コード品質分析ツール、CI/CDパイプラインに直接アクセスし、より高度な開発支援を提供できるようになります。
 
 #### セットアップ
 
-詳細な設定方法、前提条件、トラブルシューティングについては [.vscode/README.md](.vscode/README.md) を参照してください。
+詳細な設定方法、利用可能なMCPサーバー、前提条件、トラブルシューティングについては [.vscode/README.md](.vscode/README.md) を参照してください。
 
 #### クイックスタート
 
