@@ -15,6 +15,16 @@
 - `mcp.json`: MCP (Model Context Protocol) サーバー設定
 - `extensions.json`: 推奨VS Code拡張機能
 
+## extensions.json
+
+**推奨VS Code拡張機能設定ファイル**
+
+このファイルは、リポジトリを開いたときにVS Codeが自動的にインストールを推奨する拡張機能を定義しています。
+
+### 推奨拡張機能
+
+- `github.copilot`: GitHub Copilot拡張機能（MCP機能を利用するために必要）
+
 ## mcp.json
 
 **MCP (Model Context Protocol) サーバー設定ファイル**
@@ -102,7 +112,7 @@
 
 #### MCP Serverに接続できない
 
-- GitHub Personal Access Tokenの権限スコープを確認してください（推奨: `repo`, `read:org`, `read:user`, `workflow`）
+- GitHub Personal Access Tokenの権限スコープを確認してください（推奨スコープは [README.md](../README.md#mcp-model-context-protocol-サポート) を参照）
 - トークンの有効期限が切れていないか確認してください
 - 各MCPサーバーの前提条件（Docker、Node.js、uvx）が満たされているか確認してください
 
