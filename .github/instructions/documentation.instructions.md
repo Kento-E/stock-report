@@ -126,40 +126,36 @@
 （ここに詳細なテスト手順を記載）
 ```
 
-### MCP設定の適切な配置例
+### VS Code設定の適切な配置パターン
+
+VS Code固有の設定（例：開発ツール設定）を複数のドキュメントで扱う場合：
 
 ```markdown
-<!-- README.md（ユーザー向けクイックスタート） -->
-### MCP サポート
-本プロジェクトでは4つのMCPサーバーを設定しています：
-- GitHub MCP Server
-- Filesystem MCP Server
-...
+<!-- README.md: 概要と利用効果のみ -->
+### [機能名] サポート
+本プロジェクトでは[機能]を利用できます。
+- 機能A
+- 機能B
 
 詳細な設定方法は [.vscode/README.md](.vscode/README.md) を参照してください。
 
-<!-- .vscode/README.md（実装の詳細） -->
-## mcp.json
+<!-- .vscode/README.md: 詳細な設定手順とトラブルシューティング -->
+## [設定ファイル名]
 ### 機能
-#### 1. GitHub MCP Server
-- DockerコンテナでGitHub MCP Serverを起動
-...
+- 詳細な機能説明
 ### 使用方法
 1. 前提条件
-   - Docker
-   - Node.js/npx
-...
+2. セットアップ手順
 ### トラブルシューティング
-...
+- 問題と解決方法
 
-<!-- .github/specs/system-architecture.md（アーキテクチャ概念） -->
-### MCP (Model Context Protocol)
-MCPを利用することで、以下が可能になります：
-- リポジトリ情報の直接取得
-...
-
-設定の詳細は [.vscode/README.md](../../.vscode/README.md) を参照してください。
+<!-- .github/specs/system-architecture.md: アーキテクチャ上の位置づけ -->
+### [機能名]
+アーキテクチャ上の概念・利用効果のみを記載。
+設定の詳細は [.vscode/README.md](../../.vscode/README.md) を参照。
 ```
+
+**ポイント**: 各ドキュメントは異なる目的を持ち、詳細情報は1箇所に集約し参照リンクで繋ぐ。
 
 ### 悪い例
 
