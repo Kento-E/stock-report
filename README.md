@@ -234,6 +234,23 @@ pre-commit install
 - **Copilot Instructions**: GitHub Copilot コーディングエージェント向けの詳細な指示は `.github/copilot-instructions.md` にまとめられています。要件定義、コーディング規約、テスト手順などの詳細な指示ファイルへのリンクが含まれています。
 - **効率的な利用**: GitHub Copilot Premium の消費を節約するため、テスト自動化の活用や実用性重視のドキュメント方針など、効率的な作業方針を定めています。詳細は `.github/instructions/copilot.instructions.md` を参照してください。
 
+### MCP (Model Context Protocol) サポート
+
+VS Codeで**MCP (Model Context Protocol)** を利用できます。MCPを使用することで、GitHub Copilotがリポジトリ情報、ファイルシステム、コード品質分析ツール、CI/CDパイプラインに直接アクセスし、より高度な開発支援を提供できるようになります。
+
+#### セットアップ
+
+詳細な設定方法、利用可能なMCPサーバー、前提条件、トラブルシューティングについては [.vscode/README.md](.vscode/README.md) を参照してください。
+
+#### クイックスタート
+
+1. VS Code（最新版推奨）とGitHub Copilot拡張機能をインストール
+2. Docker、Node.js/npx、uvx（`pip install uv`）をインストール
+3. リポジトリを開くと、GitHub Personal Access Tokenの入力を求められます
+4. トークンの生成方法と必要な権限スコープは [.vscode/README.md](.vscode/README.md#セキュリティ) を参照してください
+
+**セキュリティ**: Personal Access Tokenはプロンプト入力方式で、リポジトリにコミットされません。
+
 ### Pull Request 自動マージ機能
 
 本リポジトリには、Pull Request を承認（Approve）すると自動的にマージする機能が実装されています。
