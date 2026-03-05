@@ -1,18 +1,20 @@
-name: Validate stocks.toml
+name: Validate TOML
 
 on:
   pull_request:
     paths:
-      - 'data/**'
+      - 'data/**/*.toml'
   push:
     branches: [ main ]
     paths:
-      - 'data/**'
-  workflow_dispatch:
+      - 'data/**/*.toml'
 
 jobs:
   validate:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -28,20 +30,27 @@ jobs:
           pip install --upgrade pip
           pip install tomli
 
-      - name: Validate stocks.toml
+      - name: Validate TOML files
         id: validate
         run: |
-          python src/validators/validate_stocks.py data/stocks.toml
+          exit_code=0
+          for file in data/*.toml; do
+            if [ -f "$file" ]; then
+              echo "Checking $file..."
+              python src/formatters/format_toml.py "$file" || exit_code=1
+            fi
+          done
+          exit $exit_code
 
       - name: Validation Summary
         if: always()
         run: |
-          echo "## stocks.toml バリデーション結果 📋" >> $GITHUB_STEP_SUMMARY
+          echo "## TOMLバリデーション結果 🔧" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ "${{ steps.validate.outcome }}" = "success" ]; then
-            echo "✅ 検証成功: stocks.tomlファイルは正しい形式です" >> $GITHUB_STEP_SUMMARY
+            echo "✓ すべてのTOMLファイルは正しい形式です" >> $GITHUB_STEP_SUMMARY
           else
-            echo "❌ 検証失敗: stocks.tomlファイルにエラーがあります" >> $GITHUB_STEP_SUMMARY
+            echo "❌ TOMLファイルにエラーがあります" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "詳細は上記のログを確認してください。" >> $GITHUB_STEP_SUMMARY
           fi

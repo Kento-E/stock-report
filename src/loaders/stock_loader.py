@@ -1,12 +1,15 @@
 """
 銘柄リスト読み込みモジュール
 
-YAML形式の銘柄リストファイルから銘柄情報を読み込みます。
+TOML形式の銘柄リストファイルから銘柄情報を読み込みます。
 """
 
 import os
 
-import yaml
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
 
 
 def normalize_symbol(symbol):
@@ -36,26 +39,32 @@ def normalize_symbol(symbol):
     return symbol
 
 
-def load_stock_symbols(filepath="data/stocks.yaml"):
+def load_stock_symbols(filepath="data/stocks.toml"):
     """
-    銘柄リストファイル（YAML形式）から銘柄情報を読み込む。
+    銘柄リストファイル（TOML形式）から銘柄情報を読み込む。
 
-    YAML形式の例:
-    stocks:
-      - symbol: 7203.T
-        name: トヨタ自動車
-        added: 2024-01-01
-        quantity: 100
-        acquisition_price: 2500
-        currency: 円
-      - symbol: 6758.T
-        name: ソニーグループ
-      - symbol: AAPL
-        name: Apple Inc.
-        currency: ドル
-      - symbol: BMW.DE
-        name: BMW
-        currency: ユーロ
+    TOML形式の例:
+    [[stocks]]
+    symbol = "7203.T"
+    name = "トヨタ自動車"
+    added = 2024-01-01
+    quantity = 100
+    acquisition_price = 2500
+    currency = "円"
+
+    [[stocks]]
+    symbol = "6758.T"
+    name = "ソニーグループ"
+
+    [[stocks]]
+    symbol = "AAPL"
+    name = "Apple Inc."
+    currency = "ドル"
+
+    [[stocks]]
+    symbol = "BMW.DE"
+    name = "BMW"
+    currency = "ユーロ"
 
     返り値: 銘柄情報の辞書リスト (例: [{'symbol': '7203.T', 'name': 'トヨタ自動車', 'quantity': 100, 'acquisition_price': 2500, 'currency': '円'}, ...])
     """
@@ -67,10 +76,10 @@ def load_stock_symbols(filepath="data/stocks.yaml"):
     full_path = os.path.join(project_root, filepath)
 
     try:
-        with open(full_path, "r", encoding="utf-8") as f:
-            data = yaml.safe_load(f)
+        with open(full_path, "rb") as f:
+            data = tomllib.load(f)
 
-        # YAMLから銘柄リストを取得
+        # TOMLから銘柄リストを取得
         if data and "stocks" in data and data["stocks"]:
             for stock in data["stocks"]:
                 if isinstance(stock, dict) and "symbol" in stock:
@@ -109,10 +118,10 @@ def load_stock_symbols(filepath="data/stocks.yaml"):
         error_msg = f"エラー: 銘柄リストファイルが見つかりません: {full_path}"
         print(error_msg)
         raise FileNotFoundError(error_msg)
-    except yaml.YAMLError as e:
-        error_msg = f"エラー: YAML解析エラー: {e}"
+    except tomllib.TOMLDecodeError as e:
+        error_msg = f"エラー: TOML解析エラー: {e}"
         print(error_msg)
-        raise yaml.YAMLError(error_msg)
+        raise tomllib.TOMLDecodeError(error_msg)
     except Exception as e:
         error_msg = f"エラー: 銘柄リストファイルの読み込みエラー: {e}"
         print(error_msg)

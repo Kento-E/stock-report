@@ -1,7 +1,7 @@
 """
-stocks.yamlファイルのバリデーションスクリプト
+stocks.tomlファイルのバリデーションスクリプト
 
-このスクリプトはstocks.yamlファイルの形式をチェックし、
+このスクリプトはstocks.tomlファイルの形式をチェックし、
 必須フィールドや有効な値の範囲を検証します。
 """
 
@@ -10,7 +10,10 @@ import sys
 from datetime import date
 from typing import Any, List
 
-import yaml
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
 
 
 def validate_stock_entry(stock: Any, index: int) -> List[str]:
@@ -113,10 +116,10 @@ def validate_stock_entry(stock: Any, index: int) -> List[str]:
 
 def validate_stocks_yaml(filepath: str) -> tuple[bool, List[str]]:
     """
-    stocks.yamlファイル全体を検証する
+    stocks.tomlファイル全体を検証する
 
     Args:
-        filepath: YAMLファイルのパス
+        filepath: TOMLファイルのパス
 
     Returns:
         (検証成功か, エラーメッセージのリスト)
@@ -128,12 +131,12 @@ def validate_stocks_yaml(filepath: str) -> tuple[bool, List[str]]:
         errors.append(f"ファイルが見つかりません: {filepath}")
         return False, errors
 
-    # YAMLとして読み込めるか確認
+    # TOMLとして読み込めるか確認
     try:
-        with open(filepath, "r", encoding="utf-8") as f:
-            data = yaml.safe_load(f)
-    except yaml.YAMLError as e:
-        errors.append(f"YAML解析エラー: {e}")
+        with open(filepath, "rb") as f:
+            data = tomllib.load(f)
+    except tomllib.TOMLDecodeError as e:
+        errors.append(f"TOML解析エラー: {e}")
         return False, errors
     except Exception as e:
         errors.append(f"ファイル読み込みエラー: {e}")
@@ -181,7 +184,7 @@ def main():
     コマンドライン引数でファイルパスを受け取り、検証を実行する
     """
     # デフォルトのファイルパス
-    default_path = "data/stocks.yaml"
+    default_path = "data/stocks.toml"
 
     # コマンドライン引数からファイルパスを取得
     if len(sys.argv) > 1:
@@ -199,7 +202,7 @@ def main():
     success, errors = validate_stocks_yaml(filepath)
 
     if success:
-        print("✅ 検証成功: stocks.yamlファイルは正しい形式です")
+        print("✅ 検証成功: stocks.tomlファイルは正しい形式です")
         return 0
     else:
         print("❌ 検証失敗: 以下のエラーが見つかりました:")

@@ -3,10 +3,10 @@ name: Validate Investment Preferences
 on:
   push:
     paths:
-      - 'data/investment_preferences.yaml'
+      - 'data/investment_preferences.toml'
   pull_request:
     paths:
-      - 'data/investment_preferences.yaml'
+      - 'data/investment_preferences.toml'
 
 jobs:
   validate:
@@ -23,8 +23,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install pyyaml
+        pip install tomli
 
-    - name: Validate investment_preferences.yaml
+    - name: Validate investment_preferences.toml
       run: |
-        python src/validators/validate_preferences.py data/investment_preferences.yaml
+        python src/validators/validate_preferences.py data/investment_preferences.toml
