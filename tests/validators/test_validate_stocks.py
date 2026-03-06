@@ -200,7 +200,7 @@ class TestValidateStockEntry:
         assert any("symbol" in err for err in errors)
 
 
-class TestValidateStocksYaml:
+class TestValidateStocksToml:
     """validate_stocks_yaml関数のテスト（TOML対応）"""
 
     def test_valid_toml_file(self, tmp_path):
