@@ -43,29 +43,7 @@ def load_stock_symbols(filepath="data/stocks.toml"):
     """
     銘柄リストファイル（TOML形式）から銘柄情報を読み込む。
 
-    TOML形式の例:
-    [[stocks]]
-    symbol = "7203.T"
-    name = "トヨタ自動車"
-    added = 2024-01-01
-    quantity = 100
-    acquisition_price = 2500
-    currency = "円"
-
-    [[stocks]]
-    symbol = "6758.T"
-    name = "ソニーグループ"
-
-    [[stocks]]
-    symbol = "AAPL"
-    name = "Apple Inc."
-    currency = "ドル"
-
-    [[stocks]]
-    symbol = "BMW.DE"
-    name = "BMW"
-    currency = "ユーロ"
-
+    ファイル形式については data/stocks.toml を参照。
     返り値: 銘柄情報の辞書リスト (例: [{'symbol': '7203.T', 'name': 'トヨタ自動車', 'quantity': 100, 'acquisition_price': 2500, 'currency': '円'}, ...])
     """
     stocks = []
