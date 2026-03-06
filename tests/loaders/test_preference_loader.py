@@ -37,13 +37,15 @@ class TestLoadInvestmentPreferences:
         with tempfile.NamedTemporaryFile(
             mode="w", suffix=".toml", delete=False, encoding="utf-8"
         ) as f:
-            f.write("""investment_style = "growth"
+            f.write(
+                """investment_style = "growth"
 risk_tolerance = "high"
 investment_horizon = "long"
 trading_frequency = "low"
 focus_areas = ["technical", "momentum"]
 custom_message = "テクノロジー企業重視"
-""")
+"""
+            )
             filepath = f.name
 
         try:
