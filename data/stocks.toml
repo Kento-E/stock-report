@@ -1,0 +1,551 @@
+[[stocks]]
+name = "モービルアイ グローバル"
+symbol = "MBLY"
+account_type = "NISA"
+acquisition_price = 11.22
+quantity = 1
+added = 2025-11-25
+
+[[stocks]]
+name = "ラウンドワン"
+symbol = "4680"
+account_type = "NISA"
+acquisition_price = 1000
+quantity = 100
+added = 2025-11-10
+
+[[stocks]]
+name = "ワーナーミュージックグループ"
+symbol = "WMG"
+account_type = "NISA"
+acquisition_price = 30
+quantity = 1
+added = 2025-11-05
+
+[[stocks]]
+name = "アイロボット"
+symbol = "IRBT"
+acquisition_price = 3.2
+quantity = 1
+added = 2025-10-30
+
+[[stocks]]
+name = "WTI原油ETF"
+symbol = "1671"
+acquisition_price = 2827
+quantity = 2
+added = 2025-10-24
+
+[[stocks]]
+name = "極楽湯HD"
+symbol = "2340"
+account_type = "NISA"
+acquisition_price = 487
+quantity = 100
+added = 2025-10-24
+
+[[stocks]]
+name = "ディーエヌエー"
+symbol = "2432"
+acquisition_price = 3135
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "神戸物産"
+symbol = "3038"
+account_type = "旧NISA"
+acquisition_price = 3188
+quantity = 10
+added = 2025-10-24
+
+[[stocks]]
+name = "星野"
+symbol = "3287"
+acquisition_price = 335500
+quantity = 2
+added = 2025-10-24
+
+[[stocks]]
+name = "東レ"
+symbol = "3402"
+acquisition_price = 1002
+quantity = 2
+added = 2025-10-24
+
+[[stocks]]
+name = "マネーフォワード"
+symbol = "3994"
+acquisition_price = 4831
+quantity = 4
+added = 2025-10-24
+
+[[stocks]]
+name = "メルカリ"
+symbol = "4385"
+acquisition_price = 2305
+quantity = 103
+added = 2025-10-24
+
+[[stocks]]
+name = "OLC"
+symbol = "4661"
+acquisition_price = 4503
+quantity = 100
+added = 2025-10-24
+
+[[stocks]]
+name = "OLC"
+symbol = "4661"
+account_type = "NISA"
+acquisition_price = 3000
+quantity = 100
+added = 2025-10-24
+
+[[stocks]]
+name = "LINEヤフー"
+symbol = "4689"
+account_type = "旧NISA"
+acquisition_price = 595
+quantity = 100
+added = 2025-10-24
+
+[[stocks]]
+name = "サイバーエージェント"
+symbol = "4751"
+account_type = "旧NISA"
+acquisition_price = 1200
+quantity = 100
+added = 2025-10-24
+
+[[stocks]]
+name = "CYBOZU"
+symbol = "4776"
+acquisition_price = 2897
+quantity = 2
+added = 2025-10-24
+
+[[stocks]]
+name = "ディスコ"
+symbol = "6146"
+account_type = "旧NISA"
+acquisition_price = 12787
+quantity = 3
+added = 2025-10-24
+
+[[stocks]]
+name = "安川電"
+symbol = "6506"
+account_type = "旧NISA"
+acquisition_price = 5671
+quantity = 3
+added = 2025-10-24
+
+[[stocks]]
+name = "オムロン"
+symbol = "6645"
+acquisition_price = 5353
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "ソニーグループ"
+symbol = "6758"
+acquisition_price = 2268
+quantity = 5
+added = 2025-10-24
+
+[[stocks]]
+name = "レーザーテック"
+symbol = "6920"
+account_type = "旧NISA"
+acquisition_price = 17846
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "良品計画"
+symbol = "7453"
+acquisition_price = 3150
+quantity = -200
+added = 2025-10-24
+
+[[stocks]]
+name = "島津製"
+symbol = "7701"
+account_type = "旧NISA"
+acquisition_price = 4108
+quantity = 3
+added = 2025-10-24
+
+[[stocks]]
+name = "バンダイナムコ"
+symbol = "7832"
+acquisition_price = 5000
+quantity = -100
+added = 2025-10-24
+
+[[stocks]]
+name = "住天堂"
+symbol = "7974"
+acquisition_price = 6933
+quantity = 10
+added = 2025-10-24
+
+[[stocks]]
+name = "東工レク"
+symbol = "8035"
+acquisition_price = 14854
+quantity = 3
+added = 2025-10-24
+
+[[stocks]]
+name = "青山商"
+symbol = "8219"
+account_type = "旧NISA"
+acquisition_price = 1499
+quantity = 100
+added = 2025-10-24
+
+[[stocks]]
+name = "イオン"
+symbol = "8267"
+account_type = "NISA"
+acquisition_price = 1026
+quantity = 390
+added = 2025-10-24
+
+[[stocks]]
+name = "SBI"
+symbol = "8473"
+acquisition_price = 3982
+quantity = 10
+added = 2025-10-24
+
+[[stocks]]
+name = "オリックス"
+symbol = "8591"
+acquisition_price = 2612
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "ソニーFG"
+symbol = "8729"
+acquisition_price = 589
+quantity = 5
+added = 2025-10-24
+
+[[stocks]]
+name = "JR西"
+symbol = "9021"
+account_type = "NISA"
+acquisition_price = 3040
+quantity = 100
+added = 2025-10-24
+
+[[stocks]]
+name = "ヤマトHD"
+symbol = "9064"
+account_type = "旧NISA"
+acquisition_price = 2590
+quantity = 100
+added = 2025-10-24
+
+[[stocks]]
+name = "JAL"
+symbol = "9201"
+acquisition_price = 2691
+quantity = 100
+added = 2025-10-24
+
+[[stocks]]
+name = "ANA"
+symbol = "9202"
+acquisition_price = 2751
+quantity = 100
+added = 2025-10-24
+
+[[stocks]]
+name = "H.I.S."
+symbol = "9603"
+acquisition_price = 1983
+quantity = 100
+added = 2025-10-24
+
+[[stocks]]
+name = "ファーストリテ"
+symbol = "9983"
+acquisition_price = 25446
+quantity = 3
+added = 2025-10-24
+
+[[stocks]]
+name = "アドバンスト マイクロ デバイシズ"
+symbol = "AMD"
+acquisition_price = 155.77
+quantity = 10
+added = 2025-10-24
+
+[[stocks]]
+name = "シースリーエーアイ A"
+symbol = "AI"
+account_type = "旧NISA"
+acquisition_price = 156.17
+quantity = 7
+added = 2025-10-24
+
+[[stocks]]
+name = "アマゾン ドットコム"
+symbol = "AMZN"
+account_type = "旧NISA"
+acquisition_price = 162.61
+quantity = 20
+added = 2025-10-24
+
+[[stocks]]
+name = "アップル"
+symbol = "AAPL"
+account_type = "旧NISA"
+acquisition_price = 192.95
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "ASML ホールディングス NYRS"
+symbol = "ASML"
+acquisition_price = 863.45
+quantity = 2
+added = 2025-10-24
+
+[[stocks]]
+name = "アストラゼネカ ADR"
+symbol = "AZN"
+acquisition_price = 65.52
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "コストコ ホールセール"
+symbol = "COST"
+acquisition_price = 520.85
+quantity = 2
+added = 2025-10-24
+
+[[stocks]]
+name = "セールスフォース"
+symbol = "CRM"
+acquisition_price = 309.30
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "ウォルト ディズニー"
+symbol = "DIS"
+account_type = "NISA"
+acquisition_price = 107.00
+quantity = 5
+added = 2025-10-24
+
+[[stocks]]
+name = "ジェイフロッグ"
+symbol = "FROG"
+account_type = "NISA"
+acquisition_price = 25.00
+quantity = 5
+added = 2025-10-24
+
+[[stocks]]
+name = "ヴァンエック 金鉱株ETF"
+symbol = "GDX"
+acquisition_price = 30.14
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "ゼネラルミルズ"
+symbol = "GIS"
+account_type = "NISA"
+acquisition_price = 57.94
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "ギリアド サイエンシズ"
+symbol = "GILD"
+acquisition_price = 92.37
+quantity = 3
+added = 2025-10-24
+
+[[stocks]]
+name = "SPDRゴールド シェア"
+symbol = "GLD"
+acquisition_price = 179.98
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "ゴールドマン サックス"
+symbol = "GS"
+account_type = "旧NISA"
+acquisition_price = 364.79
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "iシェアーズ ゴールド トラスト"
+symbol = "IAU"
+acquisition_price = 35.17
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "ガートナー"
+symbol = "IT"
+acquisition_price = 484.47
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "イーライ リリィ"
+symbol = "LLY"
+acquisition_price = 258.08
+quantity = 2
+added = 2025-10-24
+
+[[stocks]]
+name = "マクドナルド"
+symbol = "MCD"
+account_type = "NISA"
+acquisition_price = 250.00
+quantity = 2
+added = 2025-10-24
+
+[[stocks]]
+name = "モルガン スタンレー"
+symbol = "MS"
+acquisition_price = 99.02
+quantity = 3
+added = 2025-10-24
+
+[[stocks]]
+name = "マイクロソフト"
+symbol = "MSFT"
+account_type = "旧NISA"
+acquisition_price = 214.85
+quantity = 2
+added = 2025-10-24
+
+[[stocks]]
+name = "ネットフリックス"
+symbol = "NFLX"
+acquisition_price = 682.31
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "ネットフリックス"
+symbol = "NFLX"
+account_type = "旧NISA"
+acquisition_price = 422.07
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "ヌー ホールディングス"
+symbol = "NU"
+acquisition_price = 5.11
+quantity = 2
+added = 2025-10-24
+
+[[stocks]]
+name = "エヌビディア"
+symbol = "NVDA"
+account_type = "旧NISA"
+acquisition_price = 17.34
+quantity = 40
+added = 2025-10-24
+
+[[stocks]]
+name = "オラクル"
+symbol = "ORCL"
+acquisition_price = 92.68
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "パラマウント スカイダンス B"
+symbol = "PSKY"
+account_type = "NISA"
+acquisition_price = 7.25
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "クアルコム"
+symbol = "QCOM"
+acquisition_price = 153.62
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "フェラーリ"
+symbol = "RACE"
+account_type = "NISA"
+acquisition_price = 419.94
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "スターバックス"
+symbol = "SBUX"
+account_type = "NISA"
+acquisition_price = 86.00
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "SPDR S&P 500 ETF トラスト"
+symbol = "SPY"
+acquisition_price = 434.91
+quantity = 2
+added = 2025-10-24
+
+[[stocks]]
+name = "アトラシアン"
+symbol = "TEAM"
+account_type = "NISA"
+acquisition_price = 182.73
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "テンパスAI インク"
+symbol = "TEM"
+account_type = "NISA"
+acquisition_price = 43.00
+quantity = 2
+added = 2025-10-24
+
+[[stocks]]
+name = "テスラ"
+symbol = "TSLA"
+account_type = "旧NISA"
+acquisition_price = 179.88
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "ビザ A"
+symbol = "V"
+account_type = "旧NISA"
+acquisition_price = 239.17
+quantity = 1
+added = 2025-10-24
+
+[[stocks]]
+name = "バンガード 米国エネルギーセクター"
+symbol = "VDE"
+acquisition_price = 106.46
+quantity = 1
+added = 2025-10-24

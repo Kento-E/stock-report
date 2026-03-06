@@ -1,13 +1,16 @@
 """
 投資志向性設定の読み込みモジュール
 
-投資志向性設定ファイル（data/investment_preferences.yaml）を読み込み、
+投資志向性設定ファイル（data/investment_preferences.toml）を読み込み、
 AI分析用のプロンプト文字列を生成します。
 """
 
 import os
 
-import yaml
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
 
 # 有効な設定値の定義
 VALID_INVESTMENT_STYLES = ["growth", "value", "income", "balanced", "speculative"]
@@ -62,12 +65,12 @@ DEFAULT_PREFERENCES = {
 }
 
 
-def load_investment_preferences(filepath="data/investment_preferences.yaml"):
+def load_investment_preferences(filepath="data/investment_preferences.toml"):
     """
     投資志向性設定ファイルを読み込みます。
 
     Args:
-        filepath: 設定ファイルのパス（デフォルト: 'data/investment_preferences.yaml'）
+        filepath: 設定ファイルのパス（デフォルト: 'data/investment_preferences.toml'）
 
     Returns:
         投資志向性の設定内容を含む辞書
@@ -75,7 +78,7 @@ def load_investment_preferences(filepath="data/investment_preferences.yaml"):
     Raises:
         FileNotFoundError: 設定ファイルが見つからない場合
         ValueError: 設定ファイルの形式が不正な場合
-        yaml.YAMLError: YAML構文エラーの場合
+        tomllib.TOMLDecodeError: TOML構文エラーの場合
     """
     if not os.path.exists(filepath):
         print(
@@ -84,8 +87,8 @@ def load_investment_preferences(filepath="data/investment_preferences.yaml"):
         return DEFAULT_PREFERENCES.copy()
 
     try:
-        with open(filepath, "r", encoding="utf-8") as f:
-            prefs = yaml.safe_load(f)
+        with open(filepath, "rb") as f:
+            prefs = tomllib.load(f)
 
         if prefs is None:
             print(f"警告: 投資志向性設定ファイルが空です。デフォルト設定を使用します。")
@@ -100,8 +103,8 @@ def load_investment_preferences(filepath="data/investment_preferences.yaml"):
 
         return result
 
-    except yaml.YAMLError as e:
-        raise yaml.YAMLError(f"投資志向性設定ファイル '{filepath}' のYAML構文エラー: {e}")
+    except tomllib.TOMLDecodeError as e:
+        raise tomllib.TOMLDecodeError(f"投資志向性設定ファイル '{filepath}' のTOML構文エラー: {e}")
     except Exception as e:
         raise ValueError(f"投資志向性設定ファイル '{filepath}' の読み込みエラー: {e}")
 

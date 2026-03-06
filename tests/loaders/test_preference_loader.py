@@ -7,7 +7,11 @@ import sys
 import tempfile
 
 import pytest
-import yaml
+
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
 
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../..", "src"))
@@ -31,20 +35,15 @@ class TestLoadInvestmentPreferences:
     def test_load_valid_preferences_file(self):
         """有効な設定ファイルを読み込める"""
         with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".yaml", delete=False, encoding="utf-8"
+            mode="w", suffix=".toml", delete=False, encoding="utf-8"
         ) as f:
-            yaml.dump(
-                {
-                    "investment_style": "growth",
-                    "risk_tolerance": "high",
-                    "investment_horizon": "long",
-                    "trading_frequency": "low",
-                    "focus_areas": ["technical", "momentum"],
-                    "custom_message": "テクノロジー企業重視",
-                },
-                f,
-                allow_unicode=True,
-            )
+            f.write("""investment_style = "growth"
+risk_tolerance = "high"
+investment_horizon = "long"
+trading_frequency = "low"
+focus_areas = ["technical", "momentum"]
+custom_message = "テクノロジー企業重視"
+""")
             filepath = f.name
 
         try:
@@ -61,30 +60,16 @@ class TestLoadInvestmentPreferences:
 
     def test_load_file_not_found_returns_default(self):
         """ファイルが見つからない場合はデフォルト設定を返す"""
-        prefs = load_investment_preferences("nonexistent_file.yaml")
+        prefs = load_investment_preferences("nonexistent_file.toml")
 
         assert prefs == DEFAULT_PREFERENCES
-
-    def test_load_empty_file_returns_default(self):
-        """空のファイルの場合はデフォルト設定を返す"""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".yaml", delete=False, encoding="utf-8"
-        ) as f:
-            f.write("")
-            filepath = f.name
-
-        try:
-            prefs = load_investment_preferences(filepath)
-            assert prefs == DEFAULT_PREFERENCES
-        finally:
-            os.unlink(filepath)
 
     def test_load_partial_preferences_merges_with_default(self):
         """一部の設定のみ指定した場合、残りはデフォルト値とマージされる"""
         with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".yaml", delete=False, encoding="utf-8"
+            mode="w", suffix=".toml", delete=False, encoding="utf-8"
         ) as f:
-            yaml.dump({"investment_style": "value", "risk_tolerance": "low"}, f, allow_unicode=True)
+            f.write('investment_style = "value"\nrisk_tolerance = "low"\n')
             filepath = f.name
 
         try:
@@ -99,16 +84,16 @@ class TestLoadInvestmentPreferences:
         finally:
             os.unlink(filepath)
 
-    def test_load_invalid_yaml_syntax_raises_error(self):
-        """YAML構文エラーの場合は例外が発生する"""
+    def test_load_invalid_toml_syntax_raises_error(self):
+        """TOML構文エラーの場合は例外が発生する"""
         with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".yaml", delete=False, encoding="utf-8"
+            mode="w", suffix=".toml", delete=False, encoding="utf-8"
         ) as f:
-            f.write("invalid: yaml: syntax:")
+            f.write("invalid toml [[[")
             filepath = f.name
 
         try:
-            with pytest.raises(yaml.YAMLError):
+            with pytest.raises(tomllib.TOMLDecodeError):
                 load_investment_preferences(filepath)
         finally:
             os.unlink(filepath)

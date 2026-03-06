@@ -61,6 +61,8 @@
 - **isort**: import文の自動整形
 - **black**: コードの自動フォーマット
 
+> **重要**: `.pre-commit-config.yaml` の `rev` と `requirements.txt` の `black` バージョンは常に同じバージョンに統一すること。バージョンが異なるとローカルの pre-commit とCIのフォーマット結果が食い違いCI失敗の原因になる。
+
 使用方法:
 
 ```bash
