@@ -44,7 +44,7 @@ last_api_call_time = 0
 
 if __name__ == "__main__":
     try:
-        # 対象銘柄リスト（data/stocks.yamlから読み込み）
+        # 対象銘柄リスト（data/stocks.tomlから読み込み）
         stocks = load_stock_symbols()
         print(f"分析対象銘柄: {[s['symbol'] for s in stocks]}")
     except (FileNotFoundError, ValueError, tomllib.TOMLDecodeError) as e:
