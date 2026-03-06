@@ -6,11 +6,6 @@ import os
 import sys
 from pathlib import Path
 
-try:
-    import tomllib
-except ImportError:
-    import tomli as tomllib
-
 # srcディレクトリをパスに追加
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
