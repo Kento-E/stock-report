@@ -21,10 +21,6 @@ jobs:
       with:
         python-version: '3.11'
 
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-
     - name: Validate investment_preferences.toml
       run: |
         python src/validators/validate_preferences.py data/investment_preferences.toml
