@@ -6,11 +6,7 @@ AI分析用のプロンプト文字列を生成します。
 """
 
 import os
-
-try:
-    import tomllib
-except ImportError:
-    import tomli as tomllib
+import tomllib
 
 # 有効な設定値の定義
 VALID_INVESTMENT_STYLES = ["growth", "value", "income", "balanced", "speculative"]

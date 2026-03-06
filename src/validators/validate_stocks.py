@@ -7,13 +7,9 @@ stocks.tomlファイルのバリデーションスクリプト
 
 import os
 import sys
+import tomllib
 from datetime import date
 from typing import Any, List
-
-try:
-    import tomllib
-except ImportError:
-    import tomli as tomllib
 
 
 def validate_stock_entry(stock: Any, index: int) -> List[str]:

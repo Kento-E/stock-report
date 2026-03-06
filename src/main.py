@@ -16,13 +16,9 @@ import datetime
 import re
 import sys
 import time
+import tomllib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from threading import Lock
-
-try:
-    import tomllib
-except ImportError:
-    import tomli as tomllib
 
 from analyzers import analyze_with_claude, analyze_with_gemini, fetch_stock_data
 from config import MAIL_TO, SIMPLIFY_HOLD_REPORTS, USE_CLAUDE
