@@ -5,11 +5,6 @@ validate_stocksモジュールのテスト
 import os
 import sys
 
-try:
-    import tomllib
-except ImportError:
-    import tomli as tomllib
-
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../..", "src"))
 
