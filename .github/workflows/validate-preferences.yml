@@ -23,7 +23,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install tomli
+        pip install -r requirements.txt
 
     - name: Validate investment_preferences.toml
       run: |
