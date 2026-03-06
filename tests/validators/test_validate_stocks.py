@@ -5,12 +5,10 @@ validate_stocksモジュールのテスト
 import os
 import sys
 
-import yaml
-
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../..", "src"))
 
-from validators.validate_stocks import validate_stock_entry, validate_stocks_yaml
+from validators.validate_stocks import validate_stock_entry, validate_stocks_toml
 
 
 class TestValidateStockEntry:
@@ -197,72 +195,67 @@ class TestValidateStockEntry:
         assert any("symbol" in err for err in errors)
 
 
-class TestValidateStocksYaml:
-    """validate_stocks_yaml関数のテスト"""
+class TestValidateStocksToml:
+    """validate_stocks_toml関数のテスト（TOML対応）"""
 
-    def test_valid_yaml_file(self, tmp_path):
-        """正常なYAMLファイル"""
-        test_yaml = tmp_path / "test_stocks.yaml"
-        test_data = {
-            "stocks": [
-                {
-                    "symbol": "7203.T",
-                    "name": "トヨタ自動車",
-                    "quantity": 100,
-                    "acquisition_price": 2500,
-                    "currency": "円",
-                    "account_type": "特定",
-                },
-                {"symbol": "AAPL", "name": "Apple Inc.", "currency": "ドル"},
-            ]
-        }
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f, allow_unicode=True)
+    def test_valid_toml_file(self, tmp_path):
+        """正常なTOMLファイル"""
+        test_toml = tmp_path / "test_stocks.toml"
+        content = """[[stocks]]
+symbol = "7203.T"
+name = "トヨタ自動車"
+quantity = 100
+acquisition_price = 2500
+currency = "円"
+account_type = "特定"
 
-        success, errors = validate_stocks_yaml(str(test_yaml))
+[[stocks]]
+symbol = "AAPL"
+name = "Apple Inc."
+currency = "ドル"
+"""
+        test_toml.write_text(content, encoding="utf-8")
+
+        success, errors = validate_stocks_toml(str(test_toml))
 
         assert success is True
         assert len(errors) == 0
 
     def test_file_not_found(self):
         """存在しないファイル"""
-        success, errors = validate_stocks_yaml("/nonexistent/path/stocks.yaml")
+        success, errors = validate_stocks_toml("/nonexistent/path/stocks.toml")
 
         assert success is False
         assert len(errors) > 0
         assert any("見つかりません" in err for err in errors)
 
-    def test_invalid_yaml_syntax(self, tmp_path):
-        """不正なYAML構文"""
-        test_yaml = tmp_path / "invalid.yaml"
-        with open(test_yaml, "w") as f:
-            f.write("invalid: yaml: syntax:")
+    def test_invalid_toml_syntax(self, tmp_path):
+        """不正なTOML構文"""
+        test_toml = tmp_path / "invalid.toml"
+        test_toml.write_text("invalid toml [[[", encoding="utf-8")
 
-        success, errors = validate_stocks_yaml(str(test_yaml))
+        success, errors = validate_stocks_toml(str(test_toml))
 
         assert success is False
         assert len(errors) > 0
-        assert any("YAML解析エラー" in err for err in errors)
+        assert any("TOML解析エラー" in err for err in errors)
 
-    def test_empty_yaml_file(self, tmp_path):
-        """空のYAMLファイル"""
-        test_yaml = tmp_path / "empty.yaml"
-        with open(test_yaml, "w") as f:
-            f.write("")
+    def test_empty_toml_file(self, tmp_path):
+        """空のTOMLファイル"""
+        test_toml = tmp_path / "empty.toml"
+        test_toml.write_text("", encoding="utf-8")
 
-        success, errors = validate_stocks_yaml(str(test_yaml))
+        success, errors = validate_stocks_toml(str(test_toml))
 
         assert success is False
         assert len(errors) > 0
 
     def test_missing_stocks_key(self, tmp_path):
         """stocksキーが欠落"""
-        test_yaml = tmp_path / "no_stocks.yaml"
-        test_data = {"other_key": "value"}
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f)
+        test_toml = tmp_path / "no_stocks.toml"
+        test_toml.write_text('other_key = "value"\n', encoding="utf-8")
 
-        success, errors = validate_stocks_yaml(str(test_yaml))
+        success, errors = validate_stocks_toml(str(test_toml))
 
         assert success is False
         assert len(errors) > 0
@@ -270,12 +263,10 @@ class TestValidateStocksYaml:
 
     def test_empty_stocks_list(self, tmp_path):
         """空の銘柄リスト"""
-        test_yaml = tmp_path / "empty_stocks.yaml"
-        test_data = {"stocks": []}
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f)
+        test_toml = tmp_path / "empty_stocks.toml"
+        test_toml.write_text("stocks = []\n", encoding="utf-8")
 
-        success, errors = validate_stocks_yaml(str(test_yaml))
+        success, errors = validate_stocks_toml(str(test_toml))
 
         assert success is False
         assert len(errors) > 0
@@ -283,12 +274,10 @@ class TestValidateStocksYaml:
 
     def test_stocks_not_a_list(self, tmp_path):
         """stocksがリストでない"""
-        test_yaml = tmp_path / "stocks_not_list.yaml"
-        test_data = {"stocks": "not a list"}
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f)
+        test_toml = tmp_path / "stocks_not_list.toml"
+        test_toml.write_text('stocks = "not a list"\n', encoding="utf-8")
 
-        success, errors = validate_stocks_yaml(str(test_yaml))
+        success, errors = validate_stocks_toml(str(test_toml))
 
         assert success is False
         assert len(errors) > 0
@@ -296,60 +285,52 @@ class TestValidateStocksYaml:
 
     def test_multiple_errors(self, tmp_path):
         """複数のエラーを含むファイル"""
-        test_yaml = tmp_path / "multiple_errors.yaml"
-        test_data = {
-            "stocks": [
-                {"name": "トヨタ自動車"},  # symbolが欠落
-                {"symbol": "AAPL", "quantity": "invalid"},  # quantityが無効
-                {"symbol": "MSFT", "account_type": "無効"},  # account_typeが無効
-            ]
-        }
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f, allow_unicode=True)
+        test_toml = tmp_path / "multiple_errors.toml"
+        content = """[[stocks]]
+name = "トヨタ自動車"
 
-        success, errors = validate_stocks_yaml(str(test_yaml))
+[[stocks]]
+symbol = "AAPL"
+quantity = "invalid"
+
+[[stocks]]
+symbol = "MSFT"
+account_type = "無効"
+"""
+        test_toml.write_text(content, encoding="utf-8")
+
+        success, errors = validate_stocks_toml(str(test_toml))
 
         assert success is False
         assert len(errors) >= 3  # 少なくとも3つのエラー
 
     def test_backward_compatibility_string_format(self, tmp_path):
         """後方互換性: 文字列形式の銘柄リスト"""
-        test_yaml = tmp_path / "string_stocks.yaml"
-        test_data = {"stocks": ["7203.T", "AAPL", "MSFT"]}
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f)
+        test_toml = tmp_path / "string_stocks.toml"
+        test_toml.write_text('stocks = ["7203.T", "AAPL", "MSFT"]\n', encoding="utf-8")
 
-        success, errors = validate_stocks_yaml(str(test_yaml))
-
-        assert success is True
-        assert len(errors) == 0
-
-    def test_mixed_format_valid(self, tmp_path):
-        """混在形式（文字列と辞書）の有効なリスト"""
-        test_yaml = tmp_path / "mixed_stocks.yaml"
-        test_data = {"stocks": ["7203.T", {"symbol": "AAPL", "name": "Apple"}, "MSFT"]}
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f)
-
-        success, errors = validate_stocks_yaml(str(test_yaml))
+        success, errors = validate_stocks_toml(str(test_toml))
 
         assert success is True
         assert len(errors) == 0
 
     def test_numeric_symbols_valid(self, tmp_path):
         """数値型のsymbolも有効"""
-        test_yaml = tmp_path / "numeric_symbols.yaml"
-        test_data = {
-            "stocks": [
-                {"symbol": 7203, "name": "トヨタ自動車"},
-                {"symbol": 6758, "name": "ソニーグループ"},
-                {"symbol": 1234},
-            ]
-        }
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f)
+        test_toml = tmp_path / "numeric_symbols.toml"
+        content = """[[stocks]]
+symbol = 7203
+name = "トヨタ自動車"
 
-        success, errors = validate_stocks_yaml(str(test_yaml))
+[[stocks]]
+symbol = 6758
+name = "ソニーグループ"
+
+[[stocks]]
+symbol = 1234
+"""
+        test_toml.write_text(content, encoding="utf-8")
+
+        success, errors = validate_stocks_toml(str(test_toml))
 
         assert success is True
         assert len(errors) == 0

@@ -19,7 +19,10 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from threading import Lock
 
-import yaml
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
 
 from analyzers import analyze_with_claude, analyze_with_gemini, fetch_stock_data
 from config import GEMINI_DAILY_LIMIT, MAIL_TO, SIMPLIFY_HOLD_REPORTS, USE_CLAUDE
@@ -41,10 +44,10 @@ last_api_call_time = 0
 
 if __name__ == "__main__":
     try:
-        # 対象銘柄リスト（data/stocks.yamlから読み込み）
+        # 対象銘柄リスト（data/stocks.tomlから読み込み）
         stocks = load_stock_symbols()
         print(f"分析対象銘柄: {[s['symbol'] for s in stocks]}")
-    except (FileNotFoundError, ValueError, yaml.YAMLError) as e:
+    except (FileNotFoundError, ValueError, tomllib.TOMLDecodeError) as e:
         print(f"\n{str(e)}")
         print("\n処理を終了します。")
         sys.exit(1)

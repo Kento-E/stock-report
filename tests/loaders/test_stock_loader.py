@@ -6,7 +6,11 @@ import os
 import sys
 
 import pytest
-import yaml
+
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
 
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../..", "src"))
@@ -118,26 +122,23 @@ class TestGetCurrencyForSymbol:
 class TestLoadStockSymbols:
     """load_stock_symbols関数のテスト"""
 
-    def test_load_valid_yaml_file(self, tmp_path):
-        """正常なYAMLファイルの読み込み"""
-        # テスト用YAMLファイルを作成
-        test_yaml = tmp_path / "test_stocks.yaml"
-        test_data = {
-            "stocks": [
-                {
-                    "symbol": "7203.T",
-                    "name": "トヨタ自動車",
-                    "quantity": 100,
-                    "acquisition_price": 2500,
-                },
-                {"symbol": "AAPL", "name": "Apple Inc."},
-            ]
-        }
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f, allow_unicode=True)
+    def test_load_valid_toml_file(self, tmp_path):
+        """正常なTOMLファイルの読み込み"""
+        test_toml = tmp_path / "test_stocks.toml"
+        content = """
+[[stocks]]
+symbol = "7203.T"
+name = "トヨタ自動車"
+quantity = 100
+acquisition_price = 2500
 
-        # 読み込みテスト
-        result = load_stock_symbols(str(test_yaml))
+[[stocks]]
+symbol = "AAPL"
+name = "Apple Inc."
+"""
+        test_toml.write_text(content, encoding="utf-8")
+
+        result = load_stock_symbols(str(test_toml))
 
         assert len(result) == 2
         assert result[0]["symbol"] == "7203.T"
@@ -150,45 +151,38 @@ class TestLoadStockSymbols:
     def test_load_file_not_found(self):
         """存在しないファイルの読み込みでエラー"""
         with pytest.raises(FileNotFoundError):
-            load_stock_symbols("/nonexistent/path/stocks.yaml")
+            load_stock_symbols("/nonexistent/path/stocks.toml")
 
     def test_load_empty_stocks_list(self, tmp_path):
         """空の銘柄リストでエラー"""
-        test_yaml = tmp_path / "empty_stocks.yaml"
-        test_data = {"stocks": []}
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f)
+        test_toml = tmp_path / "empty_stocks.toml"
+        test_toml.write_text("stocks = []", encoding="utf-8")
 
         with pytest.raises(ValueError):
-            load_stock_symbols(str(test_yaml))
+            load_stock_symbols(str(test_toml))
 
     def test_load_no_stocks_key(self, tmp_path):
         """stocksキーがない場合"""
-        test_yaml = tmp_path / "no_stocks_key.yaml"
-        test_data = {"other_key": "value"}
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f)
+        test_toml = tmp_path / "no_stocks_key.toml"
+        test_toml.write_text('other_key = "value"', encoding="utf-8")
 
         with pytest.raises(ValueError):
-            load_stock_symbols(str(test_yaml))
+            load_stock_symbols(str(test_toml))
 
-    def test_load_invalid_yaml(self, tmp_path):
-        """不正なYAMLファイルの読み込み"""
-        test_yaml = tmp_path / "invalid.yaml"
-        with open(test_yaml, "w") as f:
-            f.write("invalid: yaml: syntax:")
+    def test_load_invalid_toml(self, tmp_path):
+        """不正なTOMLファイルの読み込み"""
+        test_toml = tmp_path / "invalid.toml"
+        test_toml.write_text("invalid toml [[[", encoding="utf-8")
 
-        with pytest.raises(yaml.YAMLError):
-            load_stock_symbols(str(test_yaml))
+        with pytest.raises(tomllib.TOMLDecodeError):
+            load_stock_symbols(str(test_toml))
 
     def test_backward_compatibility_string_format(self, tmp_path):
         """後方互換性：文字列形式の銘柄リスト"""
-        test_yaml = tmp_path / "string_stocks.yaml"
-        test_data = {"stocks": ["7203.T", "AAPL"]}
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f)
+        test_toml = tmp_path / "string_stocks.toml"
+        test_toml.write_text('stocks = ["7203.T", "AAPL"]', encoding="utf-8")
 
-        result = load_stock_symbols(str(test_yaml))
+        result = load_stock_symbols(str(test_toml))
 
         assert len(result) == 2
         assert result[0]["symbol"] == "7203.T"
@@ -196,37 +190,40 @@ class TestLoadStockSymbols:
 
     def test_holding_info_fields(self, tmp_path):
         """保有情報フィールドのテスト"""
-        test_yaml = tmp_path / "holding_stocks.yaml"
-        test_data = {
-            "stocks": [
-                {
-                    "symbol": "7203.T",
-                    "name": "トヨタ自動車",
-                    "quantity": 100,
-                    "acquisition_price": 2500,
-                    "note": "テストメモ",
-                    "added": "2025-10-07",
-                }
-            ]
-        }
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f, allow_unicode=True)
+        test_toml = tmp_path / "holding_stocks.toml"
+        content = """
+[[stocks]]
+symbol = "7203.T"
+name = "トヨタ自動車"
+quantity = 100
+acquisition_price = 2500
+note = "テストメモ"
+added = 2025-10-07
+"""
+        test_toml.write_text(content, encoding="utf-8")
 
-        result = load_stock_symbols(str(test_yaml))
+        result = load_stock_symbols(str(test_toml))
 
         assert result[0]["quantity"] == 100
         assert result[0]["acquisition_price"] == 2500
         assert result[0]["note"] == "テストメモ"
-        assert result[0]["added"] == "2025-10-07"
+        # TOMLのdate型はdatetime.dateオブジェクトとして返される
+        import datetime
+
+        assert result[0]["added"] == datetime.date(2025, 10, 7)
 
     def test_currency_field_euro(self, tmp_path):
         """通貨フィールド（ユーロ）のテスト"""
-        test_yaml = tmp_path / "euro_stocks.yaml"
-        test_data = {"stocks": [{"symbol": "BMW.DE", "name": "BMW", "currency": "ユーロ"}]}
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f, allow_unicode=True)
+        test_toml = tmp_path / "euro_stocks.toml"
+        content = """
+[[stocks]]
+symbol = "BMW.DE"
+name = "BMW"
+currency = "ユーロ"
+"""
+        test_toml.write_text(content, encoding="utf-8")
 
-        result = load_stock_symbols(str(test_yaml))
+        result = load_stock_symbols(str(test_toml))
 
         assert result[0]["symbol"] == "BMW.DE"
         assert result[0]["name"] == "BMW"
@@ -234,22 +231,18 @@ class TestLoadStockSymbols:
 
     def test_currency_field_pound(self, tmp_path):
         """通貨フィールド（ポンド）のテスト"""
-        test_yaml = tmp_path / "pound_stocks.yaml"
-        test_data = {
-            "stocks": [
-                {
-                    "symbol": "HSBA.L",
-                    "name": "HSBC Holdings",
-                    "currency": "ポンド",
-                    "quantity": 50,
-                    "acquisition_price": 650,
-                }
-            ]
-        }
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f, allow_unicode=True)
+        test_toml = tmp_path / "pound_stocks.toml"
+        content = """
+[[stocks]]
+symbol = "HSBA.L"
+name = "HSBC Holdings"
+currency = "ポンド"
+quantity = 50
+acquisition_price = 650
+"""
+        test_toml.write_text(content, encoding="utf-8")
 
-        result = load_stock_symbols(str(test_yaml))
+        result = load_stock_symbols(str(test_toml))
 
         assert result[0]["symbol"] == "HSBA.L"
         assert result[0]["currency"] == "ポンド"
@@ -258,19 +251,30 @@ class TestLoadStockSymbols:
 
     def test_mixed_currencies(self, tmp_path):
         """複数通貨の混在テスト"""
-        test_yaml = tmp_path / "mixed_currencies.yaml"
-        test_data = {
-            "stocks": [
-                {"symbol": "7203.T", "name": "トヨタ自動車"},  # 円（自動判定）
-                {"symbol": "AAPL", "name": "Apple", "currency": "ドル"},  # 明示的にドル
-                {"symbol": "BMW.DE", "name": "BMW", "currency": "ユーロ"},  # 明示的にユーロ
-                {"symbol": "HSBA.L", "name": "HSBC", "currency": "ポンド"},  # 明示的にポンド
-            ]
-        }
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f, allow_unicode=True)
+        test_toml = tmp_path / "mixed_currencies.toml"
+        content = """
+[[stocks]]
+symbol = "7203.T"
+name = "トヨタ自動車"
 
-        result = load_stock_symbols(str(test_yaml))
+[[stocks]]
+symbol = "AAPL"
+name = "Apple"
+currency = "ドル"
+
+[[stocks]]
+symbol = "BMW.DE"
+name = "BMW"
+currency = "ユーロ"
+
+[[stocks]]
+symbol = "HSBA.L"
+name = "HSBC"
+currency = "ポンド"
+"""
+        test_toml.write_text(content, encoding="utf-8")
+
+        result = load_stock_symbols(str(test_toml))
 
         assert len(result) == 4
         assert result[0]["currency"] is None  # 自動判定用にNone
@@ -280,18 +284,23 @@ class TestLoadStockSymbols:
 
     def test_numeric_symbol_conversion(self, tmp_path):
         """数値型のsymbolが文字列に変換され、4桁なら.Tが追加される"""
-        test_yaml = tmp_path / "numeric_symbols.yaml"
-        test_data = {
-            "stocks": [
-                {"symbol": 7203, "name": "トヨタ自動車"},
-                {"symbol": 6758, "name": "ソニーグループ"},
-                {"symbol": 1234, "name": "テスト銘柄"},
-            ]
-        }
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f)
+        test_toml = tmp_path / "numeric_symbols.toml"
+        content = """
+[[stocks]]
+symbol = 7203
+name = "トヨタ自動車"
 
-        result = load_stock_symbols(str(test_yaml))
+[[stocks]]
+symbol = 6758
+name = "ソニーグループ"
+
+[[stocks]]
+symbol = 1234
+name = "テスト銘柄"
+"""
+        test_toml.write_text(content, encoding="utf-8")
+
+        result = load_stock_symbols(str(test_toml))
 
         assert len(result) == 3
         assert result[0]["symbol"] == "7203.T"
@@ -387,68 +396,77 @@ class TestAccountType:
 
     def test_load_with_account_type_tokutei(self, tmp_path):
         """特定口座の読み込み"""
-        test_yaml = tmp_path / "tokutei_account.yaml"
-        test_data = {
-            "stocks": [
-                {
-                    "symbol": "7203.T",
-                    "name": "トヨタ自動車",
-                    "quantity": 100,
-                    "acquisition_price": 2500,
-                    "account_type": "特定",
-                }
-            ]
-        }
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f, allow_unicode=True)
+        test_toml = tmp_path / "tokutei_account.toml"
+        content = """
+[[stocks]]
+symbol = "7203.T"
+name = "トヨタ自動車"
+quantity = 100
+acquisition_price = 2500
+account_type = "特定"
+"""
+        test_toml.write_text(content, encoding="utf-8")
 
-        result = load_stock_symbols(str(test_yaml))
+        result = load_stock_symbols(str(test_toml))
 
         assert result[0]["account_type"] == "特定"
 
     def test_load_with_account_type_nisa(self, tmp_path):
         """NISA口座の読み込み"""
-        test_yaml = tmp_path / "nisa_account.yaml"
-        test_data = {"stocks": [{"symbol": "AAPL", "name": "Apple", "account_type": "NISA"}]}
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f, allow_unicode=True)
+        test_toml = tmp_path / "nisa_account.toml"
+        content = """
+[[stocks]]
+symbol = "AAPL"
+name = "Apple"
+account_type = "NISA"
+"""
+        test_toml.write_text(content, encoding="utf-8")
 
-        result = load_stock_symbols(str(test_yaml))
+        result = load_stock_symbols(str(test_toml))
 
         assert result[0]["account_type"] == "NISA"
 
     def test_load_with_account_type_old_nisa(self, tmp_path):
         """旧NISA口座の読み込み"""
-        test_yaml = tmp_path / "old_nisa_account.yaml"
-        test_data = {"stocks": [{"symbol": "MSFT", "name": "Microsoft", "account_type": "旧NISA"}]}
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f, allow_unicode=True)
+        test_toml = tmp_path / "old_nisa_account.toml"
+        content = """
+[[stocks]]
+symbol = "MSFT"
+name = "Microsoft"
+account_type = "旧NISA"
+"""
+        test_toml.write_text(content, encoding="utf-8")
 
-        result = load_stock_symbols(str(test_yaml))
+        result = load_stock_symbols(str(test_toml))
 
         assert result[0]["account_type"] == "旧NISA"
 
     def test_default_account_type(self, tmp_path):
         """account_type未設定時はデフォルト（特定）"""
-        test_yaml = tmp_path / "default_account.yaml"
-        test_data = {"stocks": [{"symbol": "6758.T", "name": "ソニー"}]}
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f, allow_unicode=True)
+        test_toml = tmp_path / "default_account.toml"
+        content = """
+[[stocks]]
+symbol = "6758.T"
+name = "ソニー"
+"""
+        test_toml.write_text(content, encoding="utf-8")
 
-        result = load_stock_symbols(str(test_yaml))
+        result = load_stock_symbols(str(test_toml))
 
         assert result[0]["account_type"] == "特定"
 
     def test_invalid_account_type_defaults_to_tokutei(self, tmp_path):
         """無効なaccount_typeは特定にフォールバック"""
-        test_yaml = tmp_path / "invalid_account.yaml"
-        test_data = {
-            "stocks": [{"symbol": "TSLA", "name": "Tesla", "account_type": "無効な口座種別"}]
-        }
-        with open(test_yaml, "w", encoding="utf-8") as f:
-            yaml.dump(test_data, f, allow_unicode=True)
+        test_toml = tmp_path / "invalid_account.toml"
+        content = """
+[[stocks]]
+symbol = "TSLA"
+name = "Tesla"
+account_type = "無効な口座種別"
+"""
+        test_toml.write_text(content, encoding="utf-8")
 
-        result = load_stock_symbols(str(test_yaml))
+        result = load_stock_symbols(str(test_toml))
 
         assert result[0]["account_type"] == "特定"
 

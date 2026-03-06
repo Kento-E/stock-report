@@ -41,11 +41,11 @@
 
 ### Variables（リポジトリ設定 > Settings > Secrets and variables > Actions > Variables）
 
-| Variable名               | 用途                           | 設定値             | デフォルト値 |
-| ------------------------ | ------------------------------ | ------------------ | ------------ |
-| `SIMPLIFY_HOLD_REPORTS`  | ホールド判断時のレポート簡略化 | `true` または `false` | `true` |
-| `GEMINI_MODEL`           | 使用するGeminiモデル           | Geminiモデル名（例: `gemini-2.5-flash`） | `src/config.py`参照 |
-| `GEMINI_DAILY_LIMIT`     | Gemini API日次処理上限         | `1`～`20`の整数    | `18` |
+| Variable名               | 用途                           | 設定値             |
+| ------------------------ | ------------------------------ | ------------------ |
+| `SIMPLIFY_HOLD_REPORTS`  | ホールド判断時のレポート簡略化 | `true` または `false` |
+| `GEMINI_MODEL`           | 使用するGeminiモデル           | Geminiモデル名（例: `gemini-2.5-flash`） |
+| `GEMINI_DAILY_LIMIT`     | Gemini API日次処理上限         | `1`～`20`の整数    |
 
 > これらは「Repository variables」として登録してください。未設定の場合はデフォルト値が使用されます。
 
@@ -253,7 +253,25 @@ pre-commit install
 - **Copilotへの質問**: Issueのコメント欄で `@copilot` とメンションすることで、GitHub Copilotに質問や分析を依頼できます。分析だけでなく、修正とPull Request作成まで自動で依頼することも可能です。
 - **コードレビュー**: Pull Requestでは、CODEOWNERSファイルにより `@copilot` が自動的にレビュアーとして設定されます。
 - **カスタムチャットモード**: VS Codeで `@kansai` とメンションすることで、関西弁で応答するフレンドリーなCopilotチャットモードを使用できます。詳細は `.github/copilot-chat-participants.md` を参照してください。
-- **Copilot Agents**: GitHub Copilot エージェント設定（タスク別の指示）は `.github/agents/` ディレクトリにまとめられています。詳細は `.github/agents/README.md` を参照してください。
+- **Copilot Instructions**: GitHub Copilot コーディングエージェント向けの詳細な指示は `.github/copilot-instructions.md` にまとめられています。要件定義、コーディング規約、テスト手順などの詳細な指示ファイルへのリンクが含まれています。
+- **効率的な利用**: GitHub Copilot Premium の消費を節約するため、テスト自動化の活用や実用性重視のドキュメント方針など、効率的な作業方針を定めています。詳細は `.github/instructions/copilot.instructions.md` を参照してください。
+
+### MCP (Model Context Protocol) サポート
+
+VS Codeで**MCP (Model Context Protocol)** を利用できます。MCPを使用することで、GitHub Copilotがリポジトリ情報、ファイルシステム、コード品質分析ツール、CI/CDパイプラインに直接アクセスし、より高度な開発支援を提供できるようになります。
+
+#### セットアップ
+
+詳細な設定方法、利用可能なMCPサーバー、前提条件、トラブルシューティングについては [.vscode/README.md](.vscode/README.md) を参照してください。
+
+#### クイックスタート
+
+1. VS Code（最新版推奨）とGitHub Copilot拡張機能をインストール
+2. Docker、Node.js/npx、uvx（`pip install uv`）をインストール
+3. リポジトリを開くと、GitHub Personal Access Tokenの入力を求められます
+4. トークンの生成方法と必要な権限スコープは [.vscode/README.md](.vscode/README.md#セキュリティ) を参照してください
+
+**セキュリティ**: Personal Access Tokenはプロンプト入力方式で、リポジトリにコミットされません。
 
 ### Pull Request 自動マージ機能
 
@@ -280,7 +298,7 @@ pre-commit install
 - マージ可能な状態（競合がない、必要なチェックが通過しているなど）でなければ、自動マージは実行されません。
 - **Draft状態のPRは自動マージされません。** Draft状態のPRを承認した場合、その旨が表示されますが、ワークフローはエラーにならず正常終了します。Ready for reviewに変更してから再度Approveしてください。
 - 承認後、手動でマージボタンを押す必要はありません。
-- 詳細な動作確認手順は `docs/TEST.md` を参照してください。
+- 詳細な動作確認手順は `.github/instructions/testing.instructions.md` を参照してください。
 
 ## 参考
 

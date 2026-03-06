@@ -1,5 +1,5 @@
 """
-投資志向性設定ファイル（investment_preferences.yaml）のバリデーションスクリプト
+投資志向性設定ファイル（investment_preferences.toml）のバリデーションスクリプト
 
 このスクリプトは投資志向性設定ファイルの形式を検証し、
 不正なデータの混入を防ぎます。
@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from loaders.preference_loader import load_investment_preferences
 
 
-def validate_investment_preferences_file(filepath="data/investment_preferences.yaml"):
+def validate_investment_preferences_file(filepath="data/investment_preferences.toml"):
     """
     投資志向性設定ファイルをバリデーションします。
 
@@ -54,7 +54,7 @@ def validate_investment_preferences_file(filepath="data/investment_preferences.y
 
 if __name__ == "__main__":
     # コマンドライン引数からファイルパスを取得（指定がなければデフォルト）
-    filepath = sys.argv[1] if len(sys.argv) > 1 else "data/investment_preferences.yaml"
+    filepath = sys.argv[1] if len(sys.argv) > 1 else "data/investment_preferences.toml"
 
     success = validate_investment_preferences_file(filepath)
 
