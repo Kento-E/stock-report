@@ -8,7 +8,7 @@ import sys
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../..", "src"))
 
-from validators.validate_stocks import validate_stock_entry, validate_stocks_yaml
+from validators.validate_stocks import validate_stock_entry, validate_stocks_toml
 
 
 class TestValidateStockEntry:
@@ -196,7 +196,7 @@ class TestValidateStockEntry:
 
 
 class TestValidateStocksToml:
-    """validate_stocks_yaml関数のテスト（TOML対応）"""
+    """validate_stocks_toml関数のテスト（TOML対応）"""
 
     def test_valid_toml_file(self, tmp_path):
         """正常なTOMLファイル"""
@@ -216,14 +216,14 @@ currency = "ドル"
 """
         test_toml.write_text(content, encoding="utf-8")
 
-        success, errors = validate_stocks_yaml(str(test_toml))
+        success, errors = validate_stocks_toml(str(test_toml))
 
         assert success is True
         assert len(errors) == 0
 
     def test_file_not_found(self):
         """存在しないファイル"""
-        success, errors = validate_stocks_yaml("/nonexistent/path/stocks.toml")
+        success, errors = validate_stocks_toml("/nonexistent/path/stocks.toml")
 
         assert success is False
         assert len(errors) > 0
@@ -234,7 +234,7 @@ currency = "ドル"
         test_toml = tmp_path / "invalid.toml"
         test_toml.write_text("invalid toml [[[", encoding="utf-8")
 
-        success, errors = validate_stocks_yaml(str(test_toml))
+        success, errors = validate_stocks_toml(str(test_toml))
 
         assert success is False
         assert len(errors) > 0
@@ -245,7 +245,7 @@ currency = "ドル"
         test_toml = tmp_path / "empty.toml"
         test_toml.write_text("", encoding="utf-8")
 
-        success, errors = validate_stocks_yaml(str(test_toml))
+        success, errors = validate_stocks_toml(str(test_toml))
 
         assert success is False
         assert len(errors) > 0
@@ -255,7 +255,7 @@ currency = "ドル"
         test_toml = tmp_path / "no_stocks.toml"
         test_toml.write_text('other_key = "value"\n', encoding="utf-8")
 
-        success, errors = validate_stocks_yaml(str(test_toml))
+        success, errors = validate_stocks_toml(str(test_toml))
 
         assert success is False
         assert len(errors) > 0
@@ -266,7 +266,7 @@ currency = "ドル"
         test_toml = tmp_path / "empty_stocks.toml"
         test_toml.write_text("stocks = []\n", encoding="utf-8")
 
-        success, errors = validate_stocks_yaml(str(test_toml))
+        success, errors = validate_stocks_toml(str(test_toml))
 
         assert success is False
         assert len(errors) > 0
@@ -277,7 +277,7 @@ currency = "ドル"
         test_toml = tmp_path / "stocks_not_list.toml"
         test_toml.write_text('stocks = "not a list"\n', encoding="utf-8")
 
-        success, errors = validate_stocks_yaml(str(test_toml))
+        success, errors = validate_stocks_toml(str(test_toml))
 
         assert success is False
         assert len(errors) > 0
@@ -299,7 +299,7 @@ account_type = "無効"
 """
         test_toml.write_text(content, encoding="utf-8")
 
-        success, errors = validate_stocks_yaml(str(test_toml))
+        success, errors = validate_stocks_toml(str(test_toml))
 
         assert success is False
         assert len(errors) >= 3  # 少なくとも3つのエラー
@@ -309,7 +309,7 @@ account_type = "無効"
         test_toml = tmp_path / "string_stocks.toml"
         test_toml.write_text('stocks = ["7203.T", "AAPL", "MSFT"]\n', encoding="utf-8")
 
-        success, errors = validate_stocks_yaml(str(test_toml))
+        success, errors = validate_stocks_toml(str(test_toml))
 
         assert success is True
         assert len(errors) == 0
@@ -330,7 +330,7 @@ symbol = 1234
 """
         test_toml.write_text(content, encoding="utf-8")
 
-        success, errors = validate_stocks_yaml(str(test_toml))
+        success, errors = validate_stocks_toml(str(test_toml))
 
         assert success is True
         assert len(errors) == 0

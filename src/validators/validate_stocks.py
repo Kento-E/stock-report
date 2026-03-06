@@ -114,7 +114,7 @@ def validate_stock_entry(stock: Any, index: int) -> List[str]:
     return errors
 
 
-def validate_stocks_yaml(filepath: str) -> tuple[bool, List[str]]:
+def validate_stocks_toml(filepath: str) -> tuple[bool, List[str]]:
     """
     stocks.tomlファイル全体を検証する
 
@@ -144,12 +144,12 @@ def validate_stocks_yaml(filepath: str) -> tuple[bool, List[str]]:
 
     # データが空でないことを確認
     if data is None:
-        errors.append("YAMLファイルが空です")
+        errors.append("TOMLファイルが空です")
         return False, errors
 
     # 最上位が辞書であることを確認
     if not isinstance(data, dict):
-        errors.append("YAMLファイルの最上位要素は辞書である必要があります")
+        errors.append("TOMLファイルの最上位要素は辞書である必要があります")
         return False, errors
 
     # stocksキーの存在確認
@@ -199,7 +199,7 @@ def main():
     print("-" * 60)
 
     # 検証実行
-    success, errors = validate_stocks_yaml(filepath)
+    success, errors = validate_stocks_toml(filepath)
 
     if success:
         print("✅ 検証成功: stocks.tomlファイルは正しい形式です")
