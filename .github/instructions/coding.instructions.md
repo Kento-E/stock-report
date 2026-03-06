@@ -77,10 +77,24 @@ isort src/
 black src/
 ```
 
+### pre-commit フックのセットアップ（必須）
+
+**GitHub Copilot エージェント（sandbox 環境）を含む、すべての開発セッション開始時に必ず以下を実行すること。**
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+> **重要**: `pre-commit install` を実行しないと `git commit` 時に lint が自動実行されない。
+> sandbox 環境でも `pip install pre-commit && pre-commit install` を実行することでフックをインストールできる。
+> `report_progress` ツール経由のコミットにはフックが動作しない場合があるため、コミット前に必ず手動で lint を実行すること。
+
 ### チェックリスト
 
 コード作成・変更時は以下を確認：
 
+- [ ] セッション開始時に `pip install pre-commit && pre-commit install` を実行したか
 - [ ] リスト・配列アクセス前に空チェックを実施したか
 - [ ] `random.choice()`等の関数使用前にチェックしたか
 - [ ] ファイル・ディレクトリ操作前に存在確認・作成したか
@@ -88,4 +102,4 @@ black src/
 - [ ] 未使用の変数・importを削除したか
 - [ ] 変数名は明確か
 - [ ] 必要なコメントを追加したか
-- [ ] リンターでエラーがないか確認したか
+- [ ] コミット前に `black`・`isort`・`flake8` を手動実行してエラーがないか確認したか
