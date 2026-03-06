@@ -7,10 +7,7 @@ TOML構文チェックスクリプト
 import os
 import sys
 
-try:
-    import tomllib
-except ImportError:
-    import tomli as tomllib
+import tomllib
 
 
 def format_toml_file(filepath: str, check_only: bool = False) -> tuple[bool, str]:
