@@ -4,10 +4,9 @@ stock_loaderモジュールのテスト
 
 import os
 import sys
+import tomllib
 
 import pytest
-
-import tomllib
 
 # srcディレクトリをパスに追加
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../..", "src"))

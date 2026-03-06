@@ -6,7 +6,6 @@ AI分析用のプロンプト文字列を生成します。
 """
 
 import os
-
 import tomllib
 
 # 有効な設定値の定義

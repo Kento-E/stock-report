@@ -6,7 +6,6 @@ TOML構文チェックスクリプト
 
 import os
 import sys
-
 import tomllib
 
 
