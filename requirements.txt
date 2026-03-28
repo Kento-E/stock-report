@@ -4,7 +4,7 @@ anthropic~=0.86.0
 markdown~=3.10
 defeatbeta-api==0.0.48
 pytest~=9.0.2
-pytest-cov~=7.0.0
+pytest-cov~=7.1.0
 pre-commit~=4.5.1
 black~=26.3.1
 isort~=8.0.1
