@@ -2,7 +2,7 @@ requests~=2.33.1
 python-dotenv~=1.2.2
 anthropic~=0.94.0
 markdown~=3.10
-defeatbeta-api==0.0.50
+defeatbeta-api==0.0.51
 pytest~=9.0.2
 pytest-cov~=7.1.0
 pre-commit~=4.5.1
