@@ -1,5 +1,5 @@
 requests~=2.34.2
-python-dotenv~=1.2.3
+python-dotenv~=1.2.4
 anthropic~=0.89.0
 markdown~=3.11
 defeatbeta-api==0.0.62
